@@ -82,7 +82,7 @@ gc.collect()
 if len(files)>0:
     #ts = yt.DatasetSeries(files, parallel=4)
     #'''
-    para_div = 7
+    para_div = 14
     #my_storage = {}
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
         proj_root_rank = int(rank/para_div)
@@ -127,7 +127,6 @@ if len(files)>0:
             del dx, dy, dz, dd, sink_pos
             gc.collect()
             sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
-            sys.stdout.flush()
             
             #Get indices in measure sphere
             radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
@@ -153,8 +152,6 @@ if len(files)>0:
             del gas_mass
             gc.collect()
             sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
-            #print('Got particle mass on rank', rank, ' for fn', ds)
-            sys.stdout.flush()
             enclosed_mass = enclosed_mass+sink_mass.in_units('g')
             del sink_mass
             gc.collect()
