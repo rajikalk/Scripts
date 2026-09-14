@@ -41,19 +41,16 @@ elif os.path.exists('Kep_mass_0.pkl'):
     pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([[]])})
-    save_dict.update({"Rel_kep": np.array([[]])})
+    save_dict.update({"Radius_tang": np.array([])})
+    save_dict.update({"Radius_full": np.array([])})
+    save_dict.update({"Mass_tang": np.array([])})
+    save_dict.update({"Mass_full": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
         file_open.close()
         for key in save_dict_r.keys():
-            if key == "Time":
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key])
-            else:
-                if np.shape(save_dict[key]) == (1, 0):
-                    save_dict[key] = np.empty((0,len(save_dict_r[key][0])))
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
+            save_dict[key] = np.append(save_dict[key], save_dict_r[key])
     del save_dict_r
     gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
@@ -64,8 +61,10 @@ elif os.path.exists('Kep_mass_0.pkl'):
 else:
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([[]])})
-    save_dict.update({"Rel_kep": np.array([[]])})
+    save_dict.update({"Radius_tang": np.array([])})
+    save_dict.update({"Radius_full": np.array([])})
+    save_dict.update({"Mass_tang": np.array([])})
+    save_dict.update({"Mass_full": np.array([])})
 
 sink_id = 45
 sink_form_time = np.nan
@@ -144,7 +143,6 @@ if len(files)>0:
                 enc_inds = np.where(radii<=radii[radi_it])[0]
                 enc_mass = np.sum(gas_mass[enc_inds])
                 enclosed_mass[radi_it] = enc_mass
-            del gas_mass
             gc.collect()
             print("RANK", rank, "calculated enclosed gas mass")
             sys.stdout.flush()
@@ -155,7 +153,7 @@ if len(files)>0:
             print("RANK", rank, "got sink mass")
             sys.stdout.flush()
             keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
-            del enclosed_mass, radii
+            del enclosed_mass
             gc.collect()
             print("RANK", rank, "calculated keplerian mass")
             sys.stdout.flush()
@@ -214,32 +212,25 @@ if len(files)>0:
             
             disc_tang = np.where((rel_kep_tang>0.9)&(rel_kep_tang<1.1))[0]
             disc_full = np.where((rel_kep_full>0.9)&(rel_kep_full<1.1))[0]
-            import pdb
-            pdb.set_trace()
+
             
             #get median radius of kep mass
-            
-            
-            #Get
-            
-            print("RANK", rank, "calculated relative keplerian velocity")
-            sys.stdout.flush()
-            if np.shape(save_dict["Rel_kep"]) == (1, 0):
-                save_dict["Rel_kep"] = np.empty((0,len(rel_kep)))
-            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
-            del rel_kep
+            kep_rad_tang = np.median(radii[disc_tang])
+            save_dict["Radius_tang"] = np.append(save_dict["Radius_tang"],kep_rad_tang)
+            kep_rad_full = np.median(radii[disc_full])
+            save_dict["Radius_full"] = np.append(save_dict["Radius_full"],kep_rad_full)
+            del radii
             gc.collect()
-            print("RANK", rank, "saved relative keplerian velocity")
-            sys.stdout.flush()
             
-            density_array = ds.r["gas", "Density"][sphere_inds]
-            if np.shape(save_dict["Density"]) == (1, 0):
-                save_dict["Density"] = np.empty((0,len(density_array)))
-            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
-            del density_array
-            gc.collect()
-            print("RANK", rank, "saved density")
-            sys.stdout.flush()
+            
+            
+            #Get keplerian mass
+            kep_mass_tang = np.sum(gas_mass[disc_tang].in_units('msun'))
+            save_dict["Mass_tang"] = np.append(save_dict["Mass_tang"],kep_mass_tang)
+            kep_mass_full = np.sum(gas_mass[disc_full].in_units('msun'))
+            save_dict["Mass_full"] = np.append(save_dict["Mass_full"],kep_mass_full)
+            del gas_mass
+            gc.collect
             
             #Save BHL Calculation
             file_open = open('Kep_mass_'+str(proj_root_rank)+'.pkl', 'wb')
@@ -256,20 +247,16 @@ if rank == 0:
     pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([[]])})
-    save_dict.update({"Rel_kep": np.array([[]])})
+    save_dict.update({"Radius_tang": np.array([])})
+    save_dict.update({"Radius_full": np.array([])})
+    save_dict.update({"Mass_tang": np.array([])})
+    save_dict.update({"Mass_full": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
         file_open.close()
         for key in save_dict_r.keys():
-            if key == "Time":
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key])
-            else:
-                if np.shape(save_dict[key]) == (1, 0):
-                    save_dict[key] = save_dict_r[key]
-                else:
-                    save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
+            save_dict[key] = np.append(save_dict[key], save_dict_r[key])
     del save_dict_r
     gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
