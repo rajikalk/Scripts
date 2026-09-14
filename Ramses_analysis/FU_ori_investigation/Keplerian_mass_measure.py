@@ -55,11 +55,9 @@ elif os.path.exists('Kep_mass_0.pkl'):
             if key == "Time":
                 save_dict[key] = np.append(save_dict[key], save_dict_r[key])
             else:
-                import pdb
-                pdb.set_trace()
-                try:
-                    save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=1)
-                except:
+                if np.shape(save_dict[key]) == (1, 0):
+                    save_dict[key] = save_dict_r[key]
+                else:
                     save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
     del save_dict_r
     gc.collect()
@@ -209,21 +207,17 @@ if len(files)>0:
             rel_kep = tang_vel/keplerian_velocity
             del tang_vel, keplerian_velocity
             gc.collect()
-            import pdb
-            pdb.set_trace()
-            try:
-                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
-            except:
-                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
+            if np.shape(save_dict["Rel_kep"]) == (1, 0):
+                save_dict["Rel_kep"] = np.array([rel_kep])
+            else::
+                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"],[rel_kep], axis=0)
             del rel_kep
             gc.collect()
             
             
             density_array = ds.r["gas", "Density"][sphere_inds]
-            import pdb
-            pdb.set_trace()
-            try:
-                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
+            if np.shape(save_dict["Density"]) == (1, 0):
+                save_dict["Density"] = np.array([density_array])
             except:
                 save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
             del density_array
@@ -241,7 +235,7 @@ print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
 
 if rank == 0:
-    pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
+    pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
     save_dict.update({"Density": np.array([[]])})
@@ -251,7 +245,15 @@ if rank == 0:
         save_dict_r = pickle.load(file_open)
         file_open.close()
         for key in save_dict_r.keys():
-            save_dict[key] = np.append(save_dict[key],save_dict_r[key])
+            if key == "Time":
+                save_dict[key] = np.append(save_dict[key], save_dict_r[key])
+            else:
+                if np.shape(save_dict[key]) == (1, 0):
+                    save_dict[key] = save_dict_r[key]
+                else:
+                    save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
+    del save_dict_r
+    gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
     for key in save_dict.keys():
         save_dict[key] = save_dict[key][sorted_inds]
