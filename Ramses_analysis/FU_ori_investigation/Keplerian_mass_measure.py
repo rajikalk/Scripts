@@ -8,7 +8,6 @@ import my_ramses_module as mym
 import os
 import yt
 yt.enable_parallelism()
-import my_ramses_fields_short as myf
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
 
@@ -29,11 +28,8 @@ args = parser.parse_args()
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
-sys.stdout.flush()
-CW.Barrier()
-
 sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/'
-files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
+files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))
 
 if os.path.exists('Kep_mass.pkl'):
     file_open = open('Kep_mass.pkl', 'rb')
@@ -56,9 +52,8 @@ elif os.path.exists('Kep_mass_0.pkl'):
                 save_dict[key] = np.append(save_dict[key], save_dict_r[key])
             else:
                 if np.shape(save_dict[key]) == (1, 0):
-                    save_dict[key] = save_dict_r[key]
-                else:
-                    save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
+                    save_dict[key] = np.empty((0,len(rel_kep)))
+                save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
     del save_dict_r
     gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
@@ -80,33 +75,28 @@ CW.Barrier()
 gc.collect()
 
 if len(files)>0:
-    #ts = yt.DatasetSeries(files, parallel=4)
-    #'''
-    para_div = 14
-    #my_storage = {}
-    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
+    para_div = 28
+    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):
         proj_root_rank = int(rank/para_div)
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
-        #try:
         ds = yt.load(fn, units_override=units_override)
-        #'''
-        #my_storage = {}
-        #for sto, ds in ts.piter(storage=my_storage):
         
         if len(ds.r["sink_particle_form_time"]) == 45:
             skip=True
         else:
             if np.isnan(sink_form_time):
                 sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+                del ds.r["sink_particle_form_time"][sink_id]
+                gc.collect()
             skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
             save_dict["Time"] = np.append(save_dict["Time"],time_val)
             del time_val
             gc.collect()
-            #sto.result_id = "Time"
-            #sto.result = time_val
+            print("RANK", rank, "Got time stamp")
+            sys.stdout.flush()
             
             #Get sink position
             sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
@@ -115,7 +105,7 @@ if len(files)>0:
             sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
             del sink_particle_posx, sink_particle_posy, sink_particle_posz
             gc.collect()
-            #print('Got particle position on rank', rank, ' for fn', ds)
+            print("RANK", rank, "Got sink position")
             sys.stdout.flush()
             
             #Get inds in measuring sphere
@@ -126,6 +116,8 @@ if len(files)>0:
             sep_vector_all = yt.YTArray([dx, dy, dz])
             del dx, dy, dz, dd, sink_pos
             gc.collect()
+            print("RANK", rank, "Got separation vectors")
+            sys.stdout.flush()
             sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             
             #Get indices in measure sphere
@@ -134,10 +126,13 @@ if len(files)>0:
             radii = sep[sphere_inds]
             del sep
             gc.collect()
+            print("RANK", rank, "Got indices in measuring sphere")
+            sys.stdout.flush()
             sep_vector = sep_vector_all.T[sphere_inds].T
             del sep_vector_all
             gc.collect()
-
+            print("RANK", rank, "Got separation vectors")
+            sys.stdout.flush()
             
             #Calcualte enclosed mass
             try:
@@ -151,14 +146,19 @@ if len(files)>0:
                 enclosed_mass[radi_it] = enc_mass
             del gas_mass
             gc.collect()
+            print("RANK", rank, "calculated enclosed gas mass")
+            sys.stdout.flush()
             sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
             enclosed_mass = enclosed_mass+sink_mass.in_units('g')
             del sink_mass
             gc.collect()
+            print("RANK", rank, "got sink mass")
+            sys.stdout.flush()
             keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
             del enclosed_mass, radii
             gc.collect()
-            
+            print("RANK", rank, "calculated keplerian mass")
+            sys.stdout.flush()
             
             #Calculate bulk velocity of the sphere
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
@@ -167,6 +167,8 @@ if len(files)>0:
             sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
             del sink_particle_velx, sink_particle_vely, sink_particle_velz
             gc.collect()
+            print("RANK", rank, "got particle velocity")
+            sys.stdout.flush()
             #print('Got particle velocity on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
@@ -175,7 +177,7 @@ if len(files)>0:
             sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
             del sph_dvx, sph_dvy, sph_dvz, sink_vel
             gc.collect()
-            print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
+            print("RANK", rank, "got gas mass in measuring sphere")
             sys.stdout.flush()
             
             #Calculate Tangential vel
@@ -183,33 +185,40 @@ if len(files)>0:
             sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
             del sph_vel
             gc.collect()
+            print("RANK", rank, "got gas speed and proj factor")
+            sys.stdout.flush()
 
             proj_v_x = proj_factor*sep_vector.in_units('km')[0]
             proj_v_y = proj_factor*sep_vector.in_units('km')[1]
             proj_v_z = proj_factor*sep_vector.in_units('km')[2]
             del proj_factor, sep_vector
             gc.collect()
-            rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
+            print("RANK", rank, "calculated projected components")
+            sys.stdout.flush()
+            rad_speed = np.sqrt(proj_v_x**2 + proj_v_y**2 + proj_v_z**2)
             del proj_v_x, proj_v_y, proj_v_z
             gc.collect()
-            rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
-            del rad_vel
-            gc.collect()
-            
+            print("RANK", rank, "calculated radial velocity")
+            sys.stdout.flush()
             
             tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
             del sph_speed, rad_speed
             gc.collect()
+            print("RANK", rank, "calculated tangential velocity")
+            sys.stdout.flush()
             
             rel_kep = tang_vel/keplerian_velocity
             del tang_vel, keplerian_velocity
             gc.collect()
+            print("RANK", rank, "calculated relative keplerian velocity")
+            sys.stdout.flush()
             if np.shape(save_dict["Rel_kep"]) == (1, 0):
                 save_dict["Rel_kep"] = np.empty((0,len(rel_kep)))
             save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
             del rel_kep
             gc.collect()
-            
+            print("RANK", rank, "saved relative keplerian velocity")
+            sys.stdout.flush()
             
             density_array = ds.r["gas", "Density"][sphere_inds]
             if np.shape(save_dict["Density"]) == (1, 0):
@@ -217,13 +226,15 @@ if len(files)>0:
             save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
             del density_array
             gc.collect()
+            print("RANK", rank, "saved density")
+            sys.stdout.flush()
             
             #Save BHL Calculation
             file_open = open('Kep_mass_'+str(proj_root_rank)+'.pkl', 'wb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             pickle.dump((save_dict), file_open)
             file_open.close()
-            print("RANK "+str(rank)+": Calculated Keplerian mass for file", fn)
+            print("RANK "+str(rank)+": updated pickle", fn)
             sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
