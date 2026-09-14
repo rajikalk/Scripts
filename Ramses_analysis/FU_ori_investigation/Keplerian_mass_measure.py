@@ -205,18 +205,16 @@ if len(files)>0:
             del tang_vel, keplerian_velocity
             gc.collect()
             if np.shape(save_dict["Rel_kep"]) == (1, 0):
-                save_dict["Rel_kep"] = np.array([rel_kep])
-            else:
-                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"],[rel_kep], axis=0)
+                save_dict["Rel_kep"] = np.empty((0,len(rel_kep)))
+            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
             del rel_kep
             gc.collect()
             
             
             density_array = ds.r["gas", "Density"][sphere_inds]
             if np.shape(save_dict["Density"]) == (1, 0):
-                save_dict["Density"] = np.array([density_array])
-            else:
-                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
+                save_dict["Density"] = np.empty((0,len(density_array)))
+            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
             del density_array
             gc.collect()
             
