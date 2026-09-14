@@ -53,9 +53,9 @@ elif os.path.exists('Kep_mass_0.pkl'):
         file_open.close()
         for key in save_dict_r.keys():
             try:
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=1)
+                save_dict[key] = np.append(save_dict[key], [save_dict_r[key]], axis=1)
             except:
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
+                save_dict[key] = np.append(save_dict[key], [save_dict_r[key]], axis=0)
     del save_dict_r
     gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
