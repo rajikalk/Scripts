@@ -119,6 +119,7 @@ plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 plt.tick_params(axis='both', labelsize=font_size)
 plt.xlim([start_time, end_time])
 plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+lns_all = np.array(lns_all).T[0].tolist()
 labs = [l.get_label() for l in lns_all]
 plt.legend(lns_all, labs, loc='upper left')
 plt.savefig("BHL_Event_"+str(event_it)+"_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
