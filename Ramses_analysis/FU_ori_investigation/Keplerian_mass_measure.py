@@ -18,7 +18,7 @@ if rank == 0:
     print("size =", size)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10, type=float)
+parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10000, type=float)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -40,17 +40,15 @@ if os.path.exists('Kep_mass.pkl'):
 elif os.path.exists('Kep_mass_0.pkl'):
     pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"Radius_tang": np.array([])})
-    save_dict.update({"Radius_full": np.array([])})
-    save_dict.update({"Mass_tang": np.array([])})
-    save_dict.update({"Mass_full": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
         file_open.close()
         for key in save_dict_r.keys():
-            save_dict[key] = np.append(save_dict[key], save_dict_r[key])
+            if key not in save_dict.keys():
+                save_dict.update({key:save_dict_r[key]})
+            else:
+                save_dict[key] = np.append(save_dict[key], save_dict_r[key])
     del save_dict_r
     gc.collect()
     sorted_inds = np.argsort(save_dict["Time"])
@@ -60,11 +58,7 @@ elif os.path.exists('Kep_mass_0.pkl'):
         files = files[len(save_dict["Time"]):]
 else:
     save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"Radius_tang": np.array([])})
-    save_dict.update({"Radius_full": np.array([])})
-    save_dict.update({"Mass_tang": np.array([])})
-    save_dict.update({"Mass_full": np.array([])})
+
 
 sink_id = 45
 sink_form_time = np.nan
@@ -72,6 +66,10 @@ sink_form_time = np.nan
 sys.stdout.flush()
 CW.Barrier()
 gc.collect()
+
+#Define radius bins
+radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
+radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
     para_div = 7
@@ -91,7 +89,10 @@ if len(files)>0:
             skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-            save_dict["Time"] = np.append(save_dict["Time"],time_val)
+            if "Time" not in save_dict.keys():
+                save_dict.update({"Time":np.array([time_val])})
+            else:
+                save_dict["Time"] = np.append(save_dict["Time"],time_val)
             del time_val
             gc.collect()
             print("RANK", rank, "Got time stamp")
@@ -120,7 +121,7 @@ if len(files)>0:
             sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             
             #Get indices in measure sphere
-            radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
+            #Start iterating over Radial bins
             sphere_inds = np.where(sep<=radius)[0]
             radii = sep[sphere_inds]
             del sep
@@ -263,13 +264,12 @@ if rank == 0:
     for key in save_dict.keys():
         save_dict[key] = save_dict[key][sorted_inds]
         
-    file_open = open('BHL_accretion.pkl', 'wb')
+    file_open = open('Kep_mass.pkl', 'wb')
     pickle.dump((save_dict), file_open)
     file_open.close()
     
     import matplotlib.pyplot as plt
     
-    cmap=plt.cm.gist_heat
     plt.rcParams.update({
         "font.family": "sans-serif",
         "font.sans-serif": ["Arial"],
@@ -289,14 +289,16 @@ if rank == 0:
     plt.clf()
     fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
     #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-    smap = plt.scatter(save_dict['Time'], save_dict['Rel_kep'], c=save_dict['Density'])
+    plt.plot(save_dict['Time'], save_dict['Radius_tang'], label="Tangential")
+    plt.plot(save_dict['Time'], save_dict['Radius_full'], label="Full")
     plt.xlabel("Time (yr)")
-    plt.ylabel("$v_\mathrm{\perp}/v_{Kep}$")
-    plt.ylim([0, 2])
+    plt.ylabel("$Radius (au)$")
+    #plt.ylim([0, 2])
     plt.xlim([0, save_dict['Time'][-1]])
-    plt.axhline(y=0.8, ls="--", c='k')
-    plt.axhline(y=1.2, ls="--", c='k')
-    cb = fig.colorbar(smap)
-    plt.savefig("Kep_mass_radius_"+str(args.measuring_sphere_radius)+"_au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.legend()
+    #plt.axhline(y=0.8, ls="--", c='k')
+    #plt.axhline(y=1.2, ls="--", c='k')
+    #cb = fig.colorbar(smap)
+    plt.savefig("Kep_mass_radius.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     
