@@ -24,7 +24,7 @@ mpl.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-a
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 7
+font_size = 10
 mutation_scale = 5
 linewidth = 0.8
 
@@ -74,24 +74,24 @@ for Traj_pickle in Traj_pickles:
         ax.xaxis.label.set_color('black')
         ax.yaxis.label.set_color('black')
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-        ax.set_title("Event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.22, y=-0.05)
+        ax.set_title("Event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.22, y=-0.05, fontsize=font_size)
         
         if Traj_pickles.index(Traj_pickle) > 0:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels, visible=False)
         else:
-            ax.set_ylabel('Distance$_\perp$ (AU)', labelpad=-1)
+            ax.set_ylabel('Distance$_\perp$ (AU)', labelpad=-1, fontsize=font_size)
             
         #if Traj_pickles.index(Traj_pickle) < 2:
         #    xticklabels = ax.get_xticklabels()
         #    plt.setp(xticklabels, visible=False)
         #else:
-        ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1)
+        ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1, fontsize=font_size)
         xticklabels = ax.get_xticklabels()
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
 cax = fig.add_axes([0.90, 0.35, 0.01, 0.30])
 cbar = plt.colorbar(sm, cax=cax)
-cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
+cbar.set_label(r"Time Normalised", rotation=270, labelpad=14, fontsize=font_size)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
