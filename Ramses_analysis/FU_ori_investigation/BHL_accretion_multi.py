@@ -123,7 +123,7 @@ for event_it in event_IDS:
     #plt.xaxis.label.set_color('black')
     #plt.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size)
-    ax.xlim([start_time, end_time])
+    ax.set_xlim([start_time, end_time])
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
     if event_it == 5:
         lns_all = np.array(lns_all).T[0].tolist()
