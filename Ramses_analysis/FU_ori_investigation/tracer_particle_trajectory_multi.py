@@ -30,7 +30,7 @@ linewidth = 1
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
-fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 2*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -62,8 +62,8 @@ for Traj_pickle in Traj_pickles:
         arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
         ax.add_patch(circle)
         ax.add_patch(arrow)
-        ax.set_xlim([-15, 15])
-        ax.set_ylim([-1, 15])
+        ax.set_xlim([-10, 10])
+        ax.set_ylim([-1, 10])
         ax.set_aspect('equal')
         norm = mpl.colors.Normalize(vmin=0,vmax=1)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
@@ -76,21 +76,21 @@ for Traj_pickle in Traj_pickles:
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.0)
         
-        if Traj_pickles.index(Traj_pickle) == 1 or Traj_pickles.index(Traj_pickle) == 3:
+        if Traj_pickles.index(Traj_pickle) > 0:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels, visible=False)
         else:
             ax.set_ylabel('Distance$_\perp$ (AU)', labelpad=-1)
             
-        if Traj_pickles.index(Traj_pickle) < 2:
-            xticklabels = ax.get_xticklabels()
-            plt.setp(xticklabels, visible=False)
-        else:
-            ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1)
-            xticklabels = ax.get_xticklabels()
-            plt.setp(xticklabels[-1], visible=False)
+        #if Traj_pickles.index(Traj_pickle) < 2:
+        #    xticklabels = ax.get_xticklabels()
+        #    plt.setp(xticklabels, visible=False)
+        #else:
+        ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1)
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels[-1], visible=False)
         
-        plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
+        plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
 cax = fig.add_axes([0.90, 0.28, 0.03, 0.43])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
