@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
+from mpl_toolkits.axes_grid1 import AxesGrid
 
 mpl.rcParams['mathtext.fontset'] = 'stixsans'
 mpl.rcParams['mathtext.it'] = 'Arial:italic'
@@ -30,9 +31,20 @@ linewidth = 0.8
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.8*single_col_width), sharex=True, sharey=True)
-plt.subplots_adjust(hspace=-0.61)
-plt.subplots_adjust(wspace=0.0)
+#fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.8*single_col_width), sharex=True, sharey=True)
+#plt.subplots_adjust(hspace=-0.61)
+#plt.subplots_adjust(wspace=0.0)
+
+grid = AxesGrid(fig, 122,  # similar to subplot(122)
+                    nrows_ncols=(1, 4),
+                    axes_pad=0.10,
+                    label_mode="1",
+                    share_all=True,
+                    cbar_location="right",
+                    cbar_mode="edge",
+                    cbar_size="7%",
+                    cbar_pad="2%",
+                    )
 
 for Traj_pickle in Traj_pickles:
     if os.path.isfile(Traj_pickle):
@@ -50,7 +62,8 @@ for Traj_pickle in Traj_pickles:
         Time_array = Time_array - Time_array[0]
         Time_norm = Time_array/t_event
         
-        ax = axs.flatten()[Traj_pickles.index(Traj_pickle)]
+        #ax = axs.flatten()[Traj_pickles.index(Traj_pickle)]
+        ax = grid[Traj_pickles.index(Traj_pickle)]
 
         for tracer_it in range(len(Tracer_parallel)):
             start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
@@ -92,6 +105,9 @@ for Traj_pickle in Traj_pickles:
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
 #cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
-cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
-cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
+grid.cbar_axes[-1].colorbar(sm)
+for cax in grid.cbar_axes:
+    cax.axis[cax.orientation].set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
+#cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
+#cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.03)
