@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
+from mpl_toolkits.axes_grid1 import AxesGrid
 
 mpl.rcParams['mathtext.fontset'] = 'stixsans'
 mpl.rcParams['mathtext.it'] = 'Arial:italic'
@@ -33,6 +34,17 @@ Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/E
 fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.8*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
+
+grid = AxesGrid(F, 122, # similar to subplot(122)
+                    nrows_ncols = (1, 4),
+                    axes_pad = 0.10,
+                    label_mode = "1",
+                    share_all = True,
+                    cbar_location="right",
+                    cbar_mode="edge",
+                    cbar_size="7%",
+                    cbar_pad="2%",
+                    )
 
 for Traj_pickle in Traj_pickles:
     if os.path.isfile(Traj_pickle):
@@ -91,7 +103,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
-cbar = plt.colorbar(sm, cax=cax)
+#cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
+cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.03)

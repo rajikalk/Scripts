@@ -204,7 +204,7 @@ for plot_time in plot_times:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 
     if plot_it == n_frames-1:
-        cbar_ax = fig.add_axes([0.90, 0.267, 0.015, 0.256])
+        cbar_ax = fig.add_axes([0.90, 0.28, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         if event_it > 3:
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size, y=0.35)
