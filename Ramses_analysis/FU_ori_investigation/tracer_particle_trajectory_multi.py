@@ -80,7 +80,7 @@ for Traj_pickle in Traj_pickles:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels, visible=False)
         else:
-            ax.set_ylabel('Distance$_\perp$ (AU)', labelpad=-1, fontsize=font_size)
+            ax.set_ylabel('Distance$_\perp$ (AU)', labelpad=0, fontsize=font_size)
             
         #if Traj_pickles.index(Traj_pickle) < 2:
         #    xticklabels = ax.get_xticklabels()
@@ -91,7 +91,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.35, 0.01, 0.30])
+cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
 cbar = plt.colorbar(sm, cax=cax)
-cbar.set_label(r"Time Normalised", rotation=270, labelpad=14, fontsize=font_size)
-plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
+cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
+plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.03)
