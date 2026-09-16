@@ -30,7 +30,7 @@ linewidth = 0.8
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.8*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
