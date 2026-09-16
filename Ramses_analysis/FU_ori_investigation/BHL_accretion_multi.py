@@ -132,7 +132,7 @@ for event_it in event_IDS:
     if event_it == 2:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
-        ax.legend(lns, labs,
+        ax.legend(lns_all, labs,
             loc='upper center',
             bbox_to_anchor=(1.0, -0.3),
             ncol=4,
