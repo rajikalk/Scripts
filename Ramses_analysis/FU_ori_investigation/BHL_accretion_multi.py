@@ -132,7 +132,7 @@ for event_it in event_IDS:
         labs = [l.get_label() for l in lns_all]
         pos = ax.get_position()
         ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-        ax.legend(
+        plt.legend(
             loc='upper center',
             bbox_to_anchor=(1.0, -0.3),
             ncol=4,
