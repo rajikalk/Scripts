@@ -26,11 +26,11 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 mutation_scale = 15
-linewidth = 1
+linewidth = 0.8
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -57,7 +57,7 @@ for Traj_pickle in Traj_pickles:
             end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
             for pit in range(1,len(Tracer_parallel[tracer_it])):
                 ax.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-        ax.scatter(0, 0, marker='*', color='cyan', s=600, edgecolor='k')
+        ax.scatter(0, 0, marker='*', color='cyan', s=100, edgecolor='k')
         circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='k')
         arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
         ax.add_patch(circle)
@@ -74,7 +74,7 @@ for Traj_pickle in Traj_pickles:
         ax.xaxis.label.set_color('black')
         ax.yaxis.label.set_color('black')
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.0)
+        ax.set_title("Event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=-0.05)
         
         if Traj_pickles.index(Traj_pickle) > 0:
             yticklabels = ax.get_yticklabels()
@@ -91,7 +91,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.28, 0.03, 0.43])
+cax = fig.add_axes([0.90, 0.30, 0.02, 0.40])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
