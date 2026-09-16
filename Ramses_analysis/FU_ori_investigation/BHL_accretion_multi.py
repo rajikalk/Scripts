@@ -30,7 +30,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 9
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -116,7 +116,7 @@ for event_it in event_IDS:
     ax.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
     if event_it == 2:
         ax.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-        ax.set_ylim([1.e-8, 1.e-4])
+        ax.set_ylim([5.e-9, 1.e-4])
     if event_it == 5:
         axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
         axes_1_twin.set_ylim([5, 70])
@@ -127,9 +127,18 @@ for event_it in event_IDS:
     ax.tick_params(axis='both', labelsize=font_size)
     ax.set_xlim([start_time, end_time])
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-    if event_it == 5:
+    if event_it == 2:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
+        
+        pos = ax.get_position()
+        ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+        ax.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, -0.35),
+            ncol=3,
+        )
+        
         plt.legend(lns_all, labs, loc='upper right', ncol=4)
     if event_it != 2:
         yticklabels = ax.get_yticklabels()
