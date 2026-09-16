@@ -127,12 +127,12 @@ for event_it in event_IDS:
     ax.tick_params(axis='both', labelsize=font_size)
     ax.set_xlim([start_time, end_time])
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+    pos = ax.get_position()
+    ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
     if event_it == 2:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
-        pos = ax.get_position()
-        ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-        plt.legend(
+        ax.legend(lns, labs,
             loc='upper center',
             bbox_to_anchor=(1.0, -0.3),
             ncol=4,
