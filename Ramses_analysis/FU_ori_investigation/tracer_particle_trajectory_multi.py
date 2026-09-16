@@ -25,7 +25,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-mutation_scale = 15
+mutation_scale = 5
 linewidth = 0.8
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
@@ -62,8 +62,8 @@ for Traj_pickle in Traj_pickles:
         arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
         ax.add_patch(circle)
         ax.add_patch(arrow)
-        ax.set_xlim([-10, 10])
-        ax.set_ylim([-1, 10])
+        ax.set_xlim([-9, 9])
+        ax.set_ylim([-1, 9])
         ax.set_aspect('equal')
         norm = mpl.colors.Normalize(vmin=0,vmax=1)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
@@ -91,7 +91,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.30, 0.02, 0.40])
+cax = fig.add_axes([0.90, 0.30, 0.02, 0.30])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
