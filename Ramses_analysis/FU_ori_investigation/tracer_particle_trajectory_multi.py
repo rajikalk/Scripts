@@ -38,7 +38,6 @@ plt.subplots_adjust(wspace=0.0)
 grid = AxesGrid(fig, 144,  # similar to subplot(122)
                     nrows_ncols=(1, 4),
                     axes_pad=0.10,
-                    label_mode="1",
                     share_all=True,
                     cbar_location="right",
                     cbar_mode="edge",
@@ -100,8 +99,8 @@ for Traj_pickle in Traj_pickles:
         #    plt.setp(xticklabels, visible=False)
         #else:
         ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1, fontsize=font_size)
-        xticklabels = ax.get_xticklabels()
-        plt.setp(xticklabels[-1], visible=False)
+        #xticklabels = ax.get_xticklabels()
+        #plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
 #cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
