@@ -130,16 +130,13 @@ for event_it in event_IDS:
     if event_it == 2:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
-        
         pos = ax.get_position()
         ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
         ax.legend(
             loc='upper center',
-            bbox_to_anchor=(0.5, -0.35),
-            ncol=3,
+            bbox_to_anchor=(1.0, -0.3),
+            ncol=4,
         )
-        
-        plt.legend(lns_all, labs, loc='upper right', ncol=4)
     if event_it != 2:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
