@@ -116,6 +116,7 @@ for event_it in event_IDS:
     ax.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
     if event_it == 2:
         ax.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+        ax.set_ylim([1.e-8, 1.e-4])
     if event_it == 5:
         axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
         axes_1_twin.set_ylim([5, 70])
@@ -129,7 +130,7 @@ for event_it in event_IDS:
     if event_it == 5:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
-        plt.legend(lns_all, labs, loc='lower right', ncol=4)
+        plt.legend(lns_all, labs, loc='upper right', ncol=4)
     if event_it != 2:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
