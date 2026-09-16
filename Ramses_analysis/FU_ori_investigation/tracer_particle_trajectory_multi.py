@@ -93,6 +93,6 @@ for Traj_pickle in Traj_pickles:
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
 #cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
-cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
+cbar = fig.colorbar(sm, ax=ax, label=r"Time Normalised", shrink=0.5) #plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.03)
