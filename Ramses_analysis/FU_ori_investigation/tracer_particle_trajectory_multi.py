@@ -35,7 +35,7 @@ fig, axs = plt.subplots(figsize=(two_col_width, 0.8*single_col_width))
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
-grid = AxesGrid(fig, 122,  # similar to subplot(122)
+grid = AxesGrid(fig, 111,  # similar to subplot(122)
                     nrows_ncols=(1, 4),
                     axes_pad=0.10,
                     label_mode="1",
