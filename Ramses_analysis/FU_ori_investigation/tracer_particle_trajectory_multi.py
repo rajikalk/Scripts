@@ -35,16 +35,6 @@ fig, axs = plt.subplots(figsize=(two_col_width, 0.8*single_col_width))
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
-grid = AxesGrid(fig, 144,  # similar to subplot(122)
-                    nrows_ncols=(1, 4),
-                    axes_pad=0.10,
-                    share_all=True,
-                    cbar_location="right",
-                    cbar_mode="edge",
-                    cbar_size="7%",
-                    cbar_pad="2%",
-                    )
-
 for Traj_pickle in Traj_pickles:
     if os.path.isfile(Traj_pickle):
         file = open(Traj_pickle, 'rb')
@@ -61,9 +51,8 @@ for Traj_pickle in Traj_pickles:
         Time_array = Time_array - Time_array[0]
         Time_norm = Time_array/t_event
         
-        #ax = axs.flatten()[Traj_pickles.index(Traj_pickle)]
-        ax = grid[Traj_pickles.index(Traj_pickle)]
-
+        ax = axs.flatten()[Traj_pickles.index(Traj_pickle)]
+    
         for tracer_it in range(len(Tracer_parallel)):
             start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
             end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
@@ -99,14 +88,13 @@ for Traj_pickle in Traj_pickles:
         #    plt.setp(xticklabels, visible=False)
         #else:
         ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1, fontsize=font_size)
-        #xticklabels = ax.get_xticklabels()
-        #plt.setp(xticklabels[-1], visible=False)
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-#cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
-grid.cbar_axes[-1].colorbar(sm)
-for cax in grid.cbar_axes:
-    cax.axis[cax.orientation].set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
-#cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
-#cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
+#import pdb
+#pdb.set_trace()
+cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
+cbar = ax.colorbar(sm) #plt.colorbar(sm, cax=cax)
+cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.03)
