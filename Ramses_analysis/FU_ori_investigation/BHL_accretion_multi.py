@@ -30,7 +30,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 9
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, single_col_width))
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width))
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -118,6 +118,7 @@ for event_it in event_IDS:
         ax.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
     if event_it == 5:
         axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
+        axes_1_twin.set_ylim([5, 70])
     ax.tick_params(axis='x', which='major', direction='in', color='k', top=True)
     ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
     #plt.xaxis.label.set_color('black')
@@ -129,6 +130,12 @@ for event_it in event_IDS:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
         plt.legend(lns_all, labs, loc='lower right')
+    if event_it != 2:
+        yticklabels = ax.get_yticklabels()
+        plt.setp(yticklabels, visible=False)
+    if event_it != 5:
+        yticklabels = axes_1_twin.get_yticklabels()
+        plt.setp(yticklabels, visible=False)
     plt.savefig("BHL_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     sys.stdout.flush()
