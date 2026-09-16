@@ -30,7 +30,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 9
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width))
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -65,7 +65,7 @@ for event_it in event_IDS:
         print("finished reading in pickle")
         sys.stdout.flush()
         
-    plt.title("Burst event "+str(event_it), y=0.8)
+    #plt.title("Burst event "+str(event_it), y=0.8)
     start_ind = np.argmin(abs(particle_data['time']-start_time))
     end_ind = np.argmin(abs(particle_data['time']-end_time))
     #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
@@ -129,7 +129,7 @@ for event_it in event_IDS:
     if event_it == 5:
         lns_all = np.array(lns_all).T[0].tolist()
         labs = [l.get_label() for l in lns_all]
-        plt.legend(lns_all, labs, loc='lower right')
+        plt.legend(lns_all, labs, loc='lower right', ncol=4)
     if event_it != 2:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
