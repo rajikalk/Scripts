@@ -42,7 +42,8 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+#time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 burst_bounds = [[], [5575, 5635], [6580, 6625], [7295, 7309], [7850, 7858]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [2.e-15, 2.e-13]]
 cmap=plt.cm.gist_heat
@@ -86,7 +87,7 @@ mym.set_units(units_override)
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
