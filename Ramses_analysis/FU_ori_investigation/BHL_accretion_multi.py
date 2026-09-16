@@ -34,7 +34,7 @@ plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
-colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 
 #Start by loading pickel data and then deleting what we don't need
 
@@ -68,7 +68,7 @@ end_ind = np.argmin(abs(particle_data['time']-end_time))
 lns_all = []
 lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='k', ls='-', label="Accretion rate")
 lns_all.append(lns1)
-Radii = [3, 4, 5, 6]
+Radii = [1, 2, 3, 4, 5, 6]
 
 for rad in Radii:
     directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(args.event_identifier)+"/Radius_"+str(rad) +"/"
@@ -103,7 +103,7 @@ for rad in Radii:
         lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[Radii.index(rad)], ls=':', label="r = "+str(rad)+"AU")
         lns_all.append(lns3)
         plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
-        plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[Radii.index(rad)], alpha=0.5)
+        plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[Radii.index(rad)], alpha=0.25)
 axes_1_twin = plt.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns_all.append(lns2)
