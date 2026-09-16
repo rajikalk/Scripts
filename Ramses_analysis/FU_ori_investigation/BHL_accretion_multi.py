@@ -134,7 +134,7 @@ for event_it in event_IDS:
         labs = [l.get_label() for l in lns_all]
         ax.legend(lns_all, labs,
             loc='upper center',
-            bbox_to_anchor=(1.0, -0.3),
+            bbox_to_anchor=(2.0, -0.25),
             ncol=4,
         )
     if event_it != 2:
