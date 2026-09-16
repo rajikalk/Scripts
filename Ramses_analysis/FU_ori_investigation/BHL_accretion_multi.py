@@ -75,7 +75,7 @@ for event_it in event_IDS:
     Radii = [1, 2, 3, 4, 5, 6]
 
     for rad in Radii:
-        directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(args.event_identifier)+"/Radius_"+str(rad) +"/"
+        directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(event_it)+"/Radius_"+str(rad) +"/"
         plot = True
         if os.path.exists(directory+'BHL_accretion.pkl'):
             file_open = open(directory+'BHL_accretion.pkl', 'rb')
