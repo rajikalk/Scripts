@@ -24,7 +24,7 @@ mpl.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-a
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 10
+font_size = 7
 mutation_scale = 5
 linewidth = 0.8
 
@@ -91,7 +91,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.30, 0.02, 0.40])
+cax = fig.add_axes([0.90, 0.35, 0.01, 0.30])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
