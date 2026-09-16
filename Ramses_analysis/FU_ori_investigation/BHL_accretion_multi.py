@@ -33,7 +33,8 @@ font_size = 9
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+#time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 
 #Start by loading pickel data and then deleting what we don't need
