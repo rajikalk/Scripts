@@ -41,7 +41,7 @@ event_IDS = [2, 3, 4, 5]
 
 #Start by loading pickel data and then deleting what we don't need
 
-for event_it in event_IDS
+for event_it in event_IDS:
     ax = axs.flatten()[event_it-2]
     start_time = time_bounds[event_it -1][0]
     end_time = time_bounds[event_it -1][1]
