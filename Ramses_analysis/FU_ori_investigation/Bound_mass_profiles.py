@@ -20,6 +20,7 @@ if rank == 0:
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10000, type=float)
+parser.add_argument("-event_id", "--event_identifier", default=None, type=float)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -29,7 +30,11 @@ args = parser.parse_args()
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
-sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/'
+if args.event_identifier == None:
+    sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/'
+else:
+    event_it = args.event_identifier
+    sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
 files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))
 
 if os.path.exists('Kep_mass.pkl'):
