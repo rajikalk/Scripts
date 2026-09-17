@@ -177,7 +177,7 @@ if len(files)>0:
                 gc.collect()
                 E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
                 del E_grav, E_kin, sph_vel
-                gc_collect()
+                gc.collect()
                 E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
