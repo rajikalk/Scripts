@@ -140,10 +140,10 @@ if len(files)>0:
             #Get indices in measure sphere
             #Start iterating over Radial bins
             profile_dict = {}
-            profile_dict.update("R_profile_mean":np.array([]))
-            profile_dict.update("R_profile_std":np.array([]))
-            profile_dict.update("E_profile_mean":np.array([]))
-            profile_dict.update("E_profile_std":np.array([]))
+            profile_dict.update({"R_profile_mean":np.array([])})
+            profile_dict.update({"R_profile_std":np.array([])})
+            profile_dict.update({"E_profile_mean":np.array([])})
+            profile_dict.update({"E_profile_std":np.array([])})
             for sto, field in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
