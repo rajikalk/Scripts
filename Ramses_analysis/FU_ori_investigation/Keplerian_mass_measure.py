@@ -73,7 +73,6 @@ radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
     for fn in yt.parallel_objects(files, njobs=1):
-        proj_root_rank = int(rank/para_div)
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
         ds = yt.load(fn, units_override=units_override)
