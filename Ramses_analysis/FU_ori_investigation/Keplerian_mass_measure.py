@@ -72,8 +72,7 @@ radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
-    para_div = 7
-    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):
+    for fn in yt.parallel_objects(files, njobs=1):
         proj_root_rank = int(rank/para_div)
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
@@ -103,26 +102,66 @@ if len(files)>0:
             sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
             sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
             sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-            del sink_particle_posx, sink_particle_posy, sink_particle_posz
+            
+            dx_sinks = ds.r["gas", "sink_particle_posx"].in_units('au') - sink_pos[0].in_units('au')
+            dy_sinks = ds.r["gas", "sink_particle_posy"].in_units('au') - sink_pos[1].in_units('au')
+            dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
+            sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
+            del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
             gc.collect()
             print("RANK", rank, "Got sink position")
             sys.stdout.flush()
             
             #Get inds in measuring sphere
-            dd = ds.all_data()
-            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
+            dx = ds.r['ramses', 'x'].in_units('au') - sink_pos[0].in_units('au')
+            dy = ds.r['ramses', 'y'].in_units('au') - sink_pos[1].in_units('au')
+            dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
             sep_vector_all = yt.YTArray([dx, dy, dz])
-            del dx, dy, dz, dd, sink_pos
+            del dx, dy, dz, sink_pos
             gc.collect()
             print("RANK", rank, "Got separation vectors")
             sys.stdout.flush()
             sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             
+            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
+            del sink_particle_velx, sink_particle_vely, sink_particle_velz
+            gc.collect()
+            print("RANK", rank, "got particle velocity")
+            
+            #get separations to other sink particles
+            
             #Get indices in measure sphere
             #Start iterating over Radial bins
-            sphere_inds = np.where(sep<=radius)[0]
+            for radius_bit in range(1, len(radius_bins)):
+                #Calculate enclosed mass:
+                enclosed_inds = np.where(sep<=radius_bins[radius_bit])[0]
+                enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds])
+                enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
+                enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
+                enclosed_mass = enclosed_mass + enclosed_sink_mass
+                del enclosed_sinks, enclosed_sink_mass, enclosed_inds
+                gc.collect()
+                
+                #Now get indices in sphere
+                sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
+                #get average radius in the bin
+                shell_radius = np.mean(sep[sphere_inds])
+                #calcualte gravitational potential energy
+                E_grav = (yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/shell_radius
+                #calcualte kinetic energy
+                sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
+                sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
+                sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
+                sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
+                E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
+                
+                import pdb
+                pdb.set_trace()
+                
+                
             radii = sep[sphere_inds]
             del sep
             gc.collect()
@@ -147,7 +186,6 @@ if len(files)>0:
             gc.collect()
             print("RANK", rank, "calculated enclosed gas mass")
             sys.stdout.flush()
-            sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
             enclosed_mass = enclosed_mass+sink_mass.in_units('g')
             del sink_mass
             gc.collect()
