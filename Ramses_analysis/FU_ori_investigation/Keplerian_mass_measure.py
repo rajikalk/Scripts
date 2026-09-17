@@ -176,9 +176,11 @@ if len(files)>0:
                 del sph_dvx, sph_dvy, sph_dvz
                 gc.collect()
                 E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
-                del E_grav, E_kin, sph_vel
+                del sph_vel
                 gc.collect()
                 E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
+                del E_grav, E_kin
+                gc.collect()
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
                 sto.result_id = "E_profile_mean"
