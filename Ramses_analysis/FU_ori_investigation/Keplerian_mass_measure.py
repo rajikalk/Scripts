@@ -10,6 +10,7 @@ import yt
 yt.enable_parallelism()
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
+import matplotlib.pyplot as plt
 
 #-----------------------------------------------------
 rank = CW.Get_rank()
@@ -73,18 +74,22 @@ radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
     for fn in yt.parallel_objects(files, njobs=1):
-        print('Reading file', fn, 'on rank', rank)
-        sys.stdout.flush()
-        ds = yt.load(fn, units_override=units_override)
-        
-        if len(ds.r["sink_particle_form_time"]) == 45:
-            skip=True
+        frame_name = "Profile_frame" + ("%06d" % (files.index(fn)))
+        if os.path.exists(frame_name+".pkl"):
+            skip = True
         else:
-            if np.isnan(sink_form_time):
-                sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-                print("RANK", rank, "got sink formation time")
-                sys.stdout.flush()
-            skip = False
+            print('Reading file', fn, 'on rank', rank)
+            sys.stdout.flush()
+            ds = yt.load(fn, units_override=units_override)
+            
+            if len(ds.r["sink_particle_form_time"]) == 45:
+                skip=True
+            else:
+                if np.isnan(sink_form_time):
+                    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+                    print("RANK", rank, "got sink formation time")
+                    sys.stdout.flush()
+                skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
             if "Time" not in save_dict.keys():
@@ -134,8 +139,15 @@ if len(files)>0:
             
             #Get indices in measure sphere
             #Start iterating over Radial bins
-            for radius_bit in range(1, len(radius_bins)):
+            profile_dict = {}
+            profile_dict.update("R_profile_mean":np.array([]))
+            profile_dict.update("R_profile_std":np.array([]))
+            profile_dict.update("E_profile_mean":np.array([]))
+            profile_dict.update("E_profile_std":np.array([]))
+            for sto, field in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict):
+                #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
+                
                 enclosed_inds = np.where(sep<=radius_bins[radius_bit])[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds])
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
@@ -147,195 +159,51 @@ if len(files)>0:
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
                 #get average radius in the bin
-                shell_radius = np.mean(sep[sphere_inds])
+                rad_mean = np.mean(sep[sphere_inds])
+                rad_std = np.std(sep[sphere_inds])
+                sto.result_id = "R_profile_mean"
+                sto.result = rad_mean
+                sto.result_id = "R_profile_std"
+                sto.result = rad_std
                 #calcualte gravitational potential energy
-                E_grav = (yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/shell_radius
+                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
+                
                 #calcualte kinetic energy
                 sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
                 sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
                 sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-                sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
+                sph_vel = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
+                del sph_dvx, sph_dvy, sph_dvz
+                gc.collect()
                 E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
-                
-                import pdb
-                pdb.set_trace()
-                
-                
-            radii = sep[sphere_inds]
-            del sep
-            gc.collect()
-            print("RANK", rank, "Got indices in measuring sphere")
-            sys.stdout.flush()
-            sep_vector = sep_vector_all.T[sphere_inds].T
-            del sep_vector_all
-            gc.collect()
-            print("RANK", rank, "Got separation vectors")
-            sys.stdout.flush()
+                del E_grav, E_kin, sph_vel
+                gc_collect()
+                E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
+                E_ratio_mean = np.mean(E_ratio)
+                E_ratio_std = np.std(E_ratio)
+                sto.result_id = "E_profile_mean"
+                sto.result = E_ratio_mean
+                sto.result_id = "E_profile_std"
+                sto.result = E_ratio_std
             
-            #Calcualte enclosed mass
-            try:
-                gas_mass = ds.r["gas", "mass"][sphere_inds]
-            except:
-                gas_mass = ds.r["gas", "Density"][sphere_inds].in_units('g/cm**3')*(ds.r["ramses", "dx"][sphere_inds].in_units('cm')**3)
-            enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
-            for radi_it in range(len(radii)):
-                enc_inds = np.where(radii<=radii[radi_it])[0]
-                enc_mass = np.sum(gas_mass[enc_inds])
-                enclosed_mass[radi_it] = enc_mass
-            gc.collect()
-            print("RANK", rank, "calculated enclosed gas mass")
-            sys.stdout.flush()
-            enclosed_mass = enclosed_mass+sink_mass.in_units('g')
-            del sink_mass
-            gc.collect()
-            print("RANK", rank, "got sink mass")
-            sys.stdout.flush()
-            keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
-            del enclosed_mass
-            gc.collect()
-            print("RANK", rank, "calculated keplerian mass")
-            sys.stdout.flush()
-            
-            #Calculate bulk velocity of the sphere
-            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-            del sink_particle_velx, sink_particle_vely, sink_particle_velz
-            gc.collect()
-            print("RANK", rank, "got particle velocity")
-            sys.stdout.flush()
-            #print('Got particle velocity on rank', rank, ' for fn', ds)
-            sys.stdout.flush()
-            sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-            sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-            sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-            sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-            del sph_dvx, sph_dvy, sph_dvz, sink_vel
-            gc.collect()
-            print("RANK", rank, "got gas mass in measuring sphere")
-            sys.stdout.flush()
-            
-            #Calculate Tangential vel
-            proj_factor = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()
-            sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-            rel_kep_full = sph_speed/keplerian_velocity
-            del sph_vel
-            gc.collect()
-            print("RANK", rank, "got gas speed and proj factor")
-            sys.stdout.flush()
+            #Radial profile calcaluated, so now let's plot the frame!
+            plt.clf()
+            plt.xscale("log", nonposx='clip')
+            plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["R_profile_std"])
+            plt.xlabel("Radius (au)")
+            plt.ylabel("E_grav/E_kin")
+            plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
+            plt.axhline(y=1.0)
+            plt.savefig(frame_name+".png")
 
-            proj_v_x = proj_factor*sep_vector.in_units('km')[0]
-            proj_v_y = proj_factor*sep_vector.in_units('km')[1]
-            proj_v_z = proj_factor*sep_vector.in_units('km')[2]
-            del proj_factor, sep_vector
-            gc.collect()
-            print("RANK", rank, "calculated projected components")
-            sys.stdout.flush()
-            rad_speed = np.sqrt(proj_v_x**2 + proj_v_y**2 + proj_v_z**2)
-            del proj_v_x, proj_v_y, proj_v_z
-            gc.collect()
-            print("RANK", rank, "calculated radial velocity")
-            sys.stdout.flush()
-            
-            tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
-            del sph_speed, rad_speed
-            gc.collect()
-            print("RANK", rank, "calculated tangential velocity")
-            sys.stdout.flush()
-            
-            rel_kep_tang = tang_vel/keplerian_velocity
-            del tang_vel, keplerian_velocity
-            gc.collect()
-            
-            disc_tang = np.where((rel_kep_tang>0.9)&(rel_kep_tang<1.1))[0]
-            disc_full = np.where((rel_kep_full>0.9)&(rel_kep_full<1.1))[0]
-
-            
-            #get median radius of kep mass
-            kep_rad_tang = np.median(radii[disc_tang])
-            save_dict["Radius_tang"] = np.append(save_dict["Radius_tang"],kep_rad_tang)
-            kep_rad_full = np.median(radii[disc_full])
-            save_dict["Radius_full"] = np.append(save_dict["Radius_full"],kep_rad_full)
-            del radii
-            gc.collect()
-            
-            
-            
-            #Get keplerian mass
-            kep_mass_tang = np.sum(gas_mass[disc_tang].in_units('msun'))
-            save_dict["Mass_tang"] = np.append(save_dict["Mass_tang"],kep_mass_tang)
-            kep_mass_full = np.sum(gas_mass[disc_full].in_units('msun'))
-            save_dict["Mass_full"] = np.append(save_dict["Mass_full"],kep_mass_full)
-            del gas_mass
-            gc.collect
             
             #Save BHL Calculation
-            file_open = open('Kep_mass_'+str(proj_root_rank)+'.pkl', 'wb')
+            file_open = open(frame_name+'.pkl', 'wb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-            pickle.dump((save_dict), file_open)
+            pickle.dump((profile_dict), file_open)
             file_open.close()
             print("RANK "+str(rank)+": updated pickle", fn)
             sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
-
-if rank == 0:
-    pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
-    save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"Radius_tang": np.array([])})
-    save_dict.update({"Radius_full": np.array([])})
-    save_dict.update({"Mass_tang": np.array([])})
-    save_dict.update({"Mass_full": np.array([])})
-    for pickle_file in pickle_files:
-        file_open = open(pickle_file, 'rb')
-        save_dict_r = pickle.load(file_open)
-        file_open.close()
-        for key in save_dict_r.keys():
-            save_dict[key] = np.append(save_dict[key], save_dict_r[key])
-    del save_dict_r
-    gc.collect()
-    sorted_inds = np.argsort(save_dict["Time"])
-    for key in save_dict.keys():
-        save_dict[key] = save_dict[key][sorted_inds]
-        
-    file_open = open('Kep_mass.pkl', 'wb')
-    pickle.dump((save_dict), file_open)
-    file_open.close()
-    
-    import matplotlib.pyplot as plt
-    
-    plt.rcParams.update({
-        "font.family": "sans-serif",
-        "font.sans-serif": ["Arial"],
-        "mathtext.fontset": "stixsans"  # Force math to use a sans-serif look
-    })
-
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.sans-serif'] = 'Arial'
-
-    #Ploting parameters
-    two_col_width = 7.20472 #inches
-    single_col_width = 3.50394 #inches
-    page_height = 10.62472 #inches
-    font_size = 9
-
-    
-    plt.clf()
-    fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-    #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-    plt.plot(save_dict['Time'], save_dict['Radius_tang'], label="Tangential")
-    plt.plot(save_dict['Time'], save_dict['Radius_full'], label="Full")
-    plt.xlabel("Time (yr)")
-    plt.ylabel("$Radius (au)$")
-    #plt.ylim([0, 2])
-    plt.xlim([0, save_dict['Time'][-1]])
-    plt.legend()
-    #plt.axhline(y=0.8, ls="--", c='k')
-    #plt.axhline(y=1.2, ls="--", c='k')
-    #cb = fig.colorbar(smap)
-    plt.savefig("Kep_mass_radius.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    print('Saved figure with BHL Accretion')
-    
