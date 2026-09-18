@@ -103,7 +103,6 @@ if len(files)>0:
                 save_dict["Time"] = np.append(save_dict["Time"],time_val)
             del time_val
             gc.collect()
-            print("RANK", rank, "Got time stamp")
             sys.stdout.flush()
             
             #Get sink position
@@ -118,7 +117,6 @@ if len(files)>0:
             sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
             gc.collect()
-            print("RANK", rank, "Got sink position")
             sys.stdout.flush()
             
             #Get inds in measuring sphere
@@ -128,7 +126,6 @@ if len(files)>0:
             sep_vector_all = yt.YTArray([dx, dy, dz])
             del dx, dy, dz, sink_pos
             gc.collect()
-            print("RANK", rank, "Got separation vectors")
             sys.stdout.flush()
             sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             
@@ -149,7 +146,7 @@ if len(files)>0:
             profile_dict.update({"R_profile_std":np.array([])})
             profile_dict.update({"E_profile_mean":np.array([])})
             profile_dict.update({"E_profile_std":np.array([])})
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict):
+            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=size/2):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
@@ -161,6 +158,7 @@ if len(files)>0:
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
                 del enclosed_sinks, enclosed_sink_mass, enclosed_inds
                 gc.collect()
+                print("Calculated enclosed mass on rank", rank)
                 
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
