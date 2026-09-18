@@ -203,6 +203,24 @@ if len(files)>0:
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
             
             if rank == 0:
+                #sort profile data:
+                Profile_rad_mean = np.array([])
+                Profile_rad_std = np.array([])
+                Profile_E_ratio_mean = np.array([])
+                Profile_E_ratio_std = np.array([])
+                for key in profile_dict.keys():
+                    Profile_rad_mean = np.append(Profile_rad_mean, profile_dict[key][0])
+                    Profile_rad_std = np.append(Profile_rad_std, profile_dict[key][1])
+                    Profile_E_ratio_mean = np.append(Profile_E_ratio_mean, profile_dict[key][2])
+                    Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
+                #sort inds
+                sorted_inds = np.argsort(Profile_rad_mean)
+                profile_dict = {}
+                profile_dict.update({"R_profile_mean":Profile_rad_mean[sorted_inds]})
+                profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
+                profile_dict.update({"E_profile_mean":Profile_E_ratio_mean[sorted_inds]})
+                profile_dict.update({"E_profile_std":Profile_E_ratio_std[sorted_inds]})
+            
                 #Save BHL Calculation
                 file_open = open(frame_name+'.pkl', 'wb')
                 #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
@@ -214,7 +232,7 @@ if len(files)>0:
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
                 plt.xscale("log")
-                plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["R_profile_std"])
+                plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_profile_std"])
                 plt.xlabel("Radius (au)")
                 plt.ylabel("E_grav/E_kin")
                 plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
