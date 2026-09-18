@@ -197,6 +197,14 @@ if len(files)>0:
                 sto.result = E_ratio_std
             
             if rank == 0:
+                #Save BHL Calculation
+                file_open = open(frame_name+'.pkl', 'wb')
+                #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
+                pickle.dump((profile_dict), file_open)
+                file_open.close()
+                print("RANK "+str(rank)+": updated pickle", fn)
+                sys.stdout.flush()
+                
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
                 plt.xscale("log")
@@ -206,14 +214,6 @@ if len(files)>0:
                 plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
                 plt.axhline(y=1.0)
                 plt.savefig(frame_name+".png")
-
-                #Save BHL Calculation
-                file_open = open(frame_name+'.pkl', 'wb')
-                #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-                pickle.dump((profile_dict), file_open)
-                file_open.close()
-                print("RANK "+str(rank)+": updated pickle", fn)
-                sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
