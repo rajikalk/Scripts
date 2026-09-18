@@ -199,7 +199,7 @@ if len(files)>0:
             if rank == 0:
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
-                plt.xscale("log", nonposx='clip')
+                plt.xscale("log")
                 plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["R_profile_std"])
                 plt.xlabel("Radius (au)")
                 plt.ylabel("E_grav/E_kin")
@@ -207,7 +207,6 @@ if len(files)>0:
                 plt.axhline(y=1.0)
                 plt.savefig(frame_name+".png")
 
-                
                 #Save BHL Calculation
                 file_open = open(frame_name+'.pkl', 'wb')
                 #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
