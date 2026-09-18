@@ -146,17 +146,21 @@ if len(files)>0:
             profile_dict.update({"R_profile_std":np.array([])})
             profile_dict.update({"E_profile_mean":np.array([])})
             profile_dict.update({"E_profile_std":np.array([])})
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/2)):
+            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/4)):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
                 
                 enclosed_inds = np.where(sep<=radius_bins[radius_bit])[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds])
+                del enclosed_inds
+                gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
                 enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
+                del enclosed_sinks
+                gc.collect()
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
-                del enclosed_sinks, enclosed_sink_mass, enclosed_inds
+                del enclosed_sink_mass
                 gc.collect()
                 print("Calculated enclosed mass on rank", rank)
                 
