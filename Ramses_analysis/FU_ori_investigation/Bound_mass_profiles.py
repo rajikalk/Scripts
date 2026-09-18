@@ -173,10 +173,10 @@ if len(files)>0:
                 #get average radius in the bin
                 rad_mean = np.mean(sep[sphere_inds])
                 rad_std = np.std(sep[sphere_inds])
-                sto.result_id = "R_profile_mean"
-                sto.result = rad_mean
-                sto.result_id = "R_profile_std"
-                sto.result = rad_std
+                #sto.result_id = "R_profile_mean"
+                #sto.result = rad_mean
+                #sto.result_id = "R_profile_std"
+                #sto.result = rad_std
                 #calcualte gravitational potential energy
                 E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
                 
@@ -195,10 +195,12 @@ if len(files)>0:
                 gc.collect()
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
-                sto.result_id = "E_profile_mean"
-                sto.result = E_ratio_mean
-                sto.result_id = "E_profile_std"
-                sto.result = E_ratio_std
+                #sto.result_id = "E_profile_mean"
+                #sto.result = E_ratio_mean
+                #sto.result_id = "E_profile_std"
+                #sto.result = E_ratio_std
+                sto.result_id = str(radius_bins[radius_bit])
+                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
             
             if rank == 0:
                 #Save BHL Calculation
