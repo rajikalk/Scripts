@@ -78,7 +78,7 @@ radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=1):
+    for fn in yt.parallel_objects(files, njobs=size/28):
         frame_name = "Profile_frame" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
@@ -147,7 +147,7 @@ if len(files)>0:
             #profile_dict.update({"E_profile_std":np.array([])})
             prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
             prev_radius = 0
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/7)):
+            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/14)):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
@@ -156,7 +156,6 @@ if len(files)>0:
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
-                print("Calculated enclosed gas mass on rank", rank)
                 del enclosed_inds
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
@@ -166,21 +165,9 @@ if len(files)>0:
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
                 del enclosed_sink_mass
                 gc.collect()
-                print("Calculated enclosed mass on rank", rank)
                 
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
-                #get average radius in the bin
-                rad_mean = np.mean(sep[sphere_inds])
-                rad_std = np.std(sep[sphere_inds])
-                #sto.result_id = "R_profile_mean"
-                #sto.result = rad_mean
-                #sto.result_id = "R_profile_std"
-                #sto.result = rad_std
-                #calcualte gravitational potential energy
-                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
-                
-                #calcualte kinetic energy
                 sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
                 sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
                 sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
@@ -190,19 +177,23 @@ if len(files)>0:
                 E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
                 del sph_vel
                 gc.collect()
+                #get average radius in the bin
+                rad_mean = np.mean(sep[sphere_inds])
+                rad_std = np.std(sep[sphere_inds])
+                #calcualte gravitational potential energy
+                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
+                del sphere_inds
+                gc.collect()
                 E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
                 del E_grav, E_kin
                 gc.collect()
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
-                #sto.result_id = "E_profile_mean"
-                #sto.result = E_ratio_mean
-                #sto.result_id = "E_profile_std"
-                #sto.result = E_ratio_std
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
             
-            if rank == 0:
+            root_rank = int(rank/28)
+            if rank == root_rank:
                 #sort profile data:
                 Profile_rad_mean = np.array([])
                 Profile_rad_std = np.array([])
