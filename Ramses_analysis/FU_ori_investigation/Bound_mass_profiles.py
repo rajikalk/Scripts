@@ -208,9 +208,17 @@ if len(files)>0:
                 sorted_inds = np.argsort(Profile_rad_mean)
                 profile_dict = {}
                 profile_dict.update({"R_profile_mean":Profile_rad_mean[sorted_inds]})
+                del Profile_rad_mean
+                gc.collect()
                 profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
+                del Profile_rad_mean
+                gc.collect()
                 profile_dict.update({"E_profile_mean":Profile_E_ratio_mean[sorted_inds]})
+                del Profile_E_ratio_mean
+                gc.collect()
                 profile_dict.update({"E_profile_std":Profile_E_ratio_std[sorted_inds]})
+                del Profile_E_ratio_std
+                gc.collect()
             
                 #Save BHL Calculation
                 file_open = open(frame_name+'.pkl', 'wb')
@@ -229,6 +237,7 @@ if len(files)>0:
                 plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
                 plt.axhline(y=1.0)
                 plt.savefig(frame_name+".png")
+                gc.collect()
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
