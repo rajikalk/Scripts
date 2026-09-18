@@ -78,7 +78,7 @@ radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=size/28):
+    for fn in yt.parallel_objects(files, njobs=int(size/28)):
         frame_name = "Profile_frame" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
