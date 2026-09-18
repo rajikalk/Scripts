@@ -123,11 +123,10 @@ if len(files)>0:
             dx = ds.r['ramses', 'x'].in_units('au') - sink_pos[0].in_units('au')
             dy = ds.r['ramses', 'y'].in_units('au') - sink_pos[1].in_units('au')
             dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
-            sep_vector_all = yt.YTArray([dx, dy, dz])
+            sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
             gc.collect()
             sys.stdout.flush()
-            sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
             sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
@@ -157,6 +156,7 @@ if len(files)>0:
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
+                print("Calculated enclosed gas mass on rank", rank)
                 del enclosed_inds
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
