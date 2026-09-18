@@ -146,7 +146,7 @@ if len(files)>0:
             profile_dict.update({"R_profile_std":np.array([])})
             profile_dict.update({"E_profile_mean":np.array([])})
             profile_dict.update({"E_profile_std":np.array([])})
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=size/2):
+            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/2)):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
