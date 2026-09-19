@@ -90,7 +90,7 @@ fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
-plt.subplots_adjust(hspace=-0.3)
+plt.subplots_adjust(hspace=-0.4)
             
 axes_1.set_title("Suppression event "+str(event_it), y=0.2)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
@@ -118,9 +118,11 @@ axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif
 
 plt.savefig("Suppression_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
-plot_it = -1
-for plot_time in plot_times:
-    plot_it = plot_it + 1
+plot_it = 5
+#plot_it = -1
+for plot_time in plot_times[::-1]:
+    #plot_it = plot_it + 1
+    plot_it = plot_it - 1
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
     axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
