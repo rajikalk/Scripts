@@ -45,7 +45,7 @@ mym.set_global_font_size(font_size)
 #time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 burst_bounds = [[], [5575, 5635], [6580, 6625], [7295, 7309], [7850, 7858]]
-cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [2.e-15, 2.e-13]]
+cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 5.e-14], [1.e-15, 1.e-13], [2.e-15, 2.e-13]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -92,7 +92,7 @@ axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.25)
 plt.subplots_adjust(hspace=-0.2)
-cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.3])
+cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.29])
             
 axes_1.set_title("Suppression event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
