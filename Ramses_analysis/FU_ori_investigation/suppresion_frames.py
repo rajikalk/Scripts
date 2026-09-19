@@ -86,7 +86,7 @@ mym.set_units(units_override)
 
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.65*two_col_width))
+fig = plt.figure(figsize=(two_col_width, 0.5*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
