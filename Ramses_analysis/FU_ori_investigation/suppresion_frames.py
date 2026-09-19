@@ -86,7 +86,7 @@ mym.set_units(units_override)
 
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
+fig = plt.figure(figsize=(two_col_width, 0.65*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
@@ -206,7 +206,7 @@ for plot_time in plot_times[::-1]:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 
     if plot_it == n_frames-1:
-        cbar_ax = fig.add_axes([0.90, 0.28, 0.015, 0.256])
+        cbar_ax = fig.add_axes([0.90, 0.35, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         if event_it > 3:
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size, y=0.35)
