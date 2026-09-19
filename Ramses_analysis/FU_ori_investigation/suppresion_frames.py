@@ -91,8 +91,10 @@ G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.25)
+plt.subplots_adjust(hspace=-0.2)
+cbar_ax = fig.add_axes([0.90, 0.1, 0.015, 0.256])
             
-axes_1.set_title("Suppression event "+str(event_it), y=0.2)
+axes_1.set_title("Suppression event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
@@ -206,7 +208,6 @@ for plot_time in plot_times[::-1]:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 
     if plot_it == n_frames-1:
-        cbar_ax = fig.add_axes([0.90, 0.35, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         if event_it > 3:
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size, y=0.35)
