@@ -86,13 +86,13 @@ mym.set_units(units_override)
 
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.5*two_col_width))
+fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.25)
 plt.subplots_adjust(hspace=-0.15)
-cbar_ax = fig.add_axes([0.90, 0.1, 0.015, 0.256])
+cbar_ax = fig.add_axes([0.90, 0.2, 0.015, 0.256])
             
 axes_1.set_title("Suppression event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
