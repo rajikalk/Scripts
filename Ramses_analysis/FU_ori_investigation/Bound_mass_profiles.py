@@ -79,7 +79,7 @@ radius_bins = np.logspace(0, np.log10(radius), 100)
 
 if len(files)>0:
     for fn in yt.parallel_objects(files, njobs=int(size/28)):
-        frame_name = "Profile_frame" + ("%06d" % (files.index(fn)))
+        frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
         else:
@@ -181,16 +181,20 @@ if len(files)>0:
                 rad_mean = np.mean(sep[sphere_inds])
                 rad_std = np.std(sep[sphere_inds])
                 #calcualte gravitational potential energy
-                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
-                del sphere_inds
+                E_grav = (yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
+                del sphere_inds, enclosed_mass
                 gc.collect()
                 E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
                 del E_grav, E_kin
                 gc.collect()
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
+                del E_ratio_mean, E_ratio_std
+                gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
+                del rad_mean, rad_std, E_ratio_mean, E_ratio_std
+                gc.collect()
             
             root_rank = int(rank/28)
             if rank == root_rank:
@@ -204,6 +208,8 @@ if len(files)>0:
                     Profile_rad_std = np.append(Profile_rad_std, profile_dict[key][1])
                     Profile_E_ratio_mean = np.append(Profile_E_ratio_mean, profile_dict[key][2])
                     Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
+                del profile_dict
+                gc.collect()
                 #sort inds
                 sorted_inds = np.argsort(Profile_rad_mean)
                 profile_dict = {}
@@ -225,8 +231,11 @@ if len(files)>0:
                 #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
                 pickle.dump((profile_dict), file_open)
                 file_open.close()
+                del profile_dict
+                gc.collect()
                 print("RANK "+str(rank)+": updated pickle", fn)
                 sys.stdout.flush()
+                
                 
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
@@ -237,7 +246,9 @@ if len(files)>0:
                 plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
                 plt.axhline(y=1.0)
                 plt.savefig(frame_name+".png")
+                plt.clf()
                 gc.collect()
+        CW.Barrier()
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
