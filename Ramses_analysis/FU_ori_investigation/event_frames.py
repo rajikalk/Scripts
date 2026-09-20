@@ -83,13 +83,22 @@ plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
-
+'''
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
+'''
+
+plt.clf()
+fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
+G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
+axes_1 = plt.subplot(G[0, :])
+plt.subplots_adjust(wspace=0.01)
+plt.subplots_adjust(hspace=-0.2)
+cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
             
 axes_1.set_title("Burst event "+str(event_it), y=0.8)
 start_ind = np.argmin(abs(particle_data['time']-start_time))

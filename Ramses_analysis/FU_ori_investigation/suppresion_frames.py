@@ -90,7 +90,6 @@ fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
-plt.subplots_adjust(hspace=-0.25)
 plt.subplots_adjust(hspace=-0.2)
 cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
             
