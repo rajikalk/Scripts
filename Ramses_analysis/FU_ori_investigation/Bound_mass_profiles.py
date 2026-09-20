@@ -189,7 +189,7 @@ if len(files)>0:
                 gc.collect()
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
-                del E_ratio_mean, E_ratio_std
+                del E_ratio
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
