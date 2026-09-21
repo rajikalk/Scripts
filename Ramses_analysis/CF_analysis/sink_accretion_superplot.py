@@ -72,7 +72,8 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-    
+
+import pickle
 file_open = open(global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open,encoding="latin1")
