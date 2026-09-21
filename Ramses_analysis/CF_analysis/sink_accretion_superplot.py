@@ -15,7 +15,7 @@ import matplotlib.path as mpath
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-plot_type", "--plot_accretion_type", help="which plot do you want to make?", default='Shut_off', type=str)
+    parser.add_argument("-plot_type", "--plot_accretion_type", help="which plot do you want to make?", default=None, type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -92,7 +92,7 @@ Time_arr = (global_data['time']*units['time_unit'].in_units('yr')).T
 
 window = yt.YTQuantity(500, 'yr')
 rit = -1
-make_pickle = False
+make_pickle = True
 if make_pickle:
     for sink_it in range(len(Time_arr)):
         rit = rit + 1
