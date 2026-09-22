@@ -141,7 +141,7 @@ for sink_file in sink_files:
                             best_corr = np.append(best_corr, np.median(cor))
                         if sink_it == 17:
                             frame_name = 'GIF_frame_'+("%06d" % time_it)+'.jpg'
-                            if os.path.isfile(frame_name) == False:
+                            if os.path.isfile(frame_name) == False and age[time_it] > 49440:
                         
                                 plt.clf()
                                 fig, ax1 = plt.subplots()
