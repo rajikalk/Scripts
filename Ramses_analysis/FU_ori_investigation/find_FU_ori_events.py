@@ -140,24 +140,27 @@ for sink_file in sink_files:
                             best_time = np.append(best_time, age[time_it])
                             best_corr = np.append(best_corr, np.median(cor))
                         if sink_it == 17:
-                            plt.clf()
-                            fig, ax1 = plt.subplots()
-
-                            ax2 = ax1.twinx()
-                            ax1.plot(useable_times, scaled_L, label="scaled Luminosity", color='b')
-                            ax1.plot(useable_times, cor[:len(useable_times)]/100., label="correlation", color='r')
-                            
-                            ax2.plot(useable_times, useable_L, color='b')
-
-                            ax1.set_xlabel('Time (yr)')
-                            ax1.set_ylabel('scaled L and correlation')
-                            ax2.set_ylabel('Total log Luminosity')
-                            
-                            ax1.set_ylim([0, 1])
-                            ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+                            frame_name = 'GIF_frame_'+("%06d" % time_it)+'.jpg'
+                            if os.path.isfile(frame_name) == False:
                         
-                            ax1.legend()
-                            plt.savefig('GIF_frame_'+("%06d" % time_it)+'.jpg',  bbox_inches='tight')
+                                plt.clf()
+                                fig, ax1 = plt.subplots()
+
+                                ax2 = ax1.twinx()
+                                ax1.plot(useable_times, scaled_L, label="scaled Luminosity", color='b')
+                                ax1.plot(useable_times, cor[:len(useable_times)]/100., label="correlation", color='r')
+                                
+                                ax2.plot(useable_times, useable_L, color='b')
+
+                                ax1.set_xlabel('Time (yr)')
+                                ax1.set_ylabel('scaled L and correlation')
+                                ax2.set_ylabel('Total log Luminosity')
+                                
+                                ax1.set_ylim([0, 1])
+                                ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+                            
+                                ax1.legend()
+                                plt.savefig('GIF_frame_'+("%06d" % time_it)+'.jpg',  bbox_inches='tight')
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
