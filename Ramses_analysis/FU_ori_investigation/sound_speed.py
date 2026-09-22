@@ -149,7 +149,7 @@ if len(files)>0:
             rel_speed = np.sqrt(np.sum(rel_vel**2))
             del rel_vel
             gc.collect()
-            save_dict["Campanion_Speed"] = np.append(save_dict["Campanion_Speed"], rel_speed)
+            save_dict["Companion_Speed"] = np.append(save_dict["Companion_Speed"], rel_speed)
             
             sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
             print('calculated sound speed on rank', rank, ' for fn', ds)
@@ -175,7 +175,7 @@ if rank == 0:
     save_dict = {}
     save_dict.update({"Time": np.array([])})
     save_dict.update({"Sound_Speed": np.array([])})
-    save_dict.update({"Campanion_Speed": np.array([])})
+    save_dict.update({"Companion_Speed": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
