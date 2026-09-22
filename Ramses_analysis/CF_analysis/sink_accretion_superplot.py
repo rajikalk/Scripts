@@ -33,7 +33,7 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 
 #global_data_pickle_file = '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl'
-global_data_pickle_file = '/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/stars_red_512.pkl'
+global_data_pickle_file = '/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl'
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
