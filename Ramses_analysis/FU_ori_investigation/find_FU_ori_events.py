@@ -157,7 +157,7 @@ for sink_file in sink_files:
                             ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
                         
                             ax1.legend()
-                            plt.savefig('GIF_frame_'+("%06d" % time_it)+'.png',  bbox_inches='tight')
+                            plt.savefig('GIF_frame_'+("%06d" % time_it)+'.jpg',  bbox_inches='tight')
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
