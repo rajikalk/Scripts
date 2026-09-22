@@ -83,80 +83,89 @@ if len(files)>0:
         sys.stdout.flush()
         #try:
         ds = yt.load(fn, units_override=units_override)
-        #'''
-        #my_storage = {}
-        #for sto, ds in ts.piter(storage=my_storage):
-        time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-        save_dict["Time"] = np.append(save_dict["Time"],time_val)
-        del time_val
-        gc.collect()
-        #sto.result_id = "Time"
-        #sto.result = time_val
-        
-        #Get sink position
-        sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-        sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
-        sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-        sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-        del sink_particle_posx, sink_particle_posy, sink_particle_posz
-        gc.collect()
-        #print('Got particle position on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #get sink velocity
-        sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-        sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-        sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-        sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-        del sink_particle_velx, sink_particle_vely, sink_particle_velz
-        gc.collect()
-        #print('Got particle velocity on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #Get inds in measuring sphere
-        dd = ds.all_data()
-        dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-        dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-        dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-        sep_vector = yt.YTArray([dx, dy, dz])
-        del dx, dy, dz, dd
-        gc.collect()
-        sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
-        sys.stdout.flush()
-        
-        #Get indices in measure sphere
-        radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
-        sphere_inds = np.where(sep<=radius)[0]
-        
-        #Calculate bulk velocity of the sphere
-        sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-        sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-        sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-        sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-        del sph_dvx, sph_dvy, sph_dvz
-        gc.collect()
-        sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-        rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
-        rel_speed = np.sqrt(np.sum(rel_vel**2))
-        del rel_vel
-        gc.collect()
-        save_dict["Campanion_speed"] = np.append(save_dict["Campanion_speed"], rel_speed)
-        
-        sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
-        print('calculated sound speed on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        save_dict["Sound_speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
-        sys.stdout.flush()
-        
-        #ds.index.clear_all_data()
-        
-        #Save BHL Calculation
-        file_open = open('Sound_speed_'+str(proj_root_rank)+'.pkl', 'wb')
-        #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-        pickle.dump((save_dict), file_open)
-        file_open.close()
-        print("RANK "+str(rank)+": CALCULATED BHL FOR FILE", files.index(fn), "OF", len(files))
-        sys.stdout.flush()
+        if len(ds.r["sink_particle_form_time"]) == 45:
+            skip=True
+        else:
+            if np.isnan(sink_form_time):
+                sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+                print("RANK", rank, "got sink formation time")
+                sys.stdout.flush()
+            skip = False
+        if skip == False:
+            #'''
+            #my_storage = {}
+            #for sto, ds in ts.piter(storage=my_storage):
+            time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
+            save_dict["Time"] = np.append(save_dict["Time"],time_val)
+            del time_val
+            gc.collect()
+            #sto.result_id = "Time"
+            #sto.result = time_val
+            
+            #Get sink position
+            sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+            sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+            sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+            sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+            del sink_particle_posx, sink_particle_posy, sink_particle_posz
+            gc.collect()
+            #print('Got particle position on rank', rank, ' for fn', ds)
+            sys.stdout.flush()
+            
+            #get sink velocity
+            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
+            del sink_particle_velx, sink_particle_vely, sink_particle_velz
+            gc.collect()
+            #print('Got particle velocity on rank', rank, ' for fn', ds)
+            sys.stdout.flush()
+            
+            #Get inds in measuring sphere
+            dd = ds.all_data()
+            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
+            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
+            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
+            sep_vector = yt.YTArray([dx, dy, dz])
+            del dx, dy, dz, dd
+            gc.collect()
+            sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
+            sys.stdout.flush()
+            
+            #Get indices in measure sphere
+            radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
+            sphere_inds = np.where(sep<=radius)[0]
+            
+            #Calculate bulk velocity of the sphere
+            sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
+            sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
+            sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
+            sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
+            del sph_dvx, sph_dvy, sph_dvz
+            gc.collect()
+            sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
+            rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
+            rel_speed = np.sqrt(np.sum(rel_vel**2))
+            del rel_vel
+            gc.collect()
+            save_dict["Campanion_speed"] = np.append(save_dict["Campanion_speed"], rel_speed)
+            
+            sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+            print('calculated sound speed on rank', rank, ' for fn', ds)
+            sys.stdout.flush()
+            save_dict["Sound_speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
+            sys.stdout.flush()
+            
+            #ds.index.clear_all_data()
+            
+            #Save BHL Calculation
+            file_open = open('Sound_speed_'+str(proj_root_rank)+'.pkl', 'wb')
+            #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
+            pickle.dump((save_dict), file_open)
+            file_open.close()
+            print("RANK "+str(rank)+": CALCULATED BHL FOR FILE", files.index(fn), "OF", len(files))
+            sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
