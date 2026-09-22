@@ -154,7 +154,7 @@ if len(files)>0:
             sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
             print('calculated sound speed on rank', rank, ' for fn', ds)
             sys.stdout.flush()
-            save_dict["Sound_speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
+            save_dict["Sound_Speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
             del sound_speed
             gc.collect()
             
