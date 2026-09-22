@@ -75,7 +75,7 @@ gc.collect()
 if len(files)>0:
     #ts = yt.DatasetSeries(files, parallel=4)
     #'''
-    para_div = 14
+    para_div = 28
     #my_storage = {}
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
         proj_root_rank = int(rank/para_div)
@@ -155,7 +155,8 @@ if len(files)>0:
             print('calculated sound speed on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             save_dict["Sound_speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
-            sys.stdout.flush()
+            del sound_speed
+            gc.collect()
             
             #ds.index.clear_all_data()
             
