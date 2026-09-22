@@ -139,7 +139,7 @@ for sink_file in sink_files:
                             best_sink = np.append(best_sink, sink_it)
                             best_time = np.append(best_time, age[time_it])
                             best_corr = np.append(best_corr, np.median(cor))
-                        if sink_it == 77:
+                        if sink_it == 17:
                             plt.clf()
                             fig, ax1 = plt.subplots()
 
