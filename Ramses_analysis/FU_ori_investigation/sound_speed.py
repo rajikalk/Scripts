@@ -76,7 +76,7 @@ gc.collect()
 if len(files)>0:
     #ts = yt.DatasetSeries(files, parallel=4)
     #'''
-    para_div = 28
+    para_div = 7
     #my_storage = {}
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
         proj_root_rank = int(rank/para_div)
@@ -117,6 +117,8 @@ if len(files)>0:
             
             #Get indices in measure sphere
             sphere_inds = np.where(sep<=radius)[0]
+            del sep
+            gc.collect()
             
             #get sink velocity
             sink_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id], ds.r["gas", "sink_particle_vely"][sink_id], ds.r["gas", "sink_particle_velz"][sink_id]])
