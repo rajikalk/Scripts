@@ -102,8 +102,6 @@ if len(files)>0:
             
             #Get sink position
             sink_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id], ds.r["gas", "sink_particle_posy"][sink_id], ds.r["gas", "sink_particle_posz"][sink_id]])
-            del sink_particle_posx, sink_particle_posy, sink_particle_posz
-            gc.collect()
             #print('Got particle position on rank', rank, ' for fn', ds)
             
             #Get inds in measuring sphere
