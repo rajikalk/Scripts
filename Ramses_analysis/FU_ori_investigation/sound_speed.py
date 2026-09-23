@@ -66,7 +66,6 @@ else:
 
 
 sink_id = 45
-sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
 radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 
 sys.stdout.flush()
@@ -84,7 +83,7 @@ if len(files)>0:
         sys.stdout.flush()
         #try:
         ds = yt.load(fn, units_override=units_override)
-        if len(ds.r["sink_particle_form_time"]) == 45:
+        if len(ds.r["sink_particle_form_time"]) == sink_id:
             skip=True
         else:
             if np.isnan(sink_form_time):
@@ -151,19 +150,25 @@ if len(files)>0:
             del rel_vel
             gc.collect()
             save_dict["Companion_Speed"] = np.append(save_dict["Companion_Speed"], rel_speed)
+            del rel_speed
+            gc.collect()
             
-            sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+            sound_speed_top = ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds]
+            sound_speed_bot = ds.r["gas", "Density"][sphere_inds]
+            sound_speed = np.mean(np.sqrt(sound_speed_top/sound_speed_bot).in_units('km/s'))
+            del sound_speed_top, sound_speed_bot
+            gc.collect()
+            #sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
             print('calculated sound speed on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             save_dict["Sound_Speed"] = np.append(save_dict["Sound_Speed"], sound_speed)
-            del sound_speed
+            del sound_speed, sphere_inds
             gc.collect()
             
             #ds.index.clear_all_data()
             
             #Save BHL Calculation
             file_open = open('Sound_speed_'+str(proj_root_rank)+'.pkl', 'wb')
-            #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             pickle.dump((save_dict), file_open)
             file_open.close()
             print("RANK "+str(rank)+": CALCULATED BHL FOR FILE", files.index(fn), "OF", len(files))
