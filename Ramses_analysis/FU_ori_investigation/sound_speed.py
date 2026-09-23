@@ -67,6 +67,7 @@ else:
 
 sink_id = 45
 sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
+radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 
 sys.stdout.flush()
 CW.Barrier()
@@ -112,6 +113,22 @@ if len(files)>0:
             #print('Got particle position on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             
+            #Get inds in measuring sphere
+            dd = ds.all_data()
+            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
+            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
+            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
+            sep_vector = yt.YTArray([dx, dy, dz])
+            del dx, dy, dz, dd, sink_pos
+            gc.collect()
+            sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
+            del sep_vector
+            gc.collect()
+            sys.stdout.flush()
+            
+            #Get indices in measure sphere
+            sphere_inds = np.where(sep<=radius)[0]
+            
             #get sink velocity
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
             sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
@@ -122,21 +139,6 @@ if len(files)>0:
             #print('Got particle velocity on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             
-            #Get inds in measuring sphere
-            dd = ds.all_data()
-            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-            sep_vector = yt.YTArray([dx, dy, dz])
-            del dx, dy, dz, dd
-            gc.collect()
-            sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
-            sys.stdout.flush()
-            
-            #Get indices in measure sphere
-            radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
-            sphere_inds = np.where(sep<=radius)[0]
-            
             #Calculate bulk velocity of the sphere
             sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
             sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
@@ -144,7 +146,6 @@ if len(files)>0:
             sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
             del sph_dvx, sph_dvy, sph_dvz
             gc.collect()
-            sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
             rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
             rel_speed = np.sqrt(np.sum(rel_vel**2))
             del rel_vel
