@@ -131,9 +131,7 @@ if len(files)>0:
             del rel_speed
             gc.collect()
             
-            sound_speed_top = ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds]
-            sound_speed_bot = ds.r["gas", "Density"][sphere_inds]
-            sound_speed = np.mean(np.sqrt(sound_speed_top/sound_speed_bot).in_units('km/s'))
+            sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
             del sound_speed_top, sound_speed_bot
             gc.collect()
             #sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
