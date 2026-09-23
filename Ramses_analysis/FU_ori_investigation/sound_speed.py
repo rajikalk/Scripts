@@ -32,7 +32,7 @@ mym.set_units(units_override)
 sys.stdout.flush()
 CW.Barrier()
 
-sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/'
+sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/data/'
 files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
 
 if os.path.exists('Sound_speed.pkl'):
