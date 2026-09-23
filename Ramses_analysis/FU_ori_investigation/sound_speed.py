@@ -75,7 +75,7 @@ gc.collect()
 if len(files)>0:
     #ts = yt.DatasetSeries(files, parallel=4)
     #'''
-    para_div = 14
+    para_div = 28
     #my_storage = {}
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
         proj_root_rank = int(rank/para_div)
