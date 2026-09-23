@@ -67,6 +67,7 @@ else:
 
 sink_id = 45
 radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
+sink_form_time = np.nan
 
 sys.stdout.flush()
 CW.Barrier()
