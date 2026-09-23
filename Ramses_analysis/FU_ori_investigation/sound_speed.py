@@ -96,59 +96,36 @@ if len(files)>0:
             #'''
             #my_storage = {}
             #for sto, ds in ts.piter(storage=my_storage):
-            time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-            save_dict["Time"] = np.append(save_dict["Time"],time_val)
-            del time_val
-            gc.collect()
+            save_dict["Time"] = np.append(save_dict["Time"],ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value)
             #sto.result_id = "Time"
             #sto.result = time_val
             
             #Get sink position
-            sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-            sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
-            sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-            sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+            sink_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id], ds.r["gas", "sink_particle_posy"][sink_id], ds.r["gas", "sink_particle_posz"][sink_id]])
             del sink_particle_posx, sink_particle_posy, sink_particle_posz
             gc.collect()
             #print('Got particle position on rank', rank, ' for fn', ds)
-            sys.stdout.flush()
             
             #Get inds in measuring sphere
             dd = ds.all_data()
-            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-            sep_vector = yt.YTArray([dx, dy, dz])
-            del dx, dy, dz, dd, sink_pos
+            sep_vector = yt.YTArray([(dd['x'].in_units('au') - sink_pos[0].in_units('au')), (dd['y'].in_units('au') - sink_pos[1].in_units('au')), (dd['z'].in_units('au') - sink_pos[2].in_units('au'))])
+            del dd, sink_pos
             gc.collect()
             sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
             del sep_vector
             gc.collect()
-            sys.stdout.flush()
             
             #Get indices in measure sphere
             sphere_inds = np.where(sep<=radius)[0]
             
             #get sink velocity
-            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-            del sink_particle_velx, sink_particle_vely, sink_particle_velz
-            gc.collect()
+            sink_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id], ds.r["gas", "sink_particle_vely"][sink_id], ds.r["gas", "sink_particle_velz"][sink_id]])
             #print('Got particle velocity on rank', rank, ' for fn', ds)
-            sys.stdout.flush()
             
             #Calculate bulk velocity of the sphere
-            sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-            sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-            sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-            sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-            del sph_dvx, sph_dvy, sph_dvz
-            gc.collect()
-            rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
-            rel_speed = np.sqrt(np.sum(rel_vel**2))
-            del rel_vel
+            sph_vel = yt.YTArray([ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0], ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1], ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]])
+            rel_speed = np.sqrt(np.mean(sph_vel[0])**2 + np.mean(sph_vel[1])**2, np.mean(sph_vel[2])**2)
+            del sph_vel
             gc.collect()
             save_dict["Companion_Speed"] = np.append(save_dict["Companion_Speed"], rel_speed)
             del rel_speed
