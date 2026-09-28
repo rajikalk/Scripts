@@ -105,8 +105,8 @@ end_ind = np.argmin(abs(particle_data['time']-end_time))
 lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
 
 #Highlight observed window and burst time
-plt.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
-plt.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
 
 axes_1_twin = axes_1.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
