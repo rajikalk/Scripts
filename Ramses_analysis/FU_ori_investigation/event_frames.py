@@ -75,6 +75,10 @@ start_burst = burst_bounds[event_it -1][0]
 end_burst = burst_bounds[event_it -1][1]
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
+highlight_obs_start = burst_bounds[event_it -1][0] - 15
+highlight_obs_end = burst_bounds[event_it -1][0] + 90
+highlight_burst_start = burst_bounds[event_it -1][0]
+highlight_burst_end = burst_bounds[event_it -1][0] + 20
 if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
     end_burst = 7340
     end_time = 7340
@@ -111,6 +115,11 @@ lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data[
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
+
+curr_ylim = axes_1.get_ylim()
+axes_1.set_ylim(curr_ylim)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
