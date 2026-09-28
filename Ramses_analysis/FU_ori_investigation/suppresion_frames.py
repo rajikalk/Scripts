@@ -45,6 +45,7 @@ mym.set_global_font_size(font_size)
 #time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 burst_bounds = [[], [5575, 5635], [6580, 6625], [7295, 7309], [7850, 7858]]
+burst_bounds_true = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 5.e-14], [1.e-15, 1.e-13], [2.e-15, 2.e-13]]
 cmap=plt.cm.gist_heat
 
@@ -75,6 +76,10 @@ start_burst = burst_bounds[event_it -1][0]
 end_burst = burst_bounds[event_it -1][1]
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
+highlight_obs_start = burst_bounds_true[event_it -1][0] - 15
+highlight_obs_end = burst_bounds_true[event_it -1][0] + 90
+highlight_burst_start = burst_bounds_true[event_it -1][0]
+highlight_burst_end = burst_bounds_true[event_it -1][0] + 20
 if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
     end_burst = 7340
     end_time = 7340
@@ -98,6 +103,11 @@ start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
 lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
+
+#Highlight observed window and burst time
+plt.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+plt.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
+
 axes_1_twin = axes_1.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
