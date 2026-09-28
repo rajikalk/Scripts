@@ -96,8 +96,8 @@ plot_dt = (end_burst.value-start_burst)/4
 plot_times = np.arange(start_burst, end_burst.value+plot_dt, plot_dt)
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
+G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
