@@ -105,14 +105,17 @@ end_ind = np.argmin(abs(particle_data['time']-end_time))
 lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
 
 #Highlight observed window and burst time
-axes_1.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
-axes_1.fill_betweenx(particle_data['mdot'].T[1][start_ind:end_ind], highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
 
 axes_1_twin = axes_1.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
+
+curr_ylim = axes_1.get_ylim()
+axes_1.set_ylim(curr_ylim)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
