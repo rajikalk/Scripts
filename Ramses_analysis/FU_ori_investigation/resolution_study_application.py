@@ -57,7 +57,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width*1.6), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.5), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -85,8 +85,14 @@ for pick_file in pickle_files:
     radius = yt.YTQuantity(2.0, 'rsun')
     #M_dot = accretion(sink_inds, global_ind)
     #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-    m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
-    mass = yt.YTArray(particle_data['mass']).in_units('g')
+    try:
+        m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
+    except:
+        m_dot = yt.YTArray(particle_data['mdot'], 'msun/yr').in_units('g/s')
+    try:
+        mass = yt.YTArray(particle_data['mass']).in_units('g')
+    except:
+        mass = yt.YTArray(particle_data['mass'], 'msun').in_units('g')
     L_acc = f_acc * (mass * m_dot * yt.units.gravitational_constant_cgs)/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
     
@@ -108,7 +114,7 @@ for pick_file in pickle_files:
             axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
     #axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
-    axs.flatten()[1].set_ylim([1.e-9, 1.e-4])
+    axs.flatten()[1].set_ylim([1.e-9, 5.e-5])
     axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
     print("plotted Accretion rate")
     
