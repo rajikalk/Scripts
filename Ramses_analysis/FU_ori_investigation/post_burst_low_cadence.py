@@ -43,7 +43,8 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 #time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
+#time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 burst_bounds_true = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13]]
@@ -71,10 +72,10 @@ stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
-highlight_obs_start = burst_bounds_true[event_it -1][0] - 15
-highlight_obs_end = burst_bounds_true[event_it -1][0] + 90
-highlight_burst_start = burst_bounds_true[event_it -1][0]
-highlight_burst_end = burst_bounds_true[event_it -1][0] + 20
+highlight_obs_start = burst_bounds_true[event_it-1][0] - 15
+highlight_obs_end = burst_bounds_true[event_it-1][0] + 90
+highlight_burst_start = burst_bounds_true[event_it-1][0]
+highlight_burst_end = burst_bounds_true[event_it-1][0] + 20
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
@@ -87,11 +88,11 @@ del units_override['density_unit']
 sim_files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/output*/info*'))
 ds = yt.load(sim_files[-1], units_override=units_override)
 sink_form_time = ds.r["sink_particle_form_time"][45]
-usable_files = mym.find_files([time_bounds[event_it-1][1]], sim_files, sink_form_time, 45, verbatim=True)
+usable_files = mym.find_files([time_bounds[event_it-1][1]-500], sim_files, sink_form_time, 45, verbatim=True)
 ds = yt.load(usable_files[0], units_override=units_override)
 curr_time = ds.current_time.in_units('yr') - sink_form_time
 file_no = int(usable_files[0].split('_')[-1].split('.')[0])
-if curr_time<time_bounds[event_it-1][1]:
+if curr_time<time_bounds[event_it-1][1]-500:
     file_no = file_no + 10
 if event_it == 5:
     file_no = file_no - 10

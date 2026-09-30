@@ -98,9 +98,9 @@ for pick_file in pickle_files:
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
+            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls=":")
         else:
-            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
+            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-", label=label[pickle_files.index(pick_file)])
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
     #axs.flatten()[0].legend(loc=(0.5, 0.13), fontsize=font_size)
     axs.flatten()[0].legend(loc='center right', fontsize=font_size)
