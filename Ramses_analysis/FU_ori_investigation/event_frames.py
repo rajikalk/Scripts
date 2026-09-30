@@ -109,7 +109,7 @@ axes_1.set_title("Burst event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion")
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
 axes_1_twin = axes_1.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
@@ -124,7 +124,7 @@ axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_e
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-axes_1.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
