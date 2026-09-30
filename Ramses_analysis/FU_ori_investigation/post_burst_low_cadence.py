@@ -45,6 +45,7 @@ mym.set_global_font_size(font_size)
 #time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
+burst_bounds_true = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13]]
 cmap=plt.cm.gist_heat
 
@@ -70,6 +71,10 @@ stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
+highlight_obs_start = burst_bounds_true[event_it -1][0] - 15
+highlight_obs_end = burst_bounds_true[event_it -1][0] + 90
+highlight_burst_start = burst_bounds_true[event_it -1][0]
+highlight_burst_end = burst_bounds_true[event_it -1][0] + 20
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
@@ -128,6 +133,11 @@ lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data[
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
+
+curr_ylim = axes_1.get_ylim()
+axes_1.set_ylim(curr_ylim)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
