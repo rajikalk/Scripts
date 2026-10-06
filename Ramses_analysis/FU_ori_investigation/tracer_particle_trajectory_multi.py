@@ -28,6 +28,7 @@ page_height = 10.62472 #inches
 font_size = 10
 mutation_scale = 5
 linewidth = 0.8
+axis_lim = 100
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
@@ -63,8 +64,8 @@ for Traj_pickle in Traj_pickles:
         arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
         ax.add_patch(circle)
         ax.add_patch(arrow)
-        ax.set_xlim([-9, 9])
-        ax.set_ylim([-1, 9])
+        ax.set_xlim([-1*axis_lim, axis_lim])
+        ax.set_ylim([-1, axis_lim])
         ax.set_aspect('equal')
         norm = mpl.colors.Normalize(vmin=0,vmax=1)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
