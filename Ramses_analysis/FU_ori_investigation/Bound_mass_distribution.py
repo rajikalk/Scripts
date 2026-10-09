@@ -100,24 +100,14 @@ if len(files)>0:
             gc.collect()
             sys.stdout.flush()
             
+            #Let's doa really simple analysis ingorning enclosed gas
+            sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
+            
             #Get sink position
             sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
             sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
             sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
             sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-            
-            dx_sinks = ds.r["gas", "sink_particle_posx"].in_units('au') - sink_pos[0].in_units('au')
-            dy_sinks = ds.r["gas", "sink_particle_posy"].in_units('au') - sink_pos[1].in_units('au')
-            dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
-            sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
-            del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
-            gc.collect()
-            sys.stdout.flush()
-            
-            #lets find the separation to the third closest star. If its >10000au, then we set 10000au to the upper limit, else it is the third closest star
-            
-            import pdb
-            pdb.set_trace()
             
             #Get inds in measuring sphere
             dx = ds.r['ramses', 'x'].in_units('au') - sink_pos[0].in_units('au')
@@ -127,9 +117,8 @@ if len(files)>0:
             del dx, dy, dz, sink_pos
             gc.collect()
             sys.stdout.flush()
-            
-            #Let's only look at cells withink 10000au
-            usuable_seps = np.where(sep<10000)[0]
+
+            E_grav = (yt.units.gravitational_constant_cgs*sink_mass*ds.r["gas", "mass"])/sep
             
             
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
@@ -139,6 +128,9 @@ if len(files)>0:
             del sink_particle_velx, sink_particle_vely, sink_particle_velz
             gc.collect()
             print("RANK", rank, "got particle velocity")
+            
+            import pdb
+            pdb.set_trace()
             
             #get separations to other sink particles
             
