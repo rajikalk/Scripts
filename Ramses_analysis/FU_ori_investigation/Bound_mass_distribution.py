@@ -70,11 +70,13 @@ sink_form_time = np.nan
 sys.stdout.flush()
 CW.Barrier()
 gc.collect()
+div_procs = 28
 
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=int(size/28)):
-        frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
+    for fn in yt.parallel_objects(files, njobs=int(size/div_procs)):
+        root_rank = int(rank/div_procs)
+        frame_name = "Scatter_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
         else:
@@ -117,8 +119,11 @@ if len(files)>0:
             del dx, dy, dz, sink_pos
             gc.collect()
             sys.stdout.flush()
+            
+            usuable_inds = np.where(sep<10000)[0]
+            sep = sep[usuable_inds]
 
-            E_grav = (yt.units.gravitational_constant_cgs*sink_mass*ds.r["gas", "mass"])/sep
+            E_grav = -1*(yt.units.gravitational_constant_cgs*sink_mass*ds.r["gas", "mass"][usuable_inds])/sep
             
             
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
@@ -129,122 +134,32 @@ if len(files)>0:
             gc.collect()
             print("RANK", rank, "got particle velocity")
             
-            import pdb
-            pdb.set_trace()
+            dvx = ds.r["ramses", "x-velocity"][usuable_inds].in_units('km/s') - sink_vel[0]
+            dvy = ds.r["ramses", "y-velocity"][usuable_inds].in_units('km/s') - sink_vel[1]
+            dvz = ds.r["ramses", "z-velocity"][usuable_inds].in_units('km/s') - sink_vel[2]
+            vel = np.sqrt(dvx**2 + dvx**2 + dvx**2)
+            del dvx, dvy, dvz, sink_vel
+            gc.collect()
+            sys.stdout.flush()
             
-            #get separations to other sink particles
+            E_kin = 0.5 * ds.r["gas", "mass"][usuable_inds] * vel**2
             
-            #Get indices in measure sphere
-            #Start iterating over Radial bins
-            profile_dict = {}
-            #profile_dict.update({"R_profile_mean":np.array([])})
-            #profile_dict.update({"R_profile_std":np.array([])})
-            #profile_dict.update({"E_profile_mean":np.array([])})
-            #profile_dict.update({"E_profile_std":np.array([])})
-            prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
-            prev_radius = 0
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/14)):
-                #for radius_bit in range(1, len(radius_bins)):
-                #Calculate enclosed mass:
-                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
-                
-                enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
-                enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
-                prev_enclosed_gas_mass = enclosed_mass
-                prev_radius = radius_bins[radius_bit]
-                del enclosed_inds
-                gc.collect()
-                enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
-                enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
-                del enclosed_sinks
-                gc.collect()
-                enclosed_mass = enclosed_mass + enclosed_sink_mass
-                del enclosed_sink_mass
-                gc.collect()
-                
-                #Now get indices in sphere
-                sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
-                sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-                sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-                sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-                sph_vel = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
-                del sph_dvx, sph_dvy, sph_dvz
-                gc.collect()
-                E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
-                del sph_vel
-                gc.collect()
-                #get average radius in the bin
-                rad_mean = np.mean(sep[sphere_inds])
-                rad_std = np.std(sep[sphere_inds])
-                #calcualte gravitational potential energy
-                E_grav = (yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
-                del sphere_inds, enclosed_mass
-                gc.collect()
-                E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
-                del E_grav, E_kin
-                gc.collect()
-                E_ratio_mean = np.mean(E_ratio)
-                E_ratio_std = np.std(E_ratio)
-                del E_ratio
-                gc.collect()
-                sto.result_id = str(radius_bins[radius_bit])
-                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
-                del rad_mean, rad_std, E_ratio_mean, E_ratio_std
-                gc.collect()
+            E_tot = E_grav.in_units('erg')+E_kin.in_units('erg')
+            bound_inds = np.argwhere(E_tot<0)
             
-            root_rank = int(rank/28)
             if rank == root_rank:
-                #sort profile data:
-                Profile_rad_mean = np.array([])
-                Profile_rad_std = np.array([])
-                Profile_E_ratio_mean = np.array([])
-                Profile_E_ratio_std = np.array([])
-                for key in profile_dict.keys():
-                    Profile_rad_mean = np.append(Profile_rad_mean, profile_dict[key][0])
-                    Profile_rad_std = np.append(Profile_rad_std, profile_dict[key][1])
-                    Profile_E_ratio_mean = np.append(Profile_E_ratio_mean, profile_dict[key][2])
-                    Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
-                del profile_dict
-                gc.collect()
-                #sort inds
-                sorted_inds = np.argsort(Profile_rad_mean)
-                profile_dict = {}
-                profile_dict.update({"R_profile_mean":Profile_rad_mean[sorted_inds]})
-                del Profile_rad_mean
-                gc.collect()
-                profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
-                del Profile_rad_mean
-                gc.collect()
-                profile_dict.update({"E_profile_mean":Profile_E_ratio_mean[sorted_inds]})
-                del Profile_E_ratio_mean
-                gc.collect()
-                profile_dict.update({"E_profile_std":Profile_E_ratio_std[sorted_inds]})
-                del Profile_E_ratio_std
-                gc.collect()
-            
-                #Save BHL Calculation
-                file_open = open(frame_name+'.pkl', 'wb')
-                #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-                pickle.dump((profile_dict), file_open)
-                file_open.close()
-                del profile_dict
-                gc.collect()
-                print("RANK "+str(rank)+": updated pickle", fn)
-                sys.stdout.flush()
-                
-                
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
-                plt.xscale("log")
-                plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_profile_std"])
-                plt.xlabel("Radius (au)")
-                plt.ylabel("E_grav/E_kin")
-                plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
+                plt.scatter(sep, abs(E_kin.in_units('erg'))/abs(E_grav.in_units('erg')), c=ds.r["gas", "mass"][usuable_inds], marker='.', rasterized=True)
+                plt.xlabel('Separation (AU)')
+                plt.ylabel('E_kin/E_grav')
+                plt.yscale("log")
                 plt.axhline(y=1.0)
                 plt.savefig(frame_name+".png")
+                print("saved scatter plot on rank,")
                 plt.clf()
                 gc.collect()
-        CW.Barrier()
+            
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
