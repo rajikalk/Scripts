@@ -9,11 +9,23 @@ file = open(particle_pickle, 'rb')
 particle_data = pickle.load(file)
 file.close()
 
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+units_override.update({"mass_unit":(2998,"Msun")})
+
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value
+
 #Plot sink histories for classification
 for sink_id in range(len(particle_data['dm'][0])):
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
     particle_data['time'].T[sink_id][zero_inds] = np.nan
     particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    import pdb
+    pdb.set_trace()
     time_arr = particle_data['time'].T[sink_id]
     plt.clf()
     plt.semilogy(time_arr, particle_data['dm'].T[sink_id])
