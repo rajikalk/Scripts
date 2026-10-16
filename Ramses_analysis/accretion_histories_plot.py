@@ -11,7 +11,10 @@ file.close()
 
 #Plot sink histories for classification
 for sink_id in range(len(particle_data['dm'][0])):
-    time_arr = particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id] = np.nan
+    time_arr = particle_data['time'].T[sink_id]
     plt.clf()
     plt.semilogy(time_arr, particle_data['dm'].T[sink_id])
     plt.xlabel("time")
