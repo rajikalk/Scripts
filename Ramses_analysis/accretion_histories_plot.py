@@ -104,7 +104,7 @@ for sink_id in IDs_continuous_clean:
     print("plotted sink", sink_id)
 
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[0].text(1.7, 10.-7, "(a) Continuous accretion", ha='right')
+axs.flatten()[0].text(1.7, 1.e-7, "(a) Continuous accretion", ha='right')
 
 '''
 for sink_id in IDs_continuous_messy:
@@ -129,7 +129,7 @@ for sink_id in IDs_suddenly_shut_off_clean:
     print("plotted sink", sink_id)
 
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[1].text(1.7, 10.-7, "(b) Sudden accretion shut off", ha='right')
+axs.flatten()[1].text(1.7, 1.e-7, "(b) Sudden accretion shut off", ha='right')
 
 '''
 for sink_id in IDs_suddenly_shut_off_messy:
@@ -154,7 +154,7 @@ for sink_id in IDs_steady_decline_clean:
     print("plotted sink", sink_id)
     
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[2].text(1.7, 10.-7, "(c) Steady decline", ha='right')
+axs.flatten()[2].text(1.7, 1.e-7, "(c) Steady decline", ha='right')
 
 '''
 for sink_id in IDs_steady_decline_messy:
@@ -181,7 +181,7 @@ for sink_id in IDs_late_accretion_clean:
     print("plotted sink", sink_id)
 
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[3].text(1.7, 10.-7, "(d) Steady decline with late infall", ha='right')
+axs.flatten()[3].text(1.7, 1.e-7, "(d) Steady decline with late infall", ha='right')
     
 '''
 for sink_id in IDs_late_accretion_messy:
@@ -207,7 +207,7 @@ for sink_id in IDs_Other:
     print("plotted sink", sink_id)
 
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[4].text(1.7, 10.-7, "(e) Miscellaneous", ha='right')
+axs.flatten()[4].text(1.7, 1.e-7, "(e) Miscellaneous", ha='right')
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
