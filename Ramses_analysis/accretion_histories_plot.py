@@ -35,7 +35,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-
+'''
 #Plot sink histories for classification
 plot_individual = False
 if plot_individual == False:
@@ -70,7 +70,7 @@ if plot_individual == False:
     axs.set_ylim([1.e-9, 5.e-5])
     plt.savefig("All_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
     print("saved all accretion histories")
-
+'''
 IDs_continuous_clean = [2, 8, 11, 89, 90, 126, 129, 162, 165, 208,  222, 219, 218]
 IDs_continuous_messy = [84, 109, 127, 139, 140, 141, 153, 157, 159, 164, 166, 170, 172, 184, 185, 214, 221]
 
