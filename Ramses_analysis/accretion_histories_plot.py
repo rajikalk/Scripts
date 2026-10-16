@@ -158,7 +158,7 @@ for sink_id in IDs_late_accretion_clean:
     time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
     axs.flatten()[3].semilogy(time_arr, acc_val)
 
-axs.flatten()[3].ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)")
+axs.flatten()[3].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)")
     
 for sink_id in IDs_late_accretion_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
