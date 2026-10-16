@@ -42,8 +42,11 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+#time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
+#time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
+burst_bounds_true = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13]]
 cmap=plt.cm.gist_heat
 
@@ -69,6 +72,10 @@ stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
+highlight_obs_start = burst_bounds_true[event_it-1][0] - 15
+highlight_obs_end = burst_bounds_true[event_it-1][0] + 90
+highlight_burst_start = burst_bounds_true[event_it-1][0]
+highlight_burst_end = burst_bounds_true[event_it-1][0] + 20
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
@@ -81,11 +88,11 @@ del units_override['density_unit']
 sim_files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/output*/info*'))
 ds = yt.load(sim_files[-1], units_override=units_override)
 sink_form_time = ds.r["sink_particle_form_time"][45]
-usable_files = mym.find_files([time_bounds[event_it-1][1]], sim_files, sink_form_time, 45, verbatim=True)
+usable_files = mym.find_files([time_bounds[event_it-1][1]-500], sim_files, sink_form_time, 45, verbatim=True)
 ds = yt.load(usable_files[0], units_override=units_override)
 curr_time = ds.current_time.in_units('yr') - sink_form_time
 file_no = int(usable_files[0].split('_')[-1].split('.')[0])
-if curr_time<time_bounds[event_it-1][1]:
+if curr_time<time_bounds[event_it-1][1]-500:
     file_no = file_no + 10
 if event_it == 5:
     file_no = file_no - 10
@@ -110,12 +117,13 @@ end_time = plot_times[-1]
 cbar_lims = cbar_lims_all[event_it-1]
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
+G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
-            
+cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
+
 axes_1.set_title("Post burst event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
@@ -126,11 +134,16 @@ lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data[
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
+
+curr_ylim = axes_1.get_ylim()
+axes_1.set_ylim(curr_ylim)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-axes_1.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)

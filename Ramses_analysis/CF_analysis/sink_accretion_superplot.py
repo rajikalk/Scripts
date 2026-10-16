@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pyramses as pr
 from pyramses import rsink
-import multiplicity as m
+#import multiplicity as m
 import yt
 import glob
 from mpi4py.MPI import COMM_WORLD as CW
@@ -15,7 +15,7 @@ import matplotlib.path as mpath
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-plot_type", "--plot_accretion_type", help="which plot do you want to make?", default='Shut_off', type=str)
+    parser.add_argument("-plot_type", "--plot_accretion_type", help="which plot do you want to make?", default=None, type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -32,11 +32,12 @@ Weird = [33, 71, 86, 91, 93, 98, 111, 114, 124, 133, 135, 143, 149, 177, 178, 18
 rank = CW.Get_rank()
 size = CW.Get_size()
 
-global_data_pickle_file = '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl'
+#global_data_pickle_file = '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl'
+global_data_pickle_file = '/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl'
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+simulation_density_id = '100'
 
 if simulation_density_id == '50':
     Grho=50
@@ -71,7 +72,8 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-    
+
+import pickle
 file_open = open(global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open,encoding="latin1")
@@ -90,7 +92,7 @@ Time_arr = (global_data['time']*units['time_unit'].in_units('yr')).T
 
 window = yt.YTQuantity(500, 'yr')
 rit = -1
-make_pickle = False
+make_pickle = True
 if make_pickle:
     for sink_it in range(len(Time_arr)):
         rit = rit + 1

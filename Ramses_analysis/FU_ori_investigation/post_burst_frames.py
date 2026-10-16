@@ -44,6 +44,7 @@ mym.set_global_font_size(font_size)
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
+burst_bounds_true = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13]]
 cmap=plt.cm.gist_heat
 
@@ -85,17 +86,22 @@ end_burst = ds.current_time.in_units('yr') - sink_form_time
 start_burst = time_bounds[event_it -1][1]
 cbar_lims = cbar_lims_all[event_it-1]
 start_time = burst_bounds[event_it -1][0]
+highlight_obs_start = burst_bounds_true[event_it -1][0] - 15
+highlight_obs_end = burst_bounds_true[event_it -1][0] + 90
+highlight_burst_start = burst_bounds_true[event_it -1][0]
+highlight_burst_end = burst_bounds_true[event_it -1][0] + 20
 end_time = end_burst.value
     
 plot_dt = (end_burst.value-start_burst)/4
 plot_times = np.arange(start_burst, end_burst.value+plot_dt, plot_dt)
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+fig = plt.figure(figsize=(two_col_width, 0.55*two_col_width))
+G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
+cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
             
 axes_1.set_title("Post burst event "+str(event_it), y=0.8)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
@@ -109,6 +115,10 @@ labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='upper left')
             
 #Plot accretion and separation. This should be loaded from a pickle
+curr_ylim = axes_1.get_ylim()
+axes_1.set_ylim(curr_ylim)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
+axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
 
 axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
 axes_1.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
@@ -215,7 +225,6 @@ for plot_time in plot_times:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 
     if plot_it == n_frames-1:
-        cbar_ax = fig.add_axes([0.90, 0.267, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
