@@ -100,6 +100,10 @@ for sink_id in IDs_continuous_clean:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
+
+axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
+axs.flatten()[0].set_xlim(left=0.0)
+
 '''
 for sink_id in IDs_continuous_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -185,7 +189,7 @@ for sink_id in IDs_Other:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
     
-axs.flatten()[4].set_ylabel("Time since star formation (Myr)")
+axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 
 plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
 print("remade future fellows plot")
