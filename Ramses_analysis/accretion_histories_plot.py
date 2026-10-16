@@ -63,8 +63,12 @@ for sink_id in range(len(particle_data['dm'][0])):
         print("saved accretion history for sink", sink_id)
     else:
         axs.semilogy(time_arr, acc_val)
-axs.set_xlabel("Simulation time (Myr)")
-axs.set_ylabel("Accretion rate ($\mathrm{M}_\odot/\mathrm{yr}$)")
+if plot_individual == False:
+    axs.set_xlabel("Simulation time (Myr)")
+    axs.set_ylabel("Accretion rate ($\mathrm{M}_\odot/\mathrm{yr}$)")
+    plt.savefig("All_accretion_histories.png")
+    print("saved all accretion histories")
+
         
     
     
