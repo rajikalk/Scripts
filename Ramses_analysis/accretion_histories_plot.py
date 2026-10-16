@@ -23,7 +23,7 @@ for sink_id in range(len(particle_data['dm'][0])):
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
     particle_data['time'].T[sink_id][zero_inds] = np.nan
     particle_data['dm'].T[sink_id][zero_inds] = np.nan
-    d_mass = sink_data[sink_ind][10]*units['mass_unit'].in_units('msun')
+    d_mass = particle_data[sink_ind][10]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[0] - particle_data['tflush'].T[0])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
     time_arr = particle_data['time'].T[sink_id] * scale_t.in_units('yr')
