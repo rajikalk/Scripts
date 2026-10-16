@@ -71,11 +71,115 @@ if plot_individual == False:
     plt.savefig("All_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
     print("saved all accretion histories")
 
-        
+IDs_continuous_clean = [2, 8, 11, 89, 90, 126, 129, 162, 165, 208,  222, 219, 218]
+IDs_continuous_messy = [84, 109, 127, 139, 140, 141, 153, 157, 159, 164, 166, 170, 172, 184, 185, 214, 221]
+
+IDs_suddenly_shut_off_clean = [0, 1, 59, 64, 96, 115, 117, 167, 196, 217]
+IDs_suddenly_shut_off_messy = [17, 20, 26, 49, 110, 147, 151, 154, 173, 175, 181]
+
+IDs_steady_decline_clean = [5, 12, 40, 42, 57, 65, 95, 104, 119, 112, 130, 136, 142, 145, 158, 163, 169, 171, 194, ]
+IDs_steady_decline_messy = [18, 19, 25, 28, 35, 38, 46, 51, 66, 69, 97, 116, 146, 188, 192, 200]
+
+IDs_late_accretion_clean = [6, 14, 27, 79, 82, 100, 124, 125, 135, 138, 149, 179, 180, 220]
+IDs_late_accretion_messy = [13, 24, 30, 62, 112, 144, 156, 160, 168, 178, 203,  216]
+
+IDs_Other = [3, 9, 10, 22, 31, 33, 37, 44, 48, 50, 55, 92, 93, 94, 98, 111, 114, 118, 123, , 128, 143, 177, 182, 187, 193, 195, 197, 207,  201, 210, 223]
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+
+for sink_id in IDs_continuous_clean:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[0].semilogy(time_arr, acc_val)
     
+for sink_id in IDs_continuous_messy:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[0].semilogy(time_arr, acc_val)
+
+for sink_id in IDs_suddenly_shut_off_clean:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[1].semilogy(time_arr, acc_val)
     
-IDs_continuous = [2]
-IDs_suddenly_shut_off = [0, 1,]
-IDs_steady_decline = [3, 4, 5, 6]
-IDs_late_accretion = []
-IDs_Other = []
+for sink_id in IDs_suddenly_shut_off_messy:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[1].semilogy(time_arr, acc_val)
+
+for sink_id in IDs_steady_decline_clean:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[2].semilogy(time_arr, acc_val)
+    
+for sink_id in IDs_steady_decline_messy:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[2].semilogy(time_arr, acc_val)
+
+for sink_id in IDs_late_accretion_clean:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[3].semilogy(time_arr, acc_val)
+
+axs.flatten()[3].ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)")
+    
+for sink_id in IDs_late_accretion_messy:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[3].semilogy(time_arr, acc_val)
+    
+for sink_id in IDs_Other:
+    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    particle_data['time'].T[sink_id][zero_inds] = np.nan
+    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
+    d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
+    acc_val = d_mass/d_time
+    time_arr = (particle_data['time'].T[sink_id]-t_0) * units['time_unit'].in_units('Myr')
+    axs.flatten()[4].semilogy(time_arr, acc_val)
+
+
+plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
+print("remade future fellows plot")
