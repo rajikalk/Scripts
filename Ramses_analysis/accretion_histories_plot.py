@@ -42,7 +42,6 @@ if plot_individual == False:
     plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*1), sharex=True)#, sharey=True)
 
-plt.clf()
 t_0 = particle_data['time'].T[0][0]
 for sink_id in range(len(particle_data['dm'][0])):
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
