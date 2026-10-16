@@ -101,6 +101,7 @@ for sink_id in IDs_continuous_clean:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
+    print("plotted sink", sink_id)
 
 '''
 for sink_id in IDs_continuous_messy:
@@ -122,6 +123,7 @@ for sink_id in IDs_suddenly_shut_off_clean:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[1].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
+    print("plotted sink", sink_id)
 '''
 for sink_id in IDs_suddenly_shut_off_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -142,6 +144,7 @@ for sink_id in IDs_steady_decline_clean:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
+    print("plotted sink", sink_id)
 '''
 for sink_id in IDs_steady_decline_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -164,6 +167,7 @@ for sink_id in IDs_late_accretion_clean:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[3].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
+    print("plotted sink", sink_id)
     
 '''
 for sink_id in IDs_late_accretion_messy:
@@ -186,6 +190,7 @@ for sink_id in IDs_Other:
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
+    print("plotted sink", sink_id)
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
