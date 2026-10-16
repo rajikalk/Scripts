@@ -40,7 +40,7 @@ font_size = 10
 plot_individual = False
 if plot_individual == False:
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*1))#, sharey=True)
+    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*0.5))#, sharey=True)
 
 t_0 = particle_data['time'].T[0][0]
 for sink_id in range(len(particle_data['dm'][0])):
@@ -62,11 +62,11 @@ for sink_id in range(len(particle_data['dm'][0])):
         print("saved accretion history for sink", sink_id)
     else:
         axs.semilogy(time_arr, acc_val, linewidth=0.25, alpha=0.2)
+        if sink_id == 0:
+            axs.set_xlim([time_arr[0], time_arr[-1]])
 if plot_individual == False:
     axs.set_xlabel("Simulation time (Myr)")
     axs.set_ylabel("Accretion rate ($\mathrm{M}_\odot/\mathrm{yr}$)")
-    if sink_id == 0:
-        axs.set_xlim([time_arr[0], time_arr[-1]])
     axs.set_ylim([1.e-9, 5.e-5])
     plt.savefig("All_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
     print("saved all accretion histories")
