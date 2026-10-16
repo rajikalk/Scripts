@@ -93,9 +93,9 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, single_col_wid
 plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
-    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
-    particle_data['time'].T[sink_id][zero_inds] = np.nan
-    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    #particle_data['time'].T[sink_id][zero_inds] = np.nan
+    #particle_data['dm'].T[sink_id][zero_inds] = np.nan
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
@@ -115,9 +115,9 @@ for sink_id in IDs_continuous_messy:
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
 '''
 for sink_id in IDs_suddenly_shut_off_clean:
-    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
-    particle_data['time'].T[sink_id][zero_inds] = np.nan
-    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    #particle_data['time'].T[sink_id][zero_inds] = np.nan
+    #particle_data['dm'].T[sink_id][zero_inds] = np.nan
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
@@ -136,9 +136,9 @@ for sink_id in IDs_suddenly_shut_off_messy:
     axs.flatten()[1].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
 '''
 for sink_id in IDs_steady_decline_clean:
-    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
-    particle_data['time'].T[sink_id][zero_inds] = np.nan
-    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    #particle_data['time'].T[sink_id][zero_inds] = np.nan
+    #particle_data['dm'].T[sink_id][zero_inds] = np.nan
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
@@ -159,9 +159,9 @@ for sink_id in IDs_steady_decline_messy:
 axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)")
 
 for sink_id in IDs_late_accretion_clean:
-    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
-    particle_data['time'].T[sink_id][zero_inds] = np.nan
-    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    #particle_data['time'].T[sink_id][zero_inds] = np.nan
+    #particle_data['dm'].T[sink_id][zero_inds] = np.nan
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
@@ -182,9 +182,9 @@ for sink_id in IDs_late_accretion_messy:
 '''
     
 for sink_id in IDs_Other:
-    zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
-    particle_data['time'].T[sink_id][zero_inds] = np.nan
-    particle_data['dm'].T[sink_id][zero_inds] = np.nan
+    #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
+    #particle_data['time'].T[sink_id][zero_inds] = np.nan
+    #particle_data['dm'].T[sink_id][zero_inds] = np.nan
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
