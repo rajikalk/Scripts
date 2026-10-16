@@ -99,7 +99,7 @@ for sink_id in IDs_continuous_clean:
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
-    time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
+    time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
 
@@ -121,7 +121,7 @@ for sink_id in IDs_suddenly_shut_off_clean:
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
-    time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
+    time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[1].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
 '''
@@ -142,7 +142,7 @@ for sink_id in IDs_steady_decline_clean:
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
-    time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
+    time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
 '''
@@ -165,7 +165,7 @@ for sink_id in IDs_late_accretion_clean:
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
-    time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
+    time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[3].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
     print("plotted sink", sink_id)
     
@@ -188,7 +188,7 @@ for sink_id in IDs_Other:
     d_mass = particle_data['dm'].T[sink_id]*units['mass_unit'].in_units('msun')
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
-    time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
+    time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
     print("plotted sink", sink_id)
     
