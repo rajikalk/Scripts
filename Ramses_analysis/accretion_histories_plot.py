@@ -77,13 +77,13 @@ IDs_continuous_messy = [84, 109, 127, 139, 140, 141, 153, 157, 159, 164, 166, 17
 IDs_suddenly_shut_off_clean = [0, 1, 59, 64, 96, 115, 117, 167, 196, 217]
 IDs_suddenly_shut_off_messy = [17, 20, 26, 49, 110, 147, 151, 154, 173, 175, 181]
 
-IDs_steady_decline_clean = [5, 12, 40, 42, 57, 65, 95, 104, 119, 112, 130, 136, 142, 145, 158, 163, 169, 171, 194]
-IDs_steady_decline_messy = [18, 19, 25, 28, 35, 38, 46, 51, 66, 69, 97, 116, 146, 188, 192, 200]
+IDs_steady_decline_clean = [5, 12, 40, 42, 57, 65, 95, 104, 119, 130, 136, 145, 158, 163, 169, 171, 194]
+IDs_steady_decline_messy = [18, 19, 25, 28, 35, 38, 46, 51, 66, 69, 97, 116, 142, 146, 188, 192, 200]
 
 IDs_late_accretion_clean = [6, 14, 27, 79, 82, 100, 124, 125, 135, 138, 149, 179, 180, 220]
 IDs_late_accretion_messy = [13, 24, 30, 62, 112, 144, 156, 160, 168, 178, 203, 216]
 
-IDs_Other = [3, 9, 10, 22, 31, 33, 37, 44, 48, 50, 55, 92, 93, 94, 98, 111, 114, 118, 123, 128, 143, 177, 182, 187, 193, 195, 197, 207, 201, 210, 223]
+IDs_Other = [3, 9, 10, 22, 31, 33, 37, 44, 48, 50, 55, 92, 93] #, 94, 98, 111, 114, 118, 123, 128, 143, 177, 182, 187, 193, 195, 197, 207, 201, 210, 223]
 
 ln_wd = 0.5
 alpha = 1
@@ -166,7 +166,7 @@ for sink_id in IDs_late_accretion_clean:
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
-    axs.flatten()[3].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
+    axs.flatten()[3].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
     
 '''
@@ -189,12 +189,12 @@ for sink_id in IDs_Other:
     d_time = (particle_data['time'].T[sink_id] - particle_data['tflush'].T[sink_id])*units['time_unit'].in_units('yr')
     acc_val = d_mass/d_time
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
-    axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=0.25)
+    axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
-axs.flatten()[0].set_xlim(left=0.0)
+axs.flatten()[0].set_xlim([0.0, 1.75])
 
 plt.savefig("FF_accretion_histories.jpg", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
