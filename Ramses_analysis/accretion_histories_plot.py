@@ -192,5 +192,5 @@ for sink_id in IDs_Other:
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 
-plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02)
+plt.savefig("FF_accretion_histories.jpg", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
