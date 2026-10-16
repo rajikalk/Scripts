@@ -213,5 +213,5 @@ axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
 axs.flatten()[0].set_xlim([0.0, 1.75])
 
-plt.savefig("FF_accretion_histories.jpg", bbox_inches='tight', pad_inches=0.02, dpi=300)
+plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
