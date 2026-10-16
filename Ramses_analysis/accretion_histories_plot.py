@@ -89,7 +89,7 @@ ln_wd = 0.25
 alpha = 0.7
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(1.1*two_col_width, 1.1*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
@@ -102,6 +102,9 @@ for sink_id in IDs_continuous_clean:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+
+axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[0].text(1.7, 10.-7, "(a) Continuous accretion", ha='right')
 
 '''
 for sink_id in IDs_continuous_messy:
@@ -124,6 +127,10 @@ for sink_id in IDs_suddenly_shut_off_clean:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[1].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+
+axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[1].text(1.7, 10.-7, "(b) Sudden accretion shut off", ha='right')
+
 '''
 for sink_id in IDs_suddenly_shut_off_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -145,6 +152,10 @@ for sink_id in IDs_steady_decline_clean:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+    
+axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[2].text(1.7, 10.-7, "(c) Steady decline", ha='right')
+
 '''
 for sink_id in IDs_steady_decline_messy:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -168,6 +179,9 @@ for sink_id in IDs_late_accretion_clean:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[3].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+
+axs.flatten()[3].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[3].text(1.7, 10.-7, "(d) Steady decline with late infall", ha='right')
     
 '''
 for sink_id in IDs_late_accretion_messy:
@@ -191,6 +205,9 @@ for sink_id in IDs_Other:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+
+axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[4].text(1.7, 10.-7, "(e) Miscellaneous", ha='right')
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
