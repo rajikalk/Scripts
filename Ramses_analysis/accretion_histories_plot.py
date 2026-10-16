@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import yt
+import matplotlib
 import matplotlib.pyplot as plt
 import pickle
 
