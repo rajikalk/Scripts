@@ -85,11 +85,12 @@ IDs_late_accretion_messy = [13, 24, 30, 62, 112, 144, 156, 160, 168, 178, 203, 2
 
 IDs_Other = [3, 9, 10, 22, 31, 33, 37, 44, 48, 50, 55, 92, 93, 94, 98, 111, 114, 118, 123, 128, 143, 177, 182, 187, 193, 195, 197, 207, 201, 210, 223]
 
-ln_wd = 0.25
-alpha = 0.7
+ln_wd = 0.5
+alpha = 1
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
     zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
