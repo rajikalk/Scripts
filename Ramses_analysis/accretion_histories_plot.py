@@ -19,7 +19,14 @@ for sink_id in range(len(particle_data['dm'][0])):
     plt.semilogy(time_arr, particle_data['dm'].T[sink_id])
     plt.xlabel("time")
     plt.ylabel("Accretion rate")
+    plt.ylim([1.e-9, 5.e-5])
     plt.title("Sink ID = "+str(sink_id))
     plt.savefig("Accretion_history_"+str(sink_id)+".png")
     print("saved accretion history for sink", sink_id)
     
+    
+IDs_continuous = [2]
+IDs_suddenly_shut_off = [0, 1,]
+IDs_steady_decline = [3, 4, 5, 6]
+IDs_late_accretion = []
+IDs_Other =
