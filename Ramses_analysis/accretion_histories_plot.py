@@ -89,7 +89,7 @@ ln_wd = 0.25
 alpha = 0.7
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(1.1*two_col_width, 1.2*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(1.2*two_col_width, 1.3*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
@@ -167,7 +167,7 @@ for sink_id in IDs_steady_decline_messy:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
 '''
-axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)")
+axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)", labelpad=-1)
 
 for sink_id in IDs_late_accretion_clean:
     #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -209,7 +209,7 @@ for sink_id in IDs_Other:
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right')
     
-axs.flatten()[4].set_xlabel("Time since star formation (Myr)")
+axs.flatten()[4].set_xlabel("Time since star formation (Myr)", labelpad=-1)
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
 axs.flatten()[0].set_xlim([0.0, 1.75])
 
