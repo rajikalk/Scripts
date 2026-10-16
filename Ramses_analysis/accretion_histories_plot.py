@@ -15,7 +15,7 @@ for sink_id in range(len(particle_data['dm'][0])):
     plt.plot(particle_data['time'].T[sink_id], particle_data['dm'].T[sink_id])
     plt.xlabel("time")
     plt.ylabel("Accretion rate")
-    plt.title("Sink ID = "+sink_id)
+    plt.title("Sink ID = "+str(sink_id))
     plt.savefig("Accretion_history_"+sink_id+".png")
     print("saved accretion history for sink", sink_id)
     
