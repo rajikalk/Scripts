@@ -29,4 +29,4 @@ IDs_continuous = [2]
 IDs_suddenly_shut_off = [0, 1,]
 IDs_steady_decline = [3, 4, 5, 6]
 IDs_late_accretion = []
-IDs_Other =
+IDs_Other = []
