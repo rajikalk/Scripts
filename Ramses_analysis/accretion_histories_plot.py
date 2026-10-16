@@ -61,7 +61,7 @@ for sink_id in range(len(particle_data['dm'][0])):
         plt.savefig("Accretion_history_"+str(sink_id)+".png")
         print("saved accretion history for sink", sink_id)
     else:
-        axs.semilogy(time_arr, acc_val, linewidth=0.25, alpha=0.2)
+        axs.semilogy(time_arr, acc_val, linewidth=0.25, alpha=0.01)
         if sink_id == 0:
             axs.set_xlim([time_arr[0], time_arr[-1]])
 if plot_individual == False:
