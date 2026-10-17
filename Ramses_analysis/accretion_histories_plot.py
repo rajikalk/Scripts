@@ -102,6 +102,8 @@ for sink_id in IDs_continuous_clean:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['t'].T[sink_id]) * units['time_unit'].in_units('Myr')
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
+    
+plt.title("The diversity of star accretion histories see in the turbulent ISM simulations", pad=-1)
 
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[0].text(1.73, 1.e-7, "(a) Continuous accretion", ha='right')
@@ -206,7 +208,6 @@ for sink_id in IDs_Other:
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
 
-plt.title("The diversity of star accretion histories see in the turbulent ISM simulations")
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right')
     
