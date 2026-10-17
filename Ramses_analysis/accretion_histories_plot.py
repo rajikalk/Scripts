@@ -206,6 +206,7 @@ for sink_id in IDs_Other:
     axs.flatten()[4].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
 
+plt.title("The diversity of star accretion histories see in the turbulent ISM simulations")
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right')
     
