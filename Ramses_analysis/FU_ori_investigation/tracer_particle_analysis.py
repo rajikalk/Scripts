@@ -67,8 +67,6 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
 
-mym.set_units(units_override)
-
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
     del input_dir
@@ -194,6 +192,7 @@ if args.make_pickle_files == "True":
         except:
             #This is the work around to use the tracer pickle derived from the high cades event zoom on tthe low cadence data
             import my_ramses_module as mym
+            mym.set_units(units_override)
             import pdb
             pdb.set_trace()
             start_file = mym.find_files([time_bounds[event_id-1][1]], files, sink_form_time, sink_id, verbatim=False)[0]
