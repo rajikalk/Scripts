@@ -266,8 +266,6 @@ if args.make_pickle_files == "True":
                     #remove offending tracer ID
                     remove_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds] != min_mass)[0]
                     neg_inds = np.delete(neg_inds, remove_inds)
-                    import pdb
-                    pdb.set_trace()
             
             particle_velocity_x = ds.r['particle_velocity_x'][sorted_inds][accreted_inds_burst]
             #particle_velocity_x[curr_accreted_inds] = pv_code[0]
