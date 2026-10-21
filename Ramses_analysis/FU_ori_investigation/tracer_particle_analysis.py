@@ -192,6 +192,8 @@ if args.make_pickle_files == "True":
         except:
             #This is the work around to use the tracer pickle derived from the high cades event zoom on tthe low cadence data
             import my_ramses_module as mym
+            import pdb
+            pdb.set_trace()
             start_file = mym.find_files([time_bounds[event_id-1][1]], files, sink_form_time, sink_id, verbatim=False)[0]
             end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
             usable_files = files[files.index(start_file):files.index(end_file)+1]
@@ -210,7 +212,7 @@ if args.make_pickle_files == "True":
     file_int = -1
     no_files = len(usable_files)
     para_div = 1
-    for fn in yt.parallel_objects(usable_files, njobs=size):
+    for fn in yt.parallel_objects(usable_files, njobs=size/):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
