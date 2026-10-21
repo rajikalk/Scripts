@@ -89,7 +89,7 @@ ln_wd = 0.25
 alpha = 0.7
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(1.3*two_col_width, 1.4*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
