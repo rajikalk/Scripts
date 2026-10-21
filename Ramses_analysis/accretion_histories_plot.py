@@ -103,10 +103,10 @@ for sink_id in IDs_continuous_clean:
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
     
-axs.flatten()[0].set_title("Diversity of star accretion histories in the ISM simulations of Kuruwita & Haugbølle (2023)", pad=-1)
+axs.flatten()[0].set_title("Diversity of star accretion histories in the ISM simulations of Kuruwita & Haugbølle (2023)", pad=-1, fontsize=font_size)
 
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[0].text(1.73, 1.e-7, "(a) Continuous accretion", ha='right')
+axs.flatten()[0].text(1.73, 1.e-7, "(a) Continuous accretion", ha='right', fontsize=font_size)
 
 '''
 for sink_id in IDs_continuous_messy:
@@ -131,7 +131,7 @@ for sink_id in IDs_suddenly_shut_off_clean:
     print("plotted sink", sink_id)
 
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[1].text(1.73, 1.e-7, "(b) Sudden shut off", ha='right')
+axs.flatten()[1].text(1.73, 1.e-7, "(b) Sudden shut off", ha='right', fontsize=font_size)
 
 '''
 for sink_id in IDs_suddenly_shut_off_messy:
@@ -156,7 +156,7 @@ for sink_id in IDs_steady_decline_clean:
     print("plotted sink", sink_id)
     
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[2].text(1.73, 1.e-7, "(c) Steady decline", ha='right')
+axs.flatten()[2].text(1.73, 1.e-7, "(c) Steady decline", ha='right', fontsize=font_size)
 
 '''
 for sink_id in IDs_steady_decline_messy:
@@ -169,7 +169,7 @@ for sink_id in IDs_steady_decline_messy:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
 '''
-axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)", labelpad=-1)
+axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)", labelpad=-1, fontsize=font_size)
 
 for sink_id in IDs_late_accretion_clean:
     #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
@@ -183,7 +183,7 @@ for sink_id in IDs_late_accretion_clean:
     print("plotted sink", sink_id)
 
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[3].text(1.73, 1.e-7, "(d) Steady decline with late infall", ha='right')
+axs.flatten()[3].text(1.73, 1.e-7, "(d) Steady decline with late infall", ha='right', fontsize=font_size)
     
 '''
 for sink_id in IDs_late_accretion_messy:
@@ -209,11 +209,16 @@ for sink_id in IDs_Other:
     print("plotted sink", sink_id)
 
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right')
+axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right', fontsize=font_size)
     
-axs.flatten()[4].set_xlabel("Time since star formation (Myr)", labelpad=-1)
+axs.flatten()[4].set_xlabel("Time since star formation (Myr)", labelpad=-1, fontsize=font_size)
 axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
 axs.flatten()[0].set_xlim([0.0, 1.75])
+axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
+axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
+axs.flatten()[2].tick_params(axis='both', labelsize=font_size)
+axs.flatten()[3].tick_params(axis='both', labelsize=font_size)
+axs.flatten()[4].tick_params(axis='both', labelsize=font_size)
 
 plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
