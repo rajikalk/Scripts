@@ -4,6 +4,7 @@ import yt
 import matplotlib
 import matplotlib.pyplot as plt
 import pickle
+from matplotlib import pyplot as plt, ticker as mticker
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
@@ -219,11 +220,13 @@ axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
 axs.flatten()[2].tick_params(axis='both', labelsize=font_size)
 axs.flatten()[3].tick_params(axis='both', labelsize=font_size)
 axs.flatten()[4].tick_params(axis='both', labelsize=font_size)
-axs.flatten()[0].minorticks_on()
-axs.flatten()[1].minorticks_on()
-axs.flatten()[2].minorticks_on()
-axs.flatten()[3].minorticks_on()
-axs.flatten()[4].minorticks_on()
+
+axs.flatten()[0].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
+axs.flatten()[1].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
+axs.flatten()[2].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
+axs.flatten()[3].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
+axs.flatten()[4].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
+
 
 plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
