@@ -19,6 +19,7 @@ def parse_inputs():
     parser.add_argument("-end_time", "--end_burst_time", type=float)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-pt", "--plot_time", help="Get tracer data for a particular time", type=float, default=None)
+    parser.add_argument("-event_id", "--event_identifier", type=int, default=None)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -42,6 +43,8 @@ if os.path.exists(save_dir) == False:
     
 if args.end_burst_time != None:
     end_time = args.end_burst_time
+elif args.event_identifier != None:
+    event_id = args.event_identifier
 else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
     print("Getting tracer particles for Event", event_id+1)
@@ -195,6 +198,10 @@ if args.make_pickle_files == "True":
     gc.collect()
     sys.stdout.flush()
     CW.Barrier()
+
+    import pdb
+    pdb.set_trace()
+    #update usuable files and do long baseline analysis
 
     file_int = -1
     no_files = len(usable_files)
