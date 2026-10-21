@@ -93,7 +93,10 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2d53269a117e7692f42affe3ce57460455fc1fe0
 cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
