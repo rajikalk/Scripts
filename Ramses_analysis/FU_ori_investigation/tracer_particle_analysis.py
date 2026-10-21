@@ -45,6 +45,7 @@ if args.end_burst_time != None:
     end_time = args.end_burst_time
 elif args.event_identifier != None:
     event_id = args.event_identifier
+    end_time = time_bounds[event_id-1][-1]
 else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
     print("Getting tracer particles for Event", event_id+1)
@@ -186,7 +187,13 @@ if args.make_pickle_files == "True":
         sink_id, sink_form_time, accreted_ids_burst, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file = pickle.load(file)
         file.close()
         
-        usable_files = files[:files.index(end_file)+1]
+        try:
+            usable_files = files[:files.index(end_file)+1]
+        except:
+            #This is the work around to use the tracer pickle derived from the high cades event zoom on tthe low cadence data
+            import my_ramses_module as mym
+            end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+            usable_files = files[:files.index(end_file)+1]
     
     if args.plot_time != None:
         import my_ramses_module as mym
