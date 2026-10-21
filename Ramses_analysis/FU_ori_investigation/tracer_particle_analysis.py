@@ -206,10 +206,6 @@ if args.make_pickle_files == "True":
     sys.stdout.flush()
     CW.Barrier()
 
-    import pdb
-    pdb.set_trace()
-    #update usuable files and do long baseline analysis
-
     file_int = -1
     no_files = len(usable_files)
     para_div = 1
