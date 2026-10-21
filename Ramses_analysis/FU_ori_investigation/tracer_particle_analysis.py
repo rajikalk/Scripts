@@ -67,6 +67,8 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
 
+mym.set_units(units_override)
+
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
     del input_dir
