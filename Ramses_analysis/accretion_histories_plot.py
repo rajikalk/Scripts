@@ -89,7 +89,7 @@ ln_wd = 0.25
 alpha = 0.7
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.4*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.3*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
 
 for sink_id in IDs_continuous_clean:
@@ -212,7 +212,7 @@ axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right', fontsize=font_size)
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)", labelpad=-1, fontsize=font_size)
-axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
+#axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
 axs.flatten()[0].set_xlim([0.0, 1.75])
 axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
 axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
