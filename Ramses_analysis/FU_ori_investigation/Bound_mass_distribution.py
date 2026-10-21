@@ -150,7 +150,7 @@ if len(files)>0:
             if rank == root_rank:
                 #Radial profile calcaluated, so now let's plot the frame!
                 plt.clf()
-                plt.scatter(sep, abs(E_kin.in_units('erg'))/abs(E_grav.in_units('erg')), c=ds.r["gas", "mass"][usuable_inds], marker='.', rasterized=True)
+                plt.scatter(sep, abs(E_kin.in_units('erg'))/abs(E_grav.in_units('erg')), c=ds.r["gas", "mass"][usuable_inds], marker='.', rasterized=True, markersize=0.5)
                 plt.xlabel('Separation (AU)')
                 plt.ylabel('E_kin/E_grav')
                 plt.yscale("log")

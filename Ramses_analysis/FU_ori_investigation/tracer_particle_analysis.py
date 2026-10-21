@@ -242,14 +242,18 @@ if args.make_pickle_files == "True":
             pv_code = yt.YTArray([ds.r['sink_particle_velx'][sink_id].in_units('code_velocity'), ds.r['sink_particle_vely'][sink_id].in_units('code_velocity'), ds.r['sink_particle_velz'][sink_id].in_units('code_velocity')])
             pv_code_unit = pv_code/(np.sqrt(np.sum(pv_code**2)))
             
-                            #Get burst velocity
+            
+            #Get burst velocity
             print("loading tracer particle velocities on rank", rank)
             sys.stdout.flush()
             min_mass = (-1*(sink_id+1))
             #curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst] == min_mass)[0]
             neg_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst]<0)[0]
             if len(neg_inds)>0:
-                if np.min(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != min_mass or np.max(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != min_mass:
+                if np.min(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != float(min_mass) or np.max(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != min_mass:
+                    #remove offending tracer ID
+                    remove_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds] != min_mass)[0]
+                    neg_inds = np.delete(neg_inds, remove_inds)
                     import pdb
                     pdb.set_trace()
             
