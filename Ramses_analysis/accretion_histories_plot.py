@@ -227,6 +227,13 @@ axs.flatten()[2].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="
 axs.flatten()[3].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
 axs.flatten()[4].yaxis.set_minor_locator(mticker.LogLocator(numticks=999, subs="auto"))
 
+axs.flatten()[0].tick_params(axis='y', which='minor', direction='in')
+axs.flatten()[1].tick_params(axis='y', which='minor', direction='in')
+axs.flatten()[2].tick_params(axis='y', which='minor', direction='in')
+axs.flatten()[3].tick_params(axis='y', which='minor', direction='in')
+axs.flatten()[4].tick_params(axis='y', which='minor', direction='in')
+
+
 
 plt.savefig("FF_accretion_histories.pdf", bbox_inches='tight', pad_inches=0.02, dpi=300)
 print("remade future fellows plot")
