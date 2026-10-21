@@ -106,7 +106,7 @@ for sink_id in IDs_continuous_clean:
     
 axs.flatten()[0].set_title("Diversity of star accretion histories from ISM simulations of Kuruwita & Haugbølle (2023)", pad=-1, fontsize=font_size)
 
-axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[0].tick_params(axis='both', which='both', direction='in', top=True, right=True)
 axs.flatten()[0].text(1.73, 1.e-7, "(a) Continuous accretion", ha='right', fontsize=font_size)
 
 '''
