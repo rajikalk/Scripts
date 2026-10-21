@@ -212,7 +212,7 @@ axs.flatten()[4].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[4].text(1.73, 1.e-7, "(e) Miscellaneous", ha='right', fontsize=font_size)
     
 axs.flatten()[4].set_xlabel("Time since star formation (Myr)", labelpad=-1, fontsize=font_size)
-#axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
+axs.flatten()[0].set_ylim([1.e-9, 5.e-5])
 axs.flatten()[0].set_xlim([0.0, 1.75])
 axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
 axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
