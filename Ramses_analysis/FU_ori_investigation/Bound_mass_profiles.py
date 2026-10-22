@@ -196,7 +196,7 @@ if len(files)>0:
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
-                del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std]
+                del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
             
             root_rank = int(rank/28)
