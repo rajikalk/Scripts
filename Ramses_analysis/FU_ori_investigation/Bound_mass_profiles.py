@@ -261,7 +261,7 @@ if len(files)>0:
             plt.clf()
             plt.xscale("log")
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_ratio_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_ratio_profile_std"])
-            for sink_sep in sink_seps:
+            for sink_sep in profile_dict["Sink_seps"]:
                 plt.axvline(x=sink_sep)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
@@ -274,7 +274,7 @@ if len(files)>0:
             plt.clf()
             plt.xscale("log")
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_tot_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_tot_profile_std"])
-            for sink_sep in sink_seps:
+            for sink_sep in profile_dict["Sink_seps"]:
                 plt.axvline(x=sink_sep)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
