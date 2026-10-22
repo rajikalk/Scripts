@@ -21,6 +21,7 @@ if rank == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10000, type=float)
 parser.add_argument("-event_id", "--event_identifier", default=None, type=int)
+parser.add_argument()
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -135,6 +136,7 @@ if len(files)>0:
             del sink_particle_velx, sink_particle_vely, sink_particle_velz
             gc.collect()
             print("RANK", rank, "got particle velocity")
+            sys.stdout.flush()
             
             #get separations to other sink particles
             
@@ -195,7 +197,8 @@ if len(files)>0:
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
-                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": E_ratio_mean, E_tot_mean", E_ratio_mean, E_tot_mean)
+                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass, E_ratio_mean, E_tot_mean)
+                sys.stdout.flush()
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
             
