@@ -21,7 +21,7 @@ if rank == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10000, type=float)
 parser.add_argument("-event_id", "--event_identifier", default=None, type=int)
-parser.add_argument()
+parser.add_argument("-para_div" "--parallelisation_jobs", default=None, type=int)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -77,9 +77,13 @@ gc.collect()
 #Define radius bins
 radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
 radius_bins = np.logspace(0, np.log10(radius), 100)
+if args.parallelisation_jobs == None:
+    para_div = size
+else:
+    para_div = args.parallelisation_jobs
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=int(size/28)):
+    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):
         frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
