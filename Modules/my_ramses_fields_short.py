@@ -63,6 +63,8 @@ def _Pressure(field,data):
     if ('ramses', 'Pressure') in data.ds.field_list:
         pressure = data[('ramses', 'Pressure')].value*pressure_unit
     else:
+        import pdb
+        pdb.set_trace()
         pressure = (data.ds.velocity_unit.in_units('cm/s')**2)*(data[('gas', 'Density')].in_units('g/cm**3')**data[('gas', 'Gamma')])
     pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
     del pressure
