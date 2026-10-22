@@ -232,11 +232,11 @@ if len(files)>0:
                 profile_dict.update({"E_ratio_profile_std":Profile_E_ratio_std[sorted_inds]})
                 del Profile_E_ratio_std
                 gc.collect()
-                profile_dict.update({"E_tot_profile_mean":Profile_E_ratio_mean[sorted_inds]})
-                del Profile_E_ratio_mean
+                profile_dict.update({"E_tot_profile_mean":Profile_E_tot_mean[sorted_inds]})
+                del Profile_E_tot_mean
                 gc.collect()
-                profile_dict.update({"E_tot_profile_std":Profile_E_ratio_std[sorted_inds]})
-                del Profile_E_ratio_std
+                profile_dict.update({"E_tot_profile_std":Profile_E_tot_std[sorted_inds]})
+                del Profile_E_tot_std
                 gc.collect()
             
                 #Save BHL Calculation
