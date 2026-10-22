@@ -22,28 +22,23 @@ if rank == 0:
 #Define relevant directories
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
-center_id = sys.argv[3]
     
 files = sorted(glob.glob(input_dir+"data/*/info*.txt"))
 
 #Get zoom_center from input
-if center_id == None:
-    center_pos = [np.nan, np.nan, np.nan]
-    input_file = input_dir + 'input.nml'
-    with open(input_file, 'r') as f:
-        reader = csv.reader(f, delimiter=" ")
-        for row in reader:
-            if len(row)>0:
-                if row[0] == 'x_center':
-                    center_pos[0] = float(row[-1])
-                if row[0] == 'y_center':
-                    center_pos[1] = float(row[-1])
-                if row[0] == 'z_center':
-                    center_pos[2] = float(row[-1])
-    center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
-else:
-    import pdb
-    pdb.set_trace()
+center_pos = [np.nan, np.nan, np.nan]
+input_file = input_dir + 'input.nml'
+with open(input_file, 'r') as f:
+    reader = csv.reader(f, delimiter=" ")
+    for row in reader:
+        if len(row)>0:
+            if row[0] == 'x_center':
+                center_pos[0] = float(row[-1])
+            if row[0] == 'y_center':
+                center_pos[1] = float(row[-1])
+            if row[0] == 'z_center':
+                center_pos[2] = float(row[-1])
+center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
 x_width = yt.YTQuantity(20000, 'au')
 resolution = 4096
 x = np.linspace(center_pos[0]-1*x_width/2, center_pos[0]+x_width/2, resolution)

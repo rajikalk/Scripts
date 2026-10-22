@@ -150,7 +150,6 @@ if len(files)>0:
             for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=int(size/14)):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
-                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank)
                 
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
@@ -196,8 +195,10 @@ if len(files)>0:
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
+                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": E_ratio_mean, E_tot_mean", E_ratio_mean, E_tot_mean)
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
+                
             
             root_rank = int(rank/28)
             if rank == root_rank:
