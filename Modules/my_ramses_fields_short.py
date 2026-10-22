@@ -60,7 +60,7 @@ def _Pressure(field,data):
     Overwrites pressure field
     """
     pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
-    if ('ramses', 'Pressure') in ds.field_list:
+    if ('ramses', 'Pressure') in data.ds.field_list:
         pressure = data[('ramses', 'Pressure')].value*pressure_unit
     else:
         pressure = (data.ds.velocity_unit.in_units('cm/s')**2)*(data[('gas', 'Density')].in_units('g/cm**3')**data[('gas', 'Gamma')])
