@@ -159,10 +159,6 @@ if len(files)>0:
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
                 enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
-                if radius_bins[radius_bit] == radius_bins[-1]:
-                    profile_sink_seps = sink_separations[enclosed_sinks]
-                else:
-                    profile_sink_seps = None
                 del enclosed_sinks
                 gc.collect()
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
@@ -202,8 +198,9 @@ if len(files)>0:
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": E_ratio_mean, E_tot_mean", E_ratio_mean, E_tot_mean)
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
-                
             
+            
+            sink_seps = sink_separations[np.where(sink_separations<=radius_bins[-1])[0]]
             root_rank = int(rank/28)
             if rank == root_rank:
                 #sort profile data:
@@ -220,8 +217,6 @@ if len(files)>0:
                     Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
                     Profile_E_tot_mean = np.append(Profile_E_tot_mean, profile_dict[key][4])
                     Profile_E_tot_std = np.append(Profile_E_tot_std, profile_dict[key][5])
-                    if profile_dict[key][6] != None:
-                        sink_seps = profile_dict[key][6]
                 del profile_dict
                 gc.collect()
                 #sort inds
@@ -245,7 +240,6 @@ if len(files)>0:
                 profile_dict.update({"E_tot_profile_std":Profile_E_tot_std[sorted_inds]})
                 del Profile_E_tot_std
                 gc.collect()
-                
                 profile_dict.update({"Sink_seps":sink_seps})
                 del Profile_E_tot_std
                 gc.collect()
