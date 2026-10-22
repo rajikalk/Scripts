@@ -217,7 +217,7 @@ if len(files)>0:
                 del Profile_rad_mean
                 gc.collect()
                 profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
-                del Profile_rad_mean
+                del Profile_rad_std
                 gc.collect()
                 profile_dict.update({"E_profile_mean":Profile_E_ratio_mean[sorted_inds]})
                 del Profile_E_ratio_mean
