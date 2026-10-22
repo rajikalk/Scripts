@@ -250,6 +250,7 @@ if len(files)>0:
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
             plt.axhline(y=1.0)
             plt.ylim(bottom=0.0)
+            plt.yscale("log")
             plt.savefig(frame_name+".png")
             plt.clf()
         gc.collect()
