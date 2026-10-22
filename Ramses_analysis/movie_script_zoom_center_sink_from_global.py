@@ -47,6 +47,16 @@ for fn in yt.parallel_objects(files):
     if os.path.isfile(save_name) == False:
         try:
             ds = yt.load(fn, units_override=units_override)
+            
+            
+            #Get center particle
+            sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+            sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+            sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+            sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+            
+            
+            
             import pdb
             pdb.set_trace()
             region = ds.box(left_corner, right_corner)
