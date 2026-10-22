@@ -257,9 +257,9 @@ CW.Barrier()
 if args.debug_plotting == 'True':
     print('About to load end file on rank', rank)
     sys.stdout.flush()
-if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
+try:
     ds = yt.load(files[-1], units_override=units_override)
-else:
+except:
     last_file = glob.glob(sorted(glob.glob(input_dir+"data/*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')
     ds = yt.load(last_file, units_override=units_override)
 if args.debug_plotting == 'True':
