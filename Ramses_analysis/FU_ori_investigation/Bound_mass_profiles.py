@@ -235,7 +235,7 @@ if len(files)>0:
                 print("RANK "+str(rank)+": updated pickle", fn)
                 sys.stdout.flush()
         else:
-                file_open = open(frame_name+'.pkl', 'wb')
+                file_open = open(frame_name+'.pkl', 'rb')
                 #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
                 profile_dict = pickle.load(file_open)
                 file_open.close()
