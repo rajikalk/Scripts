@@ -181,19 +181,22 @@ if len(files)>0:
                 rad_mean = np.mean(sep[sphere_inds])
                 rad_std = np.std(sep[sphere_inds])
                 #calcualte gravitational potential energy
-                E_grav = (yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
+                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
                 del sphere_inds, enclosed_mass
                 gc.collect()
+                E_tot = E_grav.in_units('erg')+E_kin.in_units('erg')
                 E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
                 del E_grav, E_kin
                 gc.collect()
+                E_tot_mean = np.mean(E_tot)
+                E_tot_std = np.std(E_tot)
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
-                del E_ratio
+                del E_ratio, E_tot
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
-                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std])
-                del rad_mean, rad_std, E_ratio_mean, E_ratio_std
+                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
+                del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std]
                 gc.collect()
             
             root_rank = int(rank/28)
@@ -203,11 +206,15 @@ if len(files)>0:
                 Profile_rad_std = np.array([])
                 Profile_E_ratio_mean = np.array([])
                 Profile_E_ratio_std = np.array([])
+                Profile_E_tot_mean = np.array([])
+                Profile_E_tot_std = np.array([])
                 for key in profile_dict.keys():
                     Profile_rad_mean = np.append(Profile_rad_mean, profile_dict[key][0])
                     Profile_rad_std = np.append(Profile_rad_std, profile_dict[key][1])
                     Profile_E_ratio_mean = np.append(Profile_E_ratio_mean, profile_dict[key][2])
                     Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
+                    Profile_E_tot_mean = np.append(Profile_E_tot_mean, profile_dict[key][4])
+                    Profile_E_tot_std = np.append(Profile_E_tot_std, profile_dict[key][5])
                 del profile_dict
                 gc.collect()
                 #sort inds
@@ -219,10 +226,16 @@ if len(files)>0:
                 profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
                 del Profile_rad_std
                 gc.collect()
-                profile_dict.update({"E_profile_mean":Profile_E_ratio_mean[sorted_inds]})
+                profile_dict.update({"E_ratio_profile_mean":Profile_E_ratio_mean[sorted_inds]})
                 del Profile_E_ratio_mean
                 gc.collect()
-                profile_dict.update({"E_profile_std":Profile_E_ratio_std[sorted_inds]})
+                profile_dict.update({"E_ratio_profile_std":Profile_E_ratio_std[sorted_inds]})
+                del Profile_E_ratio_std
+                gc.collect()
+                profile_dict.update({"E_tot_profile_mean":Profile_E_ratio_mean[sorted_inds]})
+                del Profile_E_ratio_mean
+                gc.collect()
+                profile_dict.update({"E_tot_profile_std":Profile_E_ratio_std[sorted_inds]})
                 del Profile_E_ratio_std
                 gc.collect()
             
@@ -244,14 +257,26 @@ if len(files)>0:
             #Radial profile calcaluated, so now let's plot the frame!
             plt.clf()
             plt.xscale("log")
-            plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_profile_std"])
+            plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_ratio_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_ratio_profile_std"])
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
             plt.axhline(y=1.0)
-            plt.ylim(bottom=0.0)
+            plt.ylim([0.0, np.max(profile_dict["E_ratio_profile_mean"])])
             plt.yscale("log")
             plt.savefig(frame_name+".png")
+            
+            plt.clf()
+            plt.xscale("log")
+            plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_tot_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_tot_profile_std"])
+            plt.xlabel("Radius (au)")
+            plt.ylabel("E_grav/E_kin")
+            plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
+            plt.axhline(y=1.0)
+            plt.ylim([np.min(profile_dict["E_tot_profile_mean"]), np.max(profile_dict["E_tot_profile_mean"])])
+            plt.yscale("log")
+            plt.savefig(frame_name+".png")
+            
             plt.clf()
         gc.collect()
         CW.Barrier()
