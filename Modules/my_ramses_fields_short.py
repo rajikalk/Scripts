@@ -41,22 +41,6 @@ def _Density(field,data):
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local", force_override=True)
 
-try:
-    def _Pressure(field,data):
-        """
-        Overwrites pressure field
-        """
-        pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
-        pressure = data[('ramses', 'Pressure')].value*pressure_unit
-        pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
-        del pressure
-        del pressure_unit
-        return pressure_arr
-
-    yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
-except:
-    print("('ramses', 'Pressure') does not exist")
-
 def _Gamma(field,data):
     """
     Derive gamma from density from the piecewise polytropic equation
@@ -70,6 +54,22 @@ def _Gamma(field,data):
     return gamma
 
 yt.add_field("Gamma", function=_Gamma, units=r"", sampling_type="local", force_override=True)
+
+def _Pressure(field,data):
+    """
+    Overwrites pressure field
+    """
+    pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
+    if ('ramses', 'Pressure') in ds.field_list:
+        pressure = data[('ramses', 'Pressure')].value*pressure_unit
+    else:
+        pressure = (data.ds.velocity_unit.in_units('cm/s')**2)*(data[('gas', 'Density')].in_units('g/cm**3')**data[('gas', 'Gamma')])
+    pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
+    del pressure
+    del pressure_unit
+    return pressure_arr
+
+yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
 
 def _cell_mass(field,data):
     """
