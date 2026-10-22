@@ -55,6 +55,7 @@ def _Gamma(field,data):
 
 yt.add_field("Gamma", function=_Gamma, units=r"", sampling_type="local", force_override=True)
 
+'''
 def _Pressure(field,data):
     """
     Overwrites pressure field
@@ -72,7 +73,7 @@ def _Pressure(field,data):
     return pressure_arr
 
 yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
-
+'''
 def _cell_mass(field,data):
     """
     Overwrites cell mass field
