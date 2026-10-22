@@ -34,22 +34,8 @@ for snkfile in snkfiles:
     num_lines = sum(1 for _ in open(snkfile))
     if num_lines > thres_len:
         break
-import pdb
-pdb.set_trace()
 start_file = glob.glob(snkfile.split("stars_output.snktxt")[0]+'info*.txt')[0]
 files = files[files.index(start_file):]
-    
-    
-center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
-x_width = yt.YTQuantity(20000, 'au')
-resolution = 4096
-x = np.linspace(center_pos[0]-1*x_width/2, center_pos[0]+x_width/2, resolution)
-y = np.linspace(center_pos[1]-1*x_width/2, center_pos[1]+x_width/2, resolution)
-X, Y = np.meshgrid(x, y)
-left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
-particle_search_bounds_left= left_corner #[]
-right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width.value), center_pos[1].value+(0.5*x_width.value), center_pos[2].value+(0.5*x_width.value)], 'AU')
-particle_search_bounds_right= right_corner #[]
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
@@ -61,6 +47,8 @@ for fn in yt.parallel_objects(files):
     if os.path.isfile(save_name) == False:
         try:
             ds = yt.load(fn, units_override=units_override)
+            import pdb
+            pdb.set_trace()
             region = ds.box(left_corner, right_corner)
             
             time_val = ds.current_time.in_units('yr')
