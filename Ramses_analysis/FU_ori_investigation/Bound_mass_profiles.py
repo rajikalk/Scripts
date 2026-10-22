@@ -237,7 +237,7 @@ if len(files)>0:
         else:
                 file_open = open(frame_name+'.pkl', 'wb')
                 #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-                profile_dict = pickle.load()
+                profile_dict = pickle.load(file_open)
                 file_open.close()
                 
                 
