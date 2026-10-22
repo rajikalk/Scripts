@@ -264,7 +264,7 @@ if len(files)>0:
             plt.axhline(y=1.0)
             plt.ylim([0.0, np.max(profile_dict["E_ratio_profile_mean"])])
             plt.yscale("log")
-            plt.savefig(frame_name+".png")
+            plt.savefig(frame_name+"_ratio.png")
             
             plt.clf()
             plt.xscale("log")
@@ -275,7 +275,7 @@ if len(files)>0:
             plt.axhline(y=1.0)
             plt.ylim([np.min(profile_dict["E_tot_profile_mean"]), np.max(profile_dict["E_tot_profile_mean"])])
             plt.yscale("log")
-            plt.savefig(frame_name+".png")
+            plt.savefig(frame_name+"_total.png")
             
             plt.clf()
         gc.collect()
