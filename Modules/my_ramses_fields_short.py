@@ -55,7 +55,6 @@ def _Gamma(field,data):
 
 yt.add_field("Gamma", function=_Gamma, units=r"", sampling_type="local", force_override=True)
 
-'''
 def _Pressure(field,data):
     """
     Overwrites pressure field
@@ -66,14 +65,14 @@ def _Pressure(field,data):
     else:
         import pdb
         pdb.set_trace()
-        pressure = (data.ds.velocity_unit.in_units('cm/s')**2)*(data[('gas', 'Density')].in_units('g/cm**3')**data[('gas', 'Gamma')])
+        pressure = (data.ds.velocity_unit.in_units('cm/s').value**2)*np.power(ds.r[('gas', 'Density')].in_units('g/cm**3').value, ds.r[('gas', 'Gamma')].value)
     pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
     del pressure
     del pressure_unit
     return pressure_arr
 
 yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
-'''
+
 def _cell_mass(field,data):
     """
     Overwrites cell mass field
