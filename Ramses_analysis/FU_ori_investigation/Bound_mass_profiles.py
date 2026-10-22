@@ -159,6 +159,10 @@ if len(files)>0:
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
                 enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
+                if radius_bins[radius_bit] == radius_bins[-1]:
+                    profile_sink_seps = sink_separations[enclosed_sinks]
+                else:
+                    profile_sink_seps = None
                 del enclosed_sinks
                 gc.collect()
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
@@ -194,13 +198,10 @@ if len(files)>0:
                 del E_ratio, E_tot
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
-                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
+                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std, profile_sink_seps])
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": E_ratio_mean, E_tot_mean", E_ratio_mean, E_tot_mean)
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
-                if radius_bins[radius_bit] == radius_bins[-1]:
-                    import pdb
-                    pdb.set_trace()
                 
             
             root_rank = int(rank/28)
@@ -219,6 +220,8 @@ if len(files)>0:
                     Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
                     Profile_E_tot_mean = np.append(Profile_E_tot_mean, profile_dict[key][4])
                     Profile_E_tot_std = np.append(Profile_E_tot_std, profile_dict[key][5])
+                    if profile_dict[key][6] != None:
+                        sink_seps = profile_dict[key][6]
                 del profile_dict
                 gc.collect()
                 #sort inds
@@ -242,6 +245,10 @@ if len(files)>0:
                 profile_dict.update({"E_tot_profile_std":Profile_E_tot_std[sorted_inds]})
                 del Profile_E_tot_std
                 gc.collect()
+                
+                profile_dict.update({"Sink_seps":sink_seps)
+                del Profile_E_tot_std
+                gc.collect()
             
                 #Save BHL Calculation
                 file_open = open(frame_name+'.pkl', 'wb')
@@ -257,11 +264,12 @@ if len(files)>0:
             profile_dict = pickle.load(file_open)
             file_open.close()
                 
-                
             #Radial profile calcaluated, so now let's plot the frame!
             plt.clf()
             plt.xscale("log")
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_ratio_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_ratio_profile_std"])
+            for sink_sep in sink_seps:
+                plt.axhline(x=sink_sep)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
@@ -273,6 +281,8 @@ if len(files)>0:
             plt.clf()
             plt.xscale("log")
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_tot_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_tot_profile_std"])
+            for sink_sep in sink_seps:
+                plt.axhline(x=sink_sep)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
