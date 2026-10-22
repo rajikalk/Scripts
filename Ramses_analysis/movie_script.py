@@ -219,7 +219,6 @@ files = sorted(glob.glob(input_dir+"*/info*.txt"))
 if len(files) == 0:
     print("NO FILES IN TARGET DIRECTORY")
     sys.exit()
-del input_dir
 gc.collect()
 if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
