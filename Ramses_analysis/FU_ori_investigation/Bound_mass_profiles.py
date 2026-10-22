@@ -185,7 +185,7 @@ if len(files)>0:
                 del sphere_inds, enclosed_mass
                 gc.collect()
                 E_tot = E_grav.in_units('erg')+E_kin.in_units('erg')
-                E_ratio = E_grav.in_units('erg')/E_kin.in_units('erg')
+                E_ratio = (-1*E_grav.in_units('erg'))/E_kin.in_units('erg')
                 del E_grav, E_kin
                 gc.collect()
                 E_tot_mean = np.mean(E_tot)
