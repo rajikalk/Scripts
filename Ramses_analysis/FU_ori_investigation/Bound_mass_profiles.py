@@ -234,23 +234,23 @@ if len(files)>0:
                 gc.collect()
                 print("RANK "+str(rank)+": updated pickle", fn)
                 sys.stdout.flush()
-        else:
-                file_open = open(frame_name+'.pkl', 'rb')
-                #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-                profile_dict = pickle.load(file_open)
-                file_open.close()
+        if os.path.exists(frame_name+".pkl"):
+            file_open = open(frame_name+'.pkl', 'rb')
+            #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
+            profile_dict = pickle.load(file_open)
+            file_open.close()
                 
                 
-        #Radial profile calcaluated, so now let's plot the frame!
-        plt.clf()
-        plt.xscale("log")
-        plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_profile_std"])
-        plt.xlabel("Radius (au)")
-        plt.ylabel("E_grav/E_kin")
-        plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
-        plt.axhline(y=1.0)
-        plt.savefig(frame_name+".png")
-        plt.clf()
+            #Radial profile calcaluated, so now let's plot the frame!
+            plt.clf()
+            plt.xscale("log")
+            plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_profile_std"])
+            plt.xlabel("Radius (au)")
+            plt.ylabel("E_grav/E_kin")
+            plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
+            plt.axhline(y=1.0)
+            plt.savefig(frame_name+".png")
+            plt.clf()
         gc.collect()
         CW.Barrier()
 
