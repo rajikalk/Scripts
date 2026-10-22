@@ -241,7 +241,6 @@ if len(files)>0:
                 del Profile_E_tot_std
                 gc.collect()
                 profile_dict.update({"Sink_seps":sink_seps})
-                del Profile_E_tot_std
                 gc.collect()
             
                 #Save BHL Calculation
