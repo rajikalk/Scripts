@@ -22,14 +22,14 @@ if rank == 0:
 #Define relevant directories
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
-center_id = sys.argv[3]
+sink_id = sys.argv[3]
     
 files = sorted(glob.glob(input_dir+"data/*/info*.txt"))
 
 #Get zoom_center from input
 snkfiles = sorted(glob.glob(input_dir+"data/*/*.snktxt"))
 #Find where target sink appears
-thres_len = int(center_id) + 3
+thres_len = int(sink_id) + 3
 for snkfile in snkfiles:
     num_lines = sum(1 for _ in open(snkfile))
     if num_lines > thres_len:

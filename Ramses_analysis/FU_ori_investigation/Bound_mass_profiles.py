@@ -194,7 +194,7 @@ if len(files)>0:
                 del E_ratio, E_tot
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
-                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std, profile_sink_seps])
+                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": E_ratio_mean, E_tot_mean", E_ratio_mean, E_tot_mean)
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
