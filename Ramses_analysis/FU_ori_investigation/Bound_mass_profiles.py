@@ -187,7 +187,7 @@ if len(files)>0:
                 rad_std = np.std(sep[sphere_inds])
                 #calcualte gravitational potential energy
                 E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
-                del sphere_inds, enclosed_mass
+                del sphere_inds
                 gc.collect()
                 E_tot = E_grav.in_units('erg')+E_kin.in_units('erg')
                 E_ratio = (-1*E_grav.in_units('erg'))/E_kin.in_units('erg')
