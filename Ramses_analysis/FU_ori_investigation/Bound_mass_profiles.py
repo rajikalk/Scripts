@@ -121,6 +121,8 @@ if len(files)>0:
             dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
             sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
+            sink_masses = ds.r["gas", "sink_particle_mass"].in_units('g')
+            sink_masses = np.delete(sink_masses, np.where(sink_separations>radius)[0])
             sink_separations = np.delete(sink_separations, np.where(sink_separations>radius)[0])
             #Delete sink separations greater than measuring sphere
             gc.collect()
@@ -217,7 +219,7 @@ if len(files)>0:
                 gc.collect()
                 #sto.result_id = str(radius_bins[radius_bit])
                 #sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
-                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass.in_units('msun'), E_ratio_mean, E_tot_mean)
+                print("Calculated boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass.in_units('msun'), E_ratio_mean, E_tot_mean)
                 sys.stdout.flush()
             
             #Save BHL Calculation
