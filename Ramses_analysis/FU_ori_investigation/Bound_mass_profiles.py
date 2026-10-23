@@ -121,6 +121,9 @@ if len(files)>0:
             dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
             sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
+            #Delete sink separations greater than measuring sphere
+            import pdb
+            pdb.set_trace()
             gc.collect()
             sys.stdout.flush()
             
@@ -130,6 +133,7 @@ if len(files)>0:
             dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
+            #delete cell further than measuring sphere
             gc.collect()
             sys.stdout.flush()
             
