@@ -257,7 +257,8 @@ if len(files)>0:
                 gc.collect()
                 print("RANK "+str(rank)+": updated pickle", fn)
                 sys.stdout.flush()
-        if os.path.exists(frame_name+".pkl"):
+                
+        if os.path.exists(frame_name+".pkl") and rank == 0:
             file_open = open(frame_name+'.pkl', 'rb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             profile_dict = pickle.load(file_open)
@@ -289,6 +290,7 @@ if len(files)>0:
             plt.ylim([np.min(profile_dict["E_tot_profile_mean"]), np.max(profile_dict["E_tot_profile_mean"])])
             plt.yscale("log")
             plt.savefig(frame_name+"_total.png")
+            del profile_dict
             
             plt.clf()
         gc.collect()
