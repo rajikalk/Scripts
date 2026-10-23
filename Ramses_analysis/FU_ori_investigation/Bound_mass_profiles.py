@@ -83,7 +83,7 @@ else:
     para_div = args.parallelisation_jobs
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=):
+    for fn in yt.parallel_objects(files, njobs=1):
         frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
