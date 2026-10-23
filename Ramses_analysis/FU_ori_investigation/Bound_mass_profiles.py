@@ -150,7 +150,7 @@ if len(files)>0:
             
             #Get indices in measure sphere
             #Start iterating over Radial bins
-            profile_dict = {}
+            #profile_dict = {}
             #profile_dict.update({"R_profile_mean":np.array([])})
             #profile_dict.update({"R_profile_std":np.array([])})
             #profile_dict.update({"E_profile_mean":np.array([])})
@@ -162,11 +162,12 @@ if len(files)>0:
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 
+                del_inds = np.where(sep<prev_radius)[0]
+                sep = np.delete(sep, del_inds)
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
-                sep = np.delete(sep, enclosed_inds)
                 del enclosed_inds
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
