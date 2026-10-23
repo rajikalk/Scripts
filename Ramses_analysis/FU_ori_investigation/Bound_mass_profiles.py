@@ -201,7 +201,7 @@ if len(files)>0:
                 gc.collect()
                 sto.result_id = str(radius_bins[radius_bit])
                 sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
-                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass, E_ratio_mean, E_tot_mean)
+                print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass.in_units('msun'), E_ratio_mean, E_tot_mean)
                 sys.stdout.flush()
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
