@@ -176,7 +176,7 @@ if len(files)>0:
                 del enclosed_inds
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
-                enclosed_sink_mass = np.sum(ds.r["gas", "sink_particle_mass"][enclosed_sinks])
+                enclosed_sink_mass = np.sum(sink_masses[enclosed_sinks])
                 del enclosed_sinks
                 gc.collect()
                 enclosed_mass = enclosed_mass + enclosed_sink_mass
