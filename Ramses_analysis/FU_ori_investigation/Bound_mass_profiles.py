@@ -83,7 +83,7 @@ else:
     para_div = args.parallelisation_jobs
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=1):
+    for fn in yt.parallel_objects(files, njobs=size):
         frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
@@ -121,6 +121,7 @@ if len(files)>0:
             dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
             sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
+            sink_separations = np.delete(sink_separations, np.where(sink_separations>radius)[0])
             #Delete sink separations greater than measuring sphere
             import pdb
             pdb.set_trace()
@@ -133,6 +134,7 @@ if len(files)>0:
             dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
+            sep = np.delete(sep, np.where(sep>radius)[0])
             #delete cell further than measuring sphere
             gc.collect()
             sys.stdout.flush()
@@ -157,7 +159,8 @@ if len(files)>0:
             #profile_dict.update({"E_profile_std":np.array([])})
             prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
             prev_radius = 0
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=size):
+            #for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=1):
+            for radius_bit in range(1, len(radius_bins)):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 
@@ -165,6 +168,7 @@ if len(files)>0:
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
+                sep = np.delete(sep, enclosed_inds)
                 del enclosed_inds
                 gc.collect()
                 enclosed_sinks = np.where(sink_separations<=radius_bins[radius_bit])[0]
@@ -203,64 +207,30 @@ if len(files)>0:
                 E_ratio_std = np.std(E_ratio)
                 del E_ratio, E_tot
                 gc.collect()
-                sto.result_id = str(radius_bins[radius_bit])
-                sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
+                #sto.result_id = str(radius_bins[radius_bit])
+                #sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass.in_units('msun'), E_ratio_mean, E_tot_mean)
                 sys.stdout.flush()
                 del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
                 gc.collect()
             
+            profile_dict = {}
+            profile_dict.update({"R_profile_mean":rad_mean})
+            profile_dict.update({"R_profile_std":rad_std})
+            profile_dict.update({"E_ratio_profile_mean":E_ratio_mean})
+            profile_dict.update({"E_ratio_profile_std":E_ratio_std})
+            profile_dict.update({"E_tot_profile_mean":E_tot_mean})
+            profile_dict.update({"E_tot_profile_std":E_tot_std})
+            profile_dict.update({"Sink_seps":sink_separations})
             
-            sink_seps = sink_separations[np.where(sink_separations<=radius_bins[-1])[0]]
-            if rank == 0:
-                #sort profile data:
-                Profile_rad_mean = np.array([])
-                Profile_rad_std = np.array([])
-                Profile_E_ratio_mean = np.array([])
-                Profile_E_ratio_std = np.array([])
-                Profile_E_tot_mean = np.array([])
-                Profile_E_tot_std = np.array([])
-                for key in profile_dict.keys():
-                    Profile_rad_mean = np.append(Profile_rad_mean, profile_dict[key][0])
-                    Profile_rad_std = np.append(Profile_rad_std, profile_dict[key][1])
-                    Profile_E_ratio_mean = np.append(Profile_E_ratio_mean, profile_dict[key][2])
-                    Profile_E_ratio_std = np.append(Profile_E_ratio_std, profile_dict[key][3])
-                    Profile_E_tot_mean = np.append(Profile_E_tot_mean, profile_dict[key][4])
-                    Profile_E_tot_std = np.append(Profile_E_tot_std, profile_dict[key][5])
-                del profile_dict
-                gc.collect()
-                #sort inds
-                sorted_inds = np.argsort(Profile_rad_mean)
-                profile_dict = {}
-                profile_dict.update({"R_profile_mean":Profile_rad_mean[sorted_inds]})
-                del Profile_rad_mean
-                gc.collect()
-                profile_dict.update({"R_profile_std":Profile_rad_std[sorted_inds]})
-                del Profile_rad_std
-                gc.collect()
-                profile_dict.update({"E_ratio_profile_mean":Profile_E_ratio_mean[sorted_inds]})
-                del Profile_E_ratio_mean
-                gc.collect()
-                profile_dict.update({"E_ratio_profile_std":Profile_E_ratio_std[sorted_inds]})
-                del Profile_E_ratio_std
-                gc.collect()
-                profile_dict.update({"E_tot_profile_mean":Profile_E_tot_mean[sorted_inds]})
-                del Profile_E_tot_mean
-                gc.collect()
-                profile_dict.update({"E_tot_profile_std":Profile_E_tot_std[sorted_inds]})
-                del Profile_E_tot_std
-                gc.collect()
-                profile_dict.update({"Sink_seps":sink_seps})
-                gc.collect()
-            
-                #Save BHL Calculation
-                file_open = open(frame_name+'.pkl', 'wb')
-                #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-                pickle.dump((profile_dict), file_open)
-                file_open.close()
-                gc.collect()
-                print("RANK "+str(rank)+": updated pickle", fn)
-                sys.stdout.flush()
+            #Save BHL Calculation
+            file_open = open(frame_name+'.pkl', 'wb')
+            #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
+            pickle.dump((profile_dict), file_open)
+            file_open.close()
+            gc.collect()
+            print("RANK "+str(rank)+": updated pickle", fn)
+            sys.stdout.flush()
                 
         if os.path.exists(frame_name+".pkl") and rank == 0:
             file_open = open(frame_name+'.pkl', 'rb')
