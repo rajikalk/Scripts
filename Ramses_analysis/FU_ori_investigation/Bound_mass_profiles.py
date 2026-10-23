@@ -180,6 +180,9 @@ if len(files)>0:
                 gc.collect()
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
+                import pdb
+                pdb.set_trace()
+                #FIGURE OUT WHY ENCLOSED MASS IC GROWING CRAZY FAST
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
                 del enclosed_inds
