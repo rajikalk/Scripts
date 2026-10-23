@@ -150,11 +150,13 @@ if len(files)>0:
             
             #Get indices in measure sphere
             #Start iterating over Radial bins
-            #profile_dict = {}
-            #profile_dict.update({"R_profile_mean":np.array([])})
-            #profile_dict.update({"R_profile_std":np.array([])})
-            #profile_dict.update({"E_profile_mean":np.array([])})
-            #profile_dict.update({"E_profile_std":np.array([])})
+            profile_dict = {}
+            profile_dict.update({"R_profile_mean":np.array([])})
+            profile_dict.update({"R_profile_std":np.array([])})
+            profile_dict.update({"E_ratio_profile_mean":np.array([])})
+            profile_dict.update({"E_ratio_profile_std":np.array([])})
+            profile_dict.update({"E_tot_profile_mean":np.array([])})
+            profile_dict.update({"E_tot_profile_std":np.array([])})
             prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
             prev_radius = 0
             #for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=1):
@@ -164,6 +166,7 @@ if len(files)>0:
                 
                 del_inds = np.where(sep<prev_radius)[0]
                 sep = np.delete(sep, del_inds)
+                gc.collect()
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
                 prev_enclosed_gas_mass = enclosed_mass
@@ -191,7 +194,9 @@ if len(files)>0:
                 gc.collect()
                 #get average radius in the bin
                 rad_mean = np.mean(sep[sphere_inds])
+                profile_dict["R_profile_mean"] = np.append(profile_dict["R_profile_mean"], rad_mean)
                 rad_std = np.std(sep[sphere_inds])
+                profile_dict["R_profile_std"] = np.append(profile_dict["R_profile_std"], rad_std)
                 #calcualte gravitational potential energy
                 E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
                 del sphere_inds
@@ -204,23 +209,16 @@ if len(files)>0:
                 E_tot_std = np.std(E_tot)
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
+                profile_dict["E_ratio_profile_mean"] = np.append(profile_dict["E_ratio_profile_mean"], E_ratio_mean)
+                profile_dict["E_ratio_profile_std"] = np.append(profile_dict["E_ratio_profile_std"], E_ratio_std)
+                profile_dict["E_tot_profile_mean"] = np.append(profile_dict["E_tot_profile_mean"], E_tot_mean)
+                profile_dict["E_tot_profile_std"] = np.append(profile_dict["E_tot_profile_std"], E_tot_std)
                 del E_ratio, E_tot
                 gc.collect()
                 #sto.result_id = str(radius_bins[radius_bit])
                 #sto.result = np.array([rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std])
                 print("Calculating boundness for shell radius", radius_bins[radius_bit], "on rank", rank, ": Enclosed_mass, E_ratio_mean, E_tot_mean", enclosed_mass.in_units('msun'), E_ratio_mean, E_tot_mean)
                 sys.stdout.flush()
-                del rad_mean, rad_std, E_ratio_mean, E_ratio_std, E_tot_mean, E_tot_std
-                gc.collect()
-            
-            profile_dict = {}
-            profile_dict.update({"R_profile_mean":rad_mean})
-            profile_dict.update({"R_profile_std":rad_std})
-            profile_dict.update({"E_ratio_profile_mean":E_ratio_mean})
-            profile_dict.update({"E_ratio_profile_std":E_ratio_std})
-            profile_dict.update({"E_tot_profile_mean":E_tot_mean})
-            profile_dict.update({"E_tot_profile_std":E_tot_std})
-            profile_dict.update({"Sink_seps":sink_separations})
             
             #Save BHL Calculation
             file_open = open(frame_name+'.pkl', 'wb')
