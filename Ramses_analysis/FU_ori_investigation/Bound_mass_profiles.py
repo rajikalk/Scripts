@@ -123,8 +123,6 @@ if len(files)>0:
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
             sink_separations = np.delete(sink_separations, np.where(sink_separations>radius)[0])
             #Delete sink separations greater than measuring sphere
-            import pdb
-            pdb.set_trace()
             gc.collect()
             sys.stdout.flush()
             
