@@ -76,14 +76,14 @@ gc.collect()
 
 #Define radius bins
 radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
-radius_bins = np.logspace(0, np.log10(radius), 100)
+radius_bins = np.logspace(0, np.log10(radius), 50)
 if args.parallelisation_jobs == None:
     para_div = size
 else:
     para_div = args.parallelisation_jobs
 
 if len(files)>0:
-    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):
+    for fn in yt.parallel_objects(files, njobs=1):
         frame_name = "Profile_frame_" + ("%06d" % (files.index(fn)))
         if os.path.exists(frame_name+".pkl"):
             skip = True
@@ -153,7 +153,7 @@ if len(files)>0:
             #profile_dict.update({"E_profile_std":np.array([])})
             prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
             prev_radius = 0
-            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=1):
+            for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=size):
                 #for radius_bit in range(1, len(radius_bins)):
                 #Calculate enclosed mass:
                 
@@ -208,8 +208,7 @@ if len(files)>0:
             
             
             sink_seps = sink_separations[np.where(sink_separations<=radius_bins[-1])[0]]
-            root_rank = int(rank/para_div)
-            if rank == root_rank:
+            if rank == 0:
                 #sort profile data:
                 Profile_rad_mean = np.array([])
                 Profile_rad_std = np.array([])
