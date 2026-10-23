@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
+    parser.add_argument("-prl", "--plot_real_time", help="do you want to annotate the real plot time, or use the time from m_times", default=False)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-pv", "--plot_velocity", help="would you like to annotate the velocity legend?", type=str, default="True")
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
@@ -534,9 +535,9 @@ if args.make_frames_only == 'False':
             else:
                 part_info = {}
             
-            try:
+            if args.plot_real_time == False:
                 time_val = m_times[file_int]
-            except:
+            else:
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
                 gc.collect()
