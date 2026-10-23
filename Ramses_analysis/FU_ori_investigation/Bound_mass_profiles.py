@@ -134,6 +134,7 @@ if len(files)>0:
             dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
+            del_inds = np.where(sep>radius)[0]
             sep = np.delete(sep, np.where(sep>radius)[0])
             #delete cell further than measuring sphere
             gc.collect()
@@ -147,6 +148,13 @@ if len(files)>0:
             gc.collect()
             print("RANK", rank, "got particle velocity")
             sys.stdout.flush()
+            
+            sph_dvx = ds.r["ramses", "x-velocity"].in_units('km/s') - sink_vel[0]
+            sph_dvy = ds.r["ramses", "y-velocity"].in_units('km/s') - sink_vel[1]
+            sph_dvz = ds.r["ramses", "z-velocity"].in_units('km/s') - sink_vel[2]
+            sph_vel = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
+            sph_vel = np.delete(sph_vel, del_inds)
+            del del_inds
             
             #get separations to other sink particles
             
@@ -168,6 +176,7 @@ if len(files)>0:
                 
                 del_inds = np.where(sep<prev_radius)[0]
                 sep = np.delete(sep, del_inds)
+                sph_vel = np.delete(sph_vel, del_inds)
                 gc.collect()
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
                 enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
@@ -185,14 +194,9 @@ if len(files)>0:
                 
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
-                sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-                sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-                sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-                sph_vel = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
                 del sph_dvx, sph_dvy, sph_dvz
                 gc.collect()
-                E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel**2
-                del sph_vel
+                E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel[sphere_inds]**2
                 gc.collect()
                 #get average radius in the bin
                 rad_mean = np.mean(sep[sphere_inds])
