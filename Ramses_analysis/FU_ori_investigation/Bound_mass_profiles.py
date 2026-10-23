@@ -194,7 +194,6 @@ if len(files)>0:
                 
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
-                del sph_dvx, sph_dvy, sph_dvz
                 gc.collect()
                 E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel[sphere_inds]**2
                 gc.collect()
