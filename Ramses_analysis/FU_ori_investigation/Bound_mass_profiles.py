@@ -38,35 +38,6 @@ else:
     sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
 files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))
 
-if os.path.exists('Kep_mass.pkl'):
-    file_open = open('Kep_mass.pkl', 'rb')
-    save_dict = pickle.load(file_open)
-    file_open.close()
-    if len(save_dict["Time"]) != len(files):
-        files = files[len(save_dict["Time"]):]
-elif os.path.exists('Kep_mass_0.pkl'):
-    pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
-    save_dict = {}
-    for pickle_file in pickle_files:
-        file_open = open(pickle_file, 'rb')
-        save_dict_r = pickle.load(file_open)
-        file_open.close()
-        for key in save_dict_r.keys():
-            if key not in save_dict.keys():
-                save_dict.update({key:save_dict_r[key]})
-            else:
-                save_dict[key] = np.append(save_dict[key], save_dict_r[key])
-    del save_dict_r
-    gc.collect()
-    sorted_inds = np.argsort(save_dict["Time"])
-    for key in save_dict.keys():
-        save_dict[key] = save_dict[key][sorted_inds]
-    if len(save_dict["Time"]) != len(files):
-        files = files[len(save_dict["Time"]):]
-else:
-    save_dict = {}
-
-
 sink_id = 45
 sink_form_time = np.nan
 
@@ -102,11 +73,6 @@ if len(files)>0:
                 skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-            if "Time" not in save_dict.keys():
-                save_dict.update({"Time":np.array([time_val])})
-            else:
-                save_dict["Time"] = np.append(save_dict["Time"],time_val)
-            del time_val
             gc.collect()
             sys.stdout.flush()
             
@@ -163,6 +129,7 @@ if len(files)>0:
             #Get indices in measure sphere
             #Start iterating over Radial bins
             profile_dict = {}
+            profile_dict.update({"time":time_val})
             profile_dict.update({"R_profile_mean":np.array([])})
             profile_dict.update({"R_profile_std":np.array([])})
             profile_dict.update({"E_ratio_profile_mean":np.array([])})
@@ -218,6 +185,7 @@ if len(files)>0:
                 E_tot_std = np.std(E_tot)
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
+                
                 profile_dict["E_ratio_profile_mean"] = np.append(profile_dict["E_ratio_profile_mean"], E_ratio_mean)
                 profile_dict["E_ratio_profile_std"] = np.append(profile_dict["E_ratio_profile_std"], E_ratio_std)
                 profile_dict["E_tot_profile_mean"] = np.append(profile_dict["E_tot_profile_mean"], E_tot_mean)
@@ -254,10 +222,8 @@ if len(files)>0:
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
-            plt.axhline(y=1.0)
             plt.ylim([0.0, np.max(profile_dict["E_ratio_profile_mean"])])
-            plt.yscale("log")
-            plt.savefig(frame_name+"_ratio.png")
+            plt.savefig(frame_name+"_ratio.jpg")
             
             plt.clf()
             plt.xscale("log")
@@ -267,10 +233,9 @@ if len(files)>0:
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
-            plt.axhline(y=1.0)
             plt.ylim([np.min(profile_dict["E_tot_profile_mean"]), np.max(profile_dict["E_tot_profile_mean"])])
-            plt.yscale("log")
-            plt.savefig(frame_name+"_total.png")
+            plt.yscale("symlog")
+            plt.savefig(frame_name+"_total.jpg")
             del profile_dict
             
             plt.clf()
