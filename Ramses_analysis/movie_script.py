@@ -490,6 +490,9 @@ if args.make_frames_only == 'False':
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
                 center_vel = yt.YTArray([sink_particle_velx.in_units('cm/s').value, sink_particle_vely.in_units('cm/s').value, sink_particle_velz.in_units('cm/s').value], 'cm/s')
+                if size == 1:
+                    import pdb
+                    pdb.set_trace()
                 del sink_particle_velx, sink_particle_vely, sink_particle_velz
                 gc.collect()
                 if args.debug_plotting == 'True':
@@ -855,6 +858,8 @@ if args.make_frames_only == 'False':
             if rank == proj_root_rank:
                 if args.plot_velocity == "True":
                     velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
+                    import pdb
+                    pdb.set_trace()
                     del velx_full, vely_full, velz_full
                     gc.collect()
                     
