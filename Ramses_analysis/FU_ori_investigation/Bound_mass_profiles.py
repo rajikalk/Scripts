@@ -221,6 +221,7 @@ if len(files)>0:
                 profile_dict["E_ratio_profile_std"] = np.append(profile_dict["E_ratio_profile_std"], E_ratio_std)
                 profile_dict["E_tot_profile_mean"] = np.append(profile_dict["E_tot_profile_mean"], E_tot_mean)
                 profile_dict["E_tot_profile_std"] = np.append(profile_dict["E_tot_profile_std"], E_tot_std)
+                profile_dict["Sink_seps"] = np.append(profile_dict["Sink_seps"], sink_separations)
                 del E_ratio, E_tot
                 gc.collect()
                 #sto.result_id = str(radius_bins[radius_bit])
