@@ -169,6 +169,7 @@ if len(files)>0:
             profile_dict.update({"E_ratio_profile_std":np.array([])})
             profile_dict.update({"E_tot_profile_mean":np.array([])})
             profile_dict.update({"E_tot_profile_std":np.array([])})
+            profile_dict.update({"Sink_seps":np.array([])})
             prev_enclosed_gas_mass = yt.YTQuantity(0, "msun")
             prev_radius = 0
             #for sto, radius_bit in yt.parallel_objects(range(1, len(radius_bins)), storage=profile_dict, njobs=1):
