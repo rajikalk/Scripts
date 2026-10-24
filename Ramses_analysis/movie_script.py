@@ -490,9 +490,6 @@ if args.make_frames_only == 'False':
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
                 center_vel = yt.YTArray([sink_particle_velx.in_units('cm/s').value, sink_particle_vely.in_units('cm/s').value, sink_particle_velz.in_units('cm/s').value], 'cm/s')
-                if size == 1:
-                    import pdb
-                    pdb.set_trace()
                 del sink_particle_velx, sink_particle_vely, sink_particle_velz
                 gc.collect()
                 if args.debug_plotting == 'True':
@@ -730,6 +727,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     elif 'velocity' in field[1] and args.use_density_threshold != None:
+                        import pdb
+                        pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness_arr.in_units('cm'))
