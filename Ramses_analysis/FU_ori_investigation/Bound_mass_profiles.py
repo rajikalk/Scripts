@@ -135,9 +135,9 @@ if len(files)>0:
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
             del_inds = np.where(sep>radius)[0]
+            gas_mass = ds.r["gas", "mass"]
             gas_mass = np.delete(gas_mass, np.where(sep>radius)[0])
             sep = np.delete(sep, np.where(sep>radius)[0])
-            gas_mass = ds.r["gas", "mass"]
             #delete cell further than measuring sphere
             gc.collect()
             sys.stdout.flush()
