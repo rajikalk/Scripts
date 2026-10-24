@@ -135,7 +135,9 @@ if len(files)>0:
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz, sink_pos
             del_inds = np.where(sep>radius)[0]
+            gas_mass = np.delete(gas_mass, np.where(sep>radius)[0])
             sep = np.delete(sep, np.where(sep>radius)[0])
+            gas_mass = ds.r["gas", "mass"]
             #delete cell further than measuring sphere
             gc.collect()
             sys.stdout.flush()
@@ -179,9 +181,7 @@ if len(files)>0:
                 sph_vel = np.delete(sph_vel, del_inds)
                 gc.collect()
                 enclosed_inds = np.where((sep>prev_radius)&(sep<=radius_bins[radius_bit]))[0]
-                enclosed_mass = np.sum(ds.r["gas", "mass"][enclosed_inds]) + prev_enclosed_gas_mass
-                import pdb
-                pdb.set_trace()
+                enclosed_mass = np.sum(gas_mass[enclosed_inds]) + prev_enclosed_gas_mass
                 #FIGURE OUT WHY ENCLOSED MASS IC GROWING CRAZY FAST
                 prev_enclosed_gas_mass = enclosed_mass
                 prev_radius = radius_bins[radius_bit]
@@ -198,7 +198,7 @@ if len(files)>0:
                 #Now get indices in sphere
                 sphere_inds = np.where((sep>radius_bins[radius_bit-1])&(sep<=radius_bins[radius_bit]))[0]
                 gc.collect()
-                E_kin = 0.5 * ds.r["gas", "mass"][sphere_inds] * sph_vel[sphere_inds]**2
+                E_kin = 0.5 * gas_mass[sphere_inds] * sph_vel[sphere_inds]**2
                 gc.collect()
                 #get average radius in the bin
                 rad_mean = np.mean(sep[sphere_inds])
@@ -206,7 +206,7 @@ if len(files)>0:
                 rad_std = np.std(sep[sphere_inds])
                 profile_dict["R_profile_std"] = np.append(profile_dict["R_profile_std"], rad_std)
                 #calcualte gravitational potential energy
-                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*ds.r["gas", "mass"][sphere_inds])/sep[sphere_inds]
+                E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*gas_mass[sphere_inds])/sep[sphere_inds]
                 del sphere_inds
                 gc.collect()
                 E_tot = E_grav.in_units('erg')+E_kin.in_units('erg')
