@@ -219,6 +219,7 @@ if len(files)>0:
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_ratio_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_ratio_profile_std"])
             for sink_sep in profile_dict["Sink_seps"]:
                 plt.axvline(x=sink_sep)
+            plt.axhline(y=1.0)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
