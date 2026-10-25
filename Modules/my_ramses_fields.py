@@ -1316,7 +1316,7 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g/cm**3')
     
@@ -1337,7 +1337,7 @@ def _dx_Proj(field,data):
         dens = data[('gas', 'Density')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
     
@@ -1358,7 +1358,7 @@ def _dy_Proj(field,data):
         Proj_field = data[('gas', 'dy')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
@@ -1380,7 +1380,7 @@ def _dz_Proj(field,data):
         Proj_field = data[('gas', 'dz')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
@@ -1402,7 +1402,7 @@ def _x_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'x-velocity')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1424,7 +1424,7 @@ def _y_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'y-velocity')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1446,7 +1446,7 @@ def _z_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'z-velocity')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1468,7 +1468,7 @@ def _magx_Proj(field,data):
         Proj_field = data[('gas', 'magx')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
@@ -1489,7 +1489,7 @@ def _magy_Proj(field,data):
         Proj_field = data[('gas', 'magy')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
 
@@ -1510,7 +1510,7 @@ def _magz_Proj(field,data):
         Proj_field = data[('gas', 'magz')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
@@ -1531,7 +1531,7 @@ def _cell_mass_Proj(field,data):
         Proj_field = data[('gas', 'cell_mass')]
         import pdb
         pdb.set_trace()
-        unusable_dd_inds = data[('gas', 'unusable_dd_inds')]
+        unusable_dd_inds = ds.r['gas', 'unusable_dd_inds'].value.astype(int)
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g')
     
