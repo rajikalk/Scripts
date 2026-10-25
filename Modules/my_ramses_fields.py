@@ -1316,6 +1316,7 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
         import pdb
         pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g/cm**3')
     
@@ -1334,13 +1335,9 @@ def _dx_Proj(field,data):
         Proj_field = data[('gas', 'dx')]
     else:
         dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
-        Proj_field = data[('gas', 'dx')]
-        zero_inds = np.where(dens<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
-        Proj_field[unusable_dd_inds] = 0
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
     
@@ -1358,13 +1355,10 @@ def _dy_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'dy')]
     else:
-        dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
         Proj_field = data[('gas', 'dy')]
-        zero_inds = np.where(dens<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
@@ -1383,13 +1377,10 @@ def _dz_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'dz')]
     else:
-        dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
         Proj_field = data[('gas', 'dz')]
-        zero_inds = np.where(dens<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm')
@@ -1408,14 +1399,10 @@ def _x_velocity_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
-        dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'x-velocity')]
-        cell_length = data[('gas', 'dx')].in_units('cm')
-        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1434,14 +1421,10 @@ def _y_velocity_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
-        dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'y-velocity')]
-        cell_length = data[('gas', 'dy')].in_units('cm')
-        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1460,14 +1443,10 @@ def _z_velocity_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
-        dens = data[('gas', 'Density')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'z-velocity')]
-        cell_length = data[('gas', 'dz')].in_units('cm')
-        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
         Proj_field = cell_length*Proj_field.in_units('cm/s')
@@ -1487,10 +1466,9 @@ def _magx_Proj(field,data):
         Proj_field = data[('gas', 'magx')]
     else:
         Proj_field = data[('gas', 'magx')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
@@ -1509,10 +1487,9 @@ def _magy_Proj(field,data):
         Proj_field = data[('gas', 'magy')]
     else:
         Proj_field = data[('gas', 'magy')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
 
@@ -1531,10 +1508,9 @@ def _magz_Proj(field,data):
         Proj_field = data[('gas', 'magz')]
     else:
         Proj_field = data[('gas', 'magz')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
@@ -1553,10 +1529,9 @@ def _cell_mass_Proj(field,data):
         Proj_field = data[('gas', 'cell_mass')]
     else:
         Proj_field = data[('gas', 'cell_mass')]
-        x_pos = data[('gas', 'x')]
-        y_pos = data[('gas', 'y')]
-        z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        import pdb
+        pdb.set_trace()
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds']
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g')
     
