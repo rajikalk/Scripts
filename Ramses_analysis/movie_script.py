@@ -517,12 +517,14 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
+            import pdb
+            pdb.set_trace()
             #region = ds.box(left_corner, right_corner)
-            x_pos = ds.r[('gas', 'x')]
-            y_pos = ds.r[('gas', 'y')]
-            z_pos = ds.r[('gas', 'z')]
+            #x_pos = ds.r[('gas', 'x')]
+            #y_pos = ds.r[('gas', 'y')]
+            #z_pos = ds.r[('gas', 'z')]
             #region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
-            unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+            #unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
             
             del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
@@ -531,6 +533,7 @@ if args.make_frames_only == 'False':
                 myf.set_density_threshold(args.use_density_threshold)
 
             if has_particles:
+                region = ds.box(left_corner, right_corner)
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
             else:
                 part_info = {}
