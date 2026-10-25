@@ -1283,7 +1283,7 @@ def _Radial_Momentum_wrt_Center(field, data):
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
 
-def _Density_Proj(field,data):
+def _usuable_inds(field,data):
     """
     Overwrites density field
     """
@@ -1291,14 +1291,29 @@ def _Density_Proj(field,data):
     #global projection_depth
     global left_corner
     global right_corner
-    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'Density')]
-    else:
-        Proj_field = data[('gas', 'Density')]
+    if len(left_corner) > 0:
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+    else:
+        unusable_dd_inds = np.array([])
+    unusable_dd_inds = yt.YTArray(unusable_dd_inds, "")
+    
+    return unusable_dd_inds
+    
+yt.add_field(("gas", "unusable_dd_inds"), function=_usuable_inds, units=r"", sampling_type="local", force_override=True)
+
+def _Density_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global centred_sink_id
+    #global projection_depth
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'Density')]
+    else:
+        Proj_field = data[('gas', 'Density')]
         import pdb
         pdb.set_trace()
         Proj_field[unusable_dd_inds] = 0
