@@ -518,11 +518,14 @@ if args.make_frames_only == 'False':
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
             region = ds.box(left_corner, right_corner)
-            x_pos = ds.r[('gas', 'x')]
-            y_pos = ds.r[('gas', 'y')]
-            z_pos = ds.r[('gas', 'z')]
-            region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
-            unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+            if size == 1:
+                import pdb
+                pdb.set_trace()
+            #x_pos = ds.r[('gas', 'x')]
+            #y_pos = ds.r[('gas', 'y')]
+            #z_pos = ds.r[('gas', 'z')]
+            #region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
+            #unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
@@ -696,7 +699,7 @@ if args.make_frames_only == 'False':
                     method='integrate'
                     if 'velocity' in field[1] and args.use_density_threshold != None:
                         method = 'sum'
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos)
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos, data_source=region)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
