@@ -447,10 +447,7 @@ if args.make_frames_only == 'False':
             if args.debug_plotting == 'True':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
-            
-            if size == 1:
-                import pdb
-                pdb.set_trace()
+                
             has_particles = True
             
             #Define box::
@@ -500,6 +497,8 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
+            import pdb
+            pdb.set_trace()
             #import pdb
             #pdb.set_trace()
             #region = ds.box(left_corner, right_corner)
