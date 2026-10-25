@@ -700,7 +700,7 @@ if args.make_frames_only == 'False':
                     method='integrate'
                     if 'velocity' in field[1] and args.use_density_threshold != None:
                         method = 'sum'
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos, data_source=region)
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
