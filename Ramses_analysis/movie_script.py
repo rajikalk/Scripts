@@ -90,7 +90,7 @@ def sim_info(ds,args):
     print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
     del field_it
-    gc.collect()
+    #gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
@@ -111,7 +111,7 @@ def sim_info(ds,args):
     except:
         unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
     del test_patch
-    gc.collect()
+    #gc.collect()
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
@@ -128,7 +128,7 @@ def sim_info(ds,args):
                 'unit_string': unit_string
                 }
     del field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
-    gc.collect()
+    #gc.collect()
     
     return sim_info
 
@@ -156,11 +156,11 @@ def has_sinks(ds):
     sink_particle_tag = ds.r['gas', 'sink_particle_tag']
     if len(sink_particle_tag[myf.get_centred_sink_id():].astype(int)) != 0:
         del sink_particle_tag
-        gc.collect()
+        #gc.collect()
         return True
     else:
         del sink_particle_tag
-        gc.collect()
+        #gc.collect()
         return False
 
 #=======MAIN=======
@@ -220,7 +220,7 @@ files = sorted(glob.glob(input_dir+"*/info*.txt"))
 if len(files) == 0:
     print("NO FILES IN TARGET DIRECTORY")
     sys.exit()
-gc.collect()
+#gc.collect()
 if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
 
@@ -247,7 +247,7 @@ if args.debug_plotting == 'True':
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
-gc.collect()
+#gc.collect()
 
 print('Getting sink id and formation time')
 sys.stdout.flush()
@@ -300,7 +300,7 @@ elif args.use_all_files == 'False':
             start_time = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
         else:
             start_time = yt.YTQuantity(0, 'yr')
-        gc.collect()
+        #gc.collect()
     print("start time", start_time)
     
     if os.path.isfile(files[-1].split('info_')[0]+'/stars_output.snktxt') == False:
@@ -314,7 +314,7 @@ else:
 
 print('m_times =', m_times)
 print('no_frames =', no_frames)
-gc.collect()
+#gc.collect()
 
 if args.make_frames_only == 'False':
     sys.stdout.flush()
@@ -327,7 +327,7 @@ if args.make_frames_only == 'False':
     print("Got Simfo")
     sys.stdout.flush()
     
-    gc.collect()
+    ##gc.collect()
     CW.Barrier()
         
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
@@ -393,7 +393,7 @@ if args.make_frames_only == 'False':
         else:
             usable_files = files
     del files
-    gc.collect()
+    #gc.collect()
         
     sys.stdout.flush()
     CW.Barrier()
@@ -459,14 +459,14 @@ if args.make_frames_only == 'False':
                 if args.debug_plotting == 'True':
                     print('set centre posiion on rank', rank)
                     sys.stdout.flush()
-                gc.collect()
+                ##gc.collect()
                 
             else:
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
                 del Center_Position
-                gc.collect()
-            gc.collect()
+                ##gc.collect()
+            #gc.collect()
             
             if args.debug_plotting == 'True':
                 print('calculated center pos on rank', rank)
@@ -474,8 +474,8 @@ if args.make_frames_only == 'False':
                 
             if args.image_center == 1:
                 center_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_vely"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_velz"][sink_id].in_units('cm/s').value])
-                del sink_particle_velx, sink_particle_vely, sink_particle_velz
-                gc.collect()
+                #del sink_particle_velx, sink_particle_vely, sink_particle_velz
+                ##gc.collect()
                 if args.debug_plotting == 'True':
                     print('calculated center vel on rank', rank)
                     sys.stdout.flush()
@@ -510,7 +510,7 @@ if args.make_frames_only == 'False':
             #unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
             
             #del left_corner, right_corner, x_pos, y_pos, z_pos
-            gc.collect()
+            #gc.collect()
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
@@ -526,7 +526,7 @@ if args.make_frames_only == 'False':
             else:
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
-                gc.collect()
+                ##gc.collect()
                 
                 
             if args.use_angular_momentum != 'False':
@@ -537,10 +537,10 @@ if args.make_frames_only == 'False':
                     left_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value - 100, sink_particle_posy.in_units('AU').value - 100, sink_particle_posz.in_units('AU').value - 100], 'AU')
                     right_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value + 100, sink_particle_posy.in_units('AU').value + 100, sink_particle_posz.in_units('AU').value + 100], 'AU')
                     del sink_particle_posx, sink_particle_posy, sink_particle_posz
-                    gc.collect()
+                    #gc.collect()
                     region = ds.box(left_corner_test, right_corner_test)
                     del left_corner_test,right_corner_test, region
-                    gc.collect()
+                    #gc.collect()
                     L_x = np.sum(region['Angular_Momentum_x'].value)
                     L_y = np.sum(region['Angular_Momentum_y'].value)
                     L_z = np.sum(region['Angular_Momentum_z'].value)
@@ -548,7 +548,7 @@ if args.make_frames_only == 'False':
                     myf.set_normal(L)
                     print("L =", L)
                     del L_x, L_y, L_z
-                    gc.collect()
+                    #gc.collect()
                 else:
                     Orbital_Angular_Momentum_x = ds.r['gas', 'Orbital_Angular_Momentum_x']
                     Orbital_Angular_Momentum_y = ds.r['gas', 'Orbital_Angular_Momentum_y']
@@ -558,10 +558,10 @@ if args.make_frames_only == 'False':
                     L_y = np.sum(Orbital_Angular_Momentum_y.value)
                     L_z = np.sum(Orbital_Angular_Momentum_z.value)
                     del Orbital_Angular_Momentum_x, Orbital_Angular_Momentum_y, Orbital_Angular_Momentum_z
-                    gc.collect()
+                    #gc.collect()
                     L = np.array([L_x, L_y, L_z])/np.sum(Orbital_Angular_Momentum.value)
                     del Orbital_Angular_Momentum
-                    gc.collect()
+                    #gc.collect()
                     myf.set_normal(L)
                     print("L =", L)
                     
@@ -623,7 +623,7 @@ if args.make_frames_only == 'False':
                 com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
                 center_vel = yt.YTArray(com_vel, 'cm')
                 del TM, x_top, y_top, z_top
-                gc.collect()
+                #gc.collect()
             
             if args.axis == 'xy':
                 center_vel_plane = np.array([center_vel[0], center_vel[1]])
@@ -850,7 +850,7 @@ if args.make_frames_only == 'False':
                     import pdb
                     pdb.set_trace()
                     del velx_full, vely_full, velz_full
-                    gc.collect()
+                    #gc.collect()
                     
                 else:
                     velx = None
@@ -882,10 +882,10 @@ if args.make_frames_only == 'False':
                 file.close()
                 print("Created Pickle:", pickle_file, "of", no_frames, "frames for  file:", str(ds), "on rank", rank)
                 del image, magx, magy, velx, vely, velz, args_dict
-                gc.collect()
+                #gc.collect()
                 
             del has_particles, time_val, center_vel, part_info, X_image, Y_image, X_image_vel, Y_image_vel
-            gc.collect()
+            #gc.collect()
             
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
@@ -904,7 +904,7 @@ if args.make_frames_only == 'False':
         print('Finished copying pickles that use the same file for the same frame')
     
     del usable_files
-    gc.collect()
+    #gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
