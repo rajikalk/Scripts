@@ -517,22 +517,19 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            region = ds.box(left_corner, right_corner)
-            if size == 1:
-                import pdb
-                pdb.set_trace()
-            #x_pos = ds.r[('gas', 'x')]
-            #y_pos = ds.r[('gas', 'y')]
-            #z_pos = ds.r[('gas', 'z')]
+            #region = ds.box(left_corner, right_corner)
+            x_pos = ds.r[('gas', 'x')]
+            y_pos = ds.r[('gas', 'y')]
+            z_pos = ds.r[('gas', 'z')]
             #region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
-            #unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+            unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+            
+            del left_corner, right_corner, x_pos, y_pos, z_pos
+            gc.collect()
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
 
-            #del left_corner, right_corner, x_pos, y_pos, z_pos
-            gc.collect()
-            
             if has_particles:
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
             else:
@@ -670,6 +667,10 @@ if args.make_frames_only == 'False':
                     
                     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
+                
+                import pdb
+                pdb.set_trace()
+                #Delete unusable inds from projection fields
                 #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
