@@ -517,8 +517,8 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             #region = ds.box(left_corner, right_corner)
             #x_pos = ds.r[('gas', 'x')]
             #y_pos = ds.r[('gas', 'y')]
