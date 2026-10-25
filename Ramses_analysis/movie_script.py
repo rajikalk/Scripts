@@ -272,7 +272,7 @@ else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
 try:
-    sink_form_times = ds.r["sink_particle_form_time"][sink_id]
+    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
     print("got sink formation time")
 except:
     print("TARGET SINK NOT FORMED YET")
