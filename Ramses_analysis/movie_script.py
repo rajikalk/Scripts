@@ -273,7 +273,7 @@ else:
 print("Center sink =", sink_id)
 try:
     sink_form_times = ds.r["sink_particle_form_time"][sink_id]
-else:
+except:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 
