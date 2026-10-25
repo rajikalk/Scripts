@@ -1314,6 +1314,7 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
     else:
         Proj_field = data[('gas', 'Density')]
+        data._debug()
         import pdb
         pdb.set_trace()
         unusable_dd_inds = data[('gas', 'unusable_dd_inds')].value.astype(int)
