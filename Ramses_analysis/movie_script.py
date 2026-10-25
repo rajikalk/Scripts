@@ -448,6 +448,9 @@ if args.make_frames_only == 'False':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
             
+            if size == 1:
+                import pdb
+                pdb.set_trace()
             has_particles = True
             
             #Define box::
