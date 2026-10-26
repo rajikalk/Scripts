@@ -82,14 +82,12 @@ else:
     myf.set_axis_ind(0)
 '''
 
-def sim_info(bbox,args):
+def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
     print("Reading derived fields list")
-    import pdb
-    pdb.set_trace()
-    field_it = [i for i, v in enumerate(bbox.ds.derived_field_list) if v[1] == args.field][0]
+    field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
     print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
     del field_it
@@ -109,10 +107,10 @@ def sim_info(bbox,args):
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
     try:
-        fi = bbox.ds.field_info[field]
-        unit_string = str(bbox.ds.quan(1.0, fi.units).in_cgs().units)
+        fi = ds.field_info[field]
+        unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
     except Exception:
-        small = bbox.ds.sphere(bbox.ds.domain_center, bbox.ds.domain_width[0] * 1e-4)
+        small = bbox.ds.sphere(ds.domain_center, ds.domain_width[0] * 1e-4)
         unit_string = str(small[field].in_cgs().units)
         del small
     #gc.collect()
@@ -332,16 +330,7 @@ if args.make_frames_only == 'False':
     #Get simulation information
     print("Getting Simfo")
     sys.stdout.flush()
-    center_pos = sinks['pos'][sink_id]
-    box_length = yt.YTQuantity(75000, 'au')
-    bbox = ds.box(center_pos - box_length, center_pos + box_length)
-    import pdb
-    pdb.set_trace()
-    if rank == 0:
-        simfo = sim_info(ds, args)
-        simfo = CW.bcast(simfo, root=0)
-    else:
-        None
+    simfo = sim_info(ds, args)
     CW.Barrier()
     #simfo = sim_info(ds, args)
     print("Got Simfo")
@@ -461,9 +450,17 @@ if args.make_frames_only == 'False':
                 sys.stdout.flush()
             ds = yt.load(fn, units_override=units_override)      # no index touched yet
             sinks = myf.get_sink_table(ds)
-            center_pos = sinks['pos'][sink_id]
-            box_length = yt.YTQuantity(75000, 'au')
-            bbox = ds.box(center_pos - box_length, center_pos + box_length)
+            if args.image_center == 1:
+                center_pos = sinks['pos'][sink_id]
+                #center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
+                if args.debug_plotting == 'True':
+                    print('set centre posiion on rank', rank)
+                    sys.stdout.flush()
+                ##gc.collect()
+            else:
+                Center_Position = ds.r["gas", "Center_Position"]
+                center_pos = Center_Position.in_units('au')
+                del Center_Position
             
             if args.axis == 'xy':
                 axis_ind = 2
@@ -484,53 +481,10 @@ if args.make_frames_only == 'False':
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
             region = ds.box(left_corner, right_corner)
-            box_length = yt.YTQuantity(args.slice_thickness, 'au')
-            while len(region['x'])==0:
-                box_length = box_length + yt.YTQuantity(1000, 'au')
-                region = ds.box(center_pos - box_length, center_pos + box_length)
-            
-            left_box = ((center_pos - box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
-            right_box = ((center_pos + box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
-            bbox = [left_box, right_box]
-            ds_bb = yt.load(fn, units_override=units_override, bbox=bbox)
-            import pdb
-            pdb.set_trace()
-            #import resource
-            #def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
-            #mem('bbox loaded'); ds.index; mem('bbox index built')
-            print(rank, bbox, len(ds.index.domains))
-            #ds = yt.load(fn, units_override=units_override)
             time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
             if args.debug_plotting == 'True':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
-                
-            has_particles = True
-            
-            #Define box:
-            #sinks = myf.get_sink_table(ds)
-            if args.image_center == 1:
-                center_pos = sinks['pos'][sink_id]
-                #center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
-                if args.debug_plotting == 'True':
-                    print('set centre posiion on rank', rank)
-                    sys.stdout.flush()
-                ##gc.collect()
-            else:
-                Center_Position = ds.r["gas", "Center_Position"]
-                center_pos = Center_Position.in_units('au')
-                del Center_Position
-                ##gc.collect()
-            #gc.collect()
-            
-            if args.debug_plotting == 'True':
-                print('calculated center pos on rank', rank)
-                sys.stdout.flush()
-            
-            print('Creating projection region')
-            sys.stdout.flush()
-            #mem('before index'); ds.index; mem('after index')
-            region = ds.cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.velocity_center == 1:
                 center_vel = sinks['vel'][sink_id]
@@ -554,6 +508,7 @@ if args.make_frames_only == 'False':
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
 
+            has_particles = True
             if has_particles:
                 print('Getting particle data on rank', rank)
                 sys.stdout.flush()
