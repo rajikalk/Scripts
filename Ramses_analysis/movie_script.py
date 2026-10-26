@@ -478,7 +478,10 @@ if args.make_frames_only == 'False':
                     list(np.clip((c + h - dl.v) / dw.v, 0, 1))]
 
             ds = yt.load(fn, units_override=units_override, bbox=bbox)
-            
+            import resource
+            def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
+            mem('bbox loaded'); ds.index; mem('bbox index built')
+            print(rank, bbox, len(ds.index.domains))
             #ds = yt.load(fn, units_override=units_override)
             time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
             if args.debug_plotting == 'True':
@@ -509,9 +512,7 @@ if args.make_frames_only == 'False':
             
             print('Creating projection region')
             sys.stdout.flush()
-            import resource
-            def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
-            mem('before index'); mem('after index')
+            mem('before index'); ds.index; mem('after index')
             region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.velocity_center == 1:
@@ -1065,7 +1066,7 @@ for pickle_file in pickle_files:
                     ax.scatter((part_info['particle_position'][0]), (part_info['particle_position'][1]), color='c', s=0.5)
                 else:
                     if args.annotate_particles_mass == 'True':
-                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, particle_velocity=part_info['particle_velocity'], standard_vel=args.standard_vel)
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, particle_velocity=part_info['particle_velocity'], standard_vel=args.standard_vel, annotate_velocity=True)
                     else:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, zorder=7)
             if args.debug_plotting != 'False':
