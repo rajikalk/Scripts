@@ -277,6 +277,8 @@ try:
         sink_form_time = ds.r["sink_particle_form_time"][sink_id]   # consider the full tuple form, e.g. ("sink", "particle_form_time")
     else:
         sink_form_time = None
+    sys.stdout.flush()
+    CW.Barrier()
     sink_form_time = CW.bcast(form_times, root=0)
     print("got sink formation time")
 except:
