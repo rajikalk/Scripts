@@ -113,7 +113,7 @@ def sim_info(ds,args):
         fi = ds.field_info[field]
         unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
     except Exception:
-        small = bbox.ds.sphere(ds.domain_center, ds.domain_width[0] * 1e-4)
+        small = ds.sphere(ds.domain_center, ds.domain_width[0] * 1e-4)
         unit_string = str(small[field].in_cgs().units)
         del small
     #gc.collect()
