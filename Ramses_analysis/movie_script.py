@@ -412,7 +412,7 @@ if args.make_frames_only == 'False':
     
     #Trying yt parallelism
     file_int = -1
-    para_div = 3
+    para_div = 4
     for fn in yt.parallel_objects(usable_files, njobs=int(size/(6*para_div))):
         #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
