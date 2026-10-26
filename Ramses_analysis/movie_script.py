@@ -273,7 +273,11 @@ else:
 print("Center sink =", sink_id)
 try:
     print("getting sink formation time")
-    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+    if rank == 0:
+        sink_form_time = ds.r["sink_particle_form_time"][sink_id]   # consider the full tuple form, e.g. ("sink", "particle_form_time")
+    else:
+        sink_form_time = None
+    sink_form_time = CW.bcast(form_times, root=0)
     print("got sink formation time")
 except:
     print("TARGET SINK NOT FORMED YET")
@@ -412,7 +416,7 @@ if args.make_frames_only == 'False':
     
     #Trying yt parallelism
     file_int = -1
-    para_div = 4
+    para_div = 2
     for fn in yt.parallel_objects(usable_files, njobs=int(size/(6*para_div))):
         #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
