@@ -447,7 +447,39 @@ if args.make_frames_only == 'False':
             if args.debug_plotting == 'True':
                 print('loading file', fn, 'on rank', rank)
                 sys.stdout.flush()
-            ds = yt.load(fn, units_override=units_override)
+            ds0 = yt.load(fn, units_override=units_override)      # no index touched yet
+            sinks = myf.get_sink_table(ds0)
+            center_pos = sinks['pos'][sink_id]
+            
+            if args.axis == 'xy':
+                axis_ind = 2
+                ax_str = 'z'
+                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.5*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.5*args.slice_thickness)], 'AU')
+            elif args.axis == 'xz':
+                axis_ind = 1
+                ax_str = 'y'
+                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.5*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.5*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
+            elif args.axis == 'yz':
+                axis_ind = 0
+                ax_str = 'x'
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
+                
+            myf.set_left_corner(left_corner)
+            myf.set_right_corner(right_corner)
+
+            pad = 1.2
+            dl, dw = ds0.domain_left_edge.in_units('AU'), ds0.domain_width.in_units('AU')
+            c = (left_corner.v + right_corner.v) / 2
+            h = pad * (right_corner.v - left_corner.v) / 2
+            bbox = [list(np.clip((c - h - dl.v) / dw.v, 0, 1)),
+                    list(np.clip((c + h - dl.v) / dw.v, 0, 1))]
+
+            ds = yt.load(fn, units_override=units_override, bbox=bbox)
+            
+            #ds = yt.load(fn, units_override=units_override)
             time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
             if args.debug_plotting == 'True':
                 print('loaded file', fn, 'on rank', rank)
@@ -456,7 +488,7 @@ if args.make_frames_only == 'False':
             has_particles = True
             
             #Define box:
-            sinks = myf.get_sink_table(ds)
+            #sinks = myf.get_sink_table(ds)
             if args.image_center == 1:
                 center_pos = sinks['pos'][sink_id]
                 #center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
@@ -475,28 +507,11 @@ if args.make_frames_only == 'False':
                 print('calculated center pos on rank', rank)
                 sys.stdout.flush()
             
-            if args.axis == 'xy':
-                axis_ind = 2
-                ax_str = 'z'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.5*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.5*args.slice_thickness)], 'AU')
-                
-            elif args.axis == 'xz':
-                axis_ind = 1
-                ax_str = 'y'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.5*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.5*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
-                
-            elif args.axis == 'yz':
-                axis_ind = 0
-                ax_str = 'x'
-                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
-                
-            myf.set_left_corner(left_corner)
-            myf.set_right_corner(right_corner)
             print('Creating projection region')
             sys.stdout.flush()
+            import resource
+            def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
+            mem('before index'); ds.index; mem('after index')
             region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.velocity_center == 1:
