@@ -243,7 +243,7 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
             pit = it
     return usable_files
 
-def get_particle_data(ds, axis='xy', sink_id=None, region=None):
+def get_particle_data(ds, axis='xy', sink_id=None, region=None, edges=None):
     """
     Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
     """
@@ -258,14 +258,15 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     sink_particle_posx = ds.r['gas', 'sink_particle_posx']
     sink_particle_posy = ds.r['gas', 'sink_particle_posy']
     sink_particle_posz = ds.r['gas', 'sink_particle_posz']
-    sink_particle_tag = ds.r['gas', 'sink_particle_tag']
     
     if region != None:
         usable_sinks = np.argwhere((sink_particle_posx.in_units('au')>region.left_edge[0])&(sink_particle_posx.in_units('au')<region.right_edge[0])&(sink_particle_posy.in_units('au')>region.left_edge[1])&(sink_particle_posy.in_units('au')<region.right_edge[1])&(sink_particle_posz.in_units('au')>region.left_edge[2])&(sink_particle_posz.in_units('au')<region.right_edge[2])).T[0]
+    elif edges != None:
+        usable_sinks = np.argwhere((sink_particle_posx.in_units('au')>edges[0][0])&(sink_particle_posx.in_units('au')<edges[1][0])&(sink_particle_posy.in_units('au')>edges[0][1])&(sink_particle_posy.in_units('au')<edges[1][1])&(sink_particle_posz.in_units('au')>edges[0][2])&(sink_particle_posz.in_units('au')<edges[1][2])).T[0]
     else:
-        usable_sinks = np.arange(sink_id, len(sink_particle_tag))
+        usable_sinks = np.arange(sink_id, len(ds.r['gas', 'sink_particle_tag']))
     
-    part_tags = sink_particle_tag[usable_sinks]
+    part_tags = ds.r['gas', 'sink_particle_tag'][usable_sinks]
     
     sink_particle_mass = ds.r['gas', 'sink_particle_mass']
     part_mass = sink_particle_mass[usable_sinks].in_units('msun').value

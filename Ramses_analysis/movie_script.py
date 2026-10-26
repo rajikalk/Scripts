@@ -504,7 +504,7 @@ if args.make_frames_only == 'False':
                 myf.set_density_threshold(args.use_density_threshold)
 
             if has_particles:
-                part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
+                part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, edges=[left_corner, right_corner])
             else:
                 part_info = {}
             
