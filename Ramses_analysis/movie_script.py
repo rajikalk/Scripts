@@ -515,12 +515,18 @@ if args.make_frames_only == 'False':
                 bulk_vely = np.sum(region['y-velocity']*region[('gas', 'Density')])/np.sum(region[('gas', 'Density')])
                 bulk_velz = np.sum(region['z-velocity']*region[('gas', 'Density')])/np.sum(region[('gas', 'Density')])
                 center_vel = yt.YTArray([bulk_velx.in_units('cm/s'), bulk_vely.in_units('cm/s'), bulk_velz.in_units('cm/s')])
+                print('calculated center vel on rank', rank)
+                sys.stdout.flush()
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
 
             if has_particles:
+                print('Getting particle data on rank', rank)
+                sys.stdout.flush()
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, edges=[left_corner, right_corner])
+                print('Got particle data on rank', rank)
+                sys.stdout.flush()
             else:
                 part_info = {}
             
@@ -530,7 +536,8 @@ if args.make_frames_only == 'False':
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
                 ##gc.collect()
-                
+            print('Calculated time val on rank', rank)
+            sys.stdout.flush()
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
@@ -570,6 +577,8 @@ if args.make_frames_only == 'False':
                     
             
             if args.update_ax_lim == 'True':
+                print('updating axis limits on rank', rank)
+                sys.stdout.flush()
                 if args.axis == 'xy':
                     X_image = X + center_pos[0].value
                     Y_image = Y + center_pos[1].value
@@ -585,6 +594,8 @@ if args.make_frames_only == 'False':
                     Y_image = Y + center_pos[2].value
                     X_image_vel = X_vel + center_pos[1].value
                     Y_image_vel = Y_vel + center_pos[2].value
+                print('updated axis limits on rank', rank)
+                sys.stdout.flush()
             else:
                 X_image = X
                 Y_image = Y
@@ -656,6 +667,9 @@ if args.make_frames_only == 'False':
                     
                     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
+                
+                print('Generated projection field list rank', rank)
+                sys.stdout.flush()
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
