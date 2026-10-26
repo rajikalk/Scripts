@@ -271,8 +271,9 @@ if args.sink_number == None:
 else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
-sink_form_times = ds.r["sink_particle_form_time"]
-if len(sink_form_time) < sink_id:
+sinks = myf.get_sink_table(ds)
+sink_form_times = sinks['form_time']
+if len(sink_form_times) < sink_id:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 else:
@@ -454,7 +455,8 @@ if args.make_frames_only == 'False':
             
             #Define box::
             if args.image_center == 1:
-                center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
+                center_pos = sinks['pos'][sink_id]
+                #center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
                 if args.debug_plotting == 'True':
                     print('set centre posiion on rank', rank)
                     sys.stdout.flush()
@@ -472,7 +474,8 @@ if args.make_frames_only == 'False':
                 sys.stdout.flush()
                 
             if args.image_center == 1:
-                center_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_vely"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_velz"][sink_id].in_units('cm/s').value])
+                center_vel = sinks['vel'][sink_id]
+                #center_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_vely"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_velz"][sink_id].in_units('cm/s').value])
                 #del sink_particle_velx, sink_particle_vely, sink_particle_velz
                 ##gc.collect()
                 if args.debug_plotting == 'True':

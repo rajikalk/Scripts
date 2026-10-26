@@ -379,6 +379,20 @@ def projected_vector(vector, proj_vector):
         proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
     return proj_v
 
+def get_sink_table(ds):
+    file_no = int(ds.directory.split('output_')[-1])
+    datadir = ds.directory.split('output_')[0]
+    s = rsink(file_no, datadir=datadir)            # the cached wrapper
+    lu = ds.length_unit.in_units('au').value
+    vu = ds.velocity_unit.in_units('cm/s').value
+    tu = ds.time_unit.in_units('yr').value
+    return {
+        'pos': yt.YTArray(np.array([s['x'], s['y'], s['z']]).T * lu, 'au'),
+        'vel': yt.YTArray(np.array([s['ux'], s['uy'], s['uz']]).T * vu, 'cm/s'),
+        'form_time': yt.YTArray(np.array(s['tcreate']) * tu, 'yr'),
+        'mass': yt.YTArray(np.array(s['m']) * ds.mass_unit.in_units('Msun').value, 'Msun'),
+    }
+
 #===========================OVERWRITING DENSITY FIELD BECAUSE DENSITY UNIT DOESN'T GET OVERWRITTEN======================================
 
 def _Density(field,data):
