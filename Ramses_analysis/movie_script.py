@@ -471,6 +471,8 @@ if args.make_frames_only == 'False':
             myf.set_right_corner(right_corner)
 
             #ds = yt.load(fn, units_override=units_override, bbox=bbox)
+            import pdb
+            pdb.set_trace()
             #import resource
             #def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
             #mem('bbox loaded'); ds.index; mem('bbox index built')
