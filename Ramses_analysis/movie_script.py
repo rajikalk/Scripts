@@ -507,9 +507,12 @@ if args.make_frames_only == 'False':
                     print('calculated center vel on rank', rank)
                     sys.stdout.flush()
             else:
-                bulk_velx = np.mean(region['x-velocity'])
-                bulk_vely = np.mean(region['y-velocity'])
-                bulk_velz = np.mean(region['z-velocity'])
+                #bulk_velx = np.mean(region['x-velocity'])
+                #bulk_vely = np.mean(region['y-velocity'])
+                #bulk_velz = np.mean(region['z-velocity'])
+                bulk_velx = np.sum(region['x-velocity']*region[('gas', 'Density')])/np.sum(region[('gas', 'Density')])
+                bulk_vely = np.sum(region['y-velocity']*region[('gas', 'Density')])/np.sum(region[('gas', 'Density')])
+                bulk_velz = np.sum(region['z-velocity']*region[('gas', 'Density')])/np.sum(region[('gas', 'Density')])
                 center_vel = yt.YTArray([bulk_velx.in_units('cm/s'), bulk_vely.in_units('cm/s'), bulk_velz.in_units('cm/s')])
             
             if args.use_density_threshold != None:
@@ -1032,7 +1035,7 @@ for pickle_file in pickle_files:
                     ax.scatter((part_info['particle_position'][0]), (part_info['particle_position'][1]), color='c', s=0.5)
                 else:
                     if args.annotate_particles_mass == 'True':
-                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, particle_velocity=part_info['particle_velocity'], standard_vel=args.standard_vel)
                     else:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, zorder=7)
             if args.debug_plotting != 'False':
