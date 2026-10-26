@@ -35,6 +35,7 @@ def parse_inputs():
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float)
     parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
+    parser.add_argument("-vel_center", "--velocity_center", help="0 = Bulk gas velocity in  projection region, 1= centred sink", type=int, default=0)
     parser.add_argument("-cc", "--calculation_center", help="where would you like to calculate center positionn and velocity?", type=int, default=0)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
@@ -472,15 +473,6 @@ if args.make_frames_only == 'False':
             if args.debug_plotting == 'True':
                 print('calculated center pos on rank', rank)
                 sys.stdout.flush()
-                
-            if args.image_center == 1:
-                center_vel = sinks['vel'][sink_id]
-                #center_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_vely"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_velz"][sink_id].in_units('cm/s').value])
-                #del sink_particle_velx, sink_particle_vely, sink_particle_velz
-                ##gc.collect()
-                if args.debug_plotting == 'True':
-                    print('calculated center vel on rank', rank)
-                    sys.stdout.flush()
             
             if args.axis == 'xy':
                 axis_ind = 2
@@ -503,6 +495,20 @@ if args.make_frames_only == 'False':
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
             region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
+            
+            if args.velocity_center == 1:
+                center_vel = sinks['vel'][sink_id]
+                #center_vel = yt.YTArray([ds.r["gas", "sink_particle_velx"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_vely"][sink_id].in_units('cm/s').value, ds.r["gas", "sink_particle_velz"][sink_id].in_units('cm/s').value])
+                #del sink_particle_velx, sink_particle_vely, sink_particle_velz
+                ##gc.collect()
+                if args.debug_plotting == 'True':
+                    print('calculated center vel on rank', rank)
+                    sys.stdout.flush()
+            else:
+                bulk_velx = np.mean(region['x-velocity'])
+                bulk_velx = np.mean(region['y-velocity'])
+                bulk_velx = np.mean(region['z-velocity'])
+                center_vel = yt.YTArray([bulk_velx.in_units('cm/s'), bulk_vely.in_units('cm/s'), bulk_velz.in_units('cm/s')])
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
