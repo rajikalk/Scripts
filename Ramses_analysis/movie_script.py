@@ -507,8 +507,8 @@ if args.make_frames_only == 'False':
                     sys.stdout.flush()
             else:
                 bulk_velx = np.mean(region['x-velocity'])
-                bulk_velx = np.mean(region['y-velocity'])
-                bulk_velx = np.mean(region['z-velocity'])
+                bulk_vely = np.mean(region['y-velocity'])
+                bulk_velz = np.mean(region['z-velocity'])
                 center_vel = yt.YTArray([bulk_velx.in_units('cm/s'), bulk_vely.in_units('cm/s'), bulk_velz.in_units('cm/s')])
             
             if args.use_density_threshold != None:
