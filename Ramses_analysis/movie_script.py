@@ -477,8 +477,8 @@ if args.make_frames_only == 'False':
                 box_length = box_length + yt.YTQuantity(1000, 'au')
                 region = ds.box(center_pos - box_length, center_pos + box_length)
             
-            left_box = (center_pos - box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
-            right_box = (center_pos + box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
+            left_box = ((center_pos - box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
+            right_box = ((center_pos + box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
             bbox = [left_box, right_box]
             ds_bb = yt.load(fn, units_override=units_override, bbox=bbox)
             import pdb
