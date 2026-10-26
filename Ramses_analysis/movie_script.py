@@ -271,19 +271,14 @@ if args.sink_number == None:
 else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
-try:
-    print("getting sink formation time")
-    if rank == 0:
-        sink_form_time = ds.r["sink_particle_form_time"][sink_id]   # consider the full tuple form, e.g. ("sink", "particle_form_time")
-    else:
-        sink_form_time = None
-    sys.stdout.flush()
-    CW.Barrier()
-    sink_form_time = CW.bcast(form_times, root=0)
-    print("got sink formation time")
-except:
+sink_form_times = ds.r["sink_particle_form_time"]
+if len(sink_form_time) < sink_id:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
+else:
+    sink_form_time = sink_form_times[sink_id]
+    print("got sink formation time")
+    
 
 sys.stdout.flush()
 CW.Barrier()
