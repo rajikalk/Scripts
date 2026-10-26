@@ -455,7 +455,8 @@ if args.make_frames_only == 'False':
                 
             has_particles = True
             
-            #Define box::
+            #Define box:
+            sinks = myf.get_sink_table(ds)
             if args.image_center == 1:
                 center_pos = sinks['pos'][sink_id]
                 #center_pos = yt.YTArray([ds.r["gas", "sink_particle_posx"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posy"][sink_id].in_units('au'), ds.r["gas", "sink_particle_posz"][sink_id].in_units('au')])
@@ -463,7 +464,6 @@ if args.make_frames_only == 'False':
                     print('set centre posiion on rank', rank)
                     sys.stdout.flush()
                 ##gc.collect()
-                
             else:
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
@@ -495,6 +495,7 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
+            print('Creating projection region')
             region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.velocity_center == 1:
