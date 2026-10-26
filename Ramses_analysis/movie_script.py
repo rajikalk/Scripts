@@ -447,8 +447,8 @@ if args.make_frames_only == 'False':
             if args.debug_plotting == 'True':
                 print('loading file', fn, 'on rank', rank)
                 sys.stdout.flush()
-            ds0 = yt.load(fn, units_override=units_override)      # no index touched yet
-            sinks = myf.get_sink_table(ds0)
+            ds = yt.load(fn, units_override=units_override)      # no index touched yet
+            sinks = myf.get_sink_table(ds)
             center_pos = sinks['pos'][sink_id]
             
             if args.axis == 'xy':
@@ -470,17 +470,10 @@ if args.make_frames_only == 'False':
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
 
-            pad = 1.2
-            dl, dw = ds0.domain_left_edge.in_units('AU'), ds0.domain_width.in_units('AU')
-            c = (left_corner.v + right_corner.v) / 2
-            h = pad * (right_corner.v - left_corner.v) / 2
-            bbox = [list(np.clip((c - h - dl.v) / dw.v, 0, 1)),
-                    list(np.clip((c + h - dl.v) / dw.v, 0, 1))]
-
-            ds = yt.load(fn, units_override=units_override, bbox=bbox)
-            import resource
-            def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
-            mem('bbox loaded'); ds.index; mem('bbox index built')
+            #ds = yt.load(fn, units_override=units_override, bbox=bbox)
+            #import resource
+            #def mem(tag): print(rank, tag, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'GB', flush=True)
+            #mem('bbox loaded'); ds.index; mem('bbox index built')
             print(rank, bbox, len(ds.index.domains))
             #ds = yt.load(fn, units_override=units_override)
             time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
@@ -512,8 +505,8 @@ if args.make_frames_only == 'False':
             
             print('Creating projection region')
             sys.stdout.flush()
-            mem('before index'); ds.index; mem('after index')
-            region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
+            #mem('before index'); ds.index; mem('after index')
+            region = ds.cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.velocity_center == 1:
                 center_vel = sinks['vel'][sink_id]
