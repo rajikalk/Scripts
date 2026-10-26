@@ -258,7 +258,7 @@ if args.debug_plotting == 'True':
     print('About to load end file on rank', rank)
     sys.stdout.flush()
 try:
-    ds = yt.load(files[-1], units_override=units_override, fields=["sink_particle_speed", "sink_particle_form_time"])
+    ds = yt.load(files[-1], units_override=units_override)
 except:
     last_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')[0]
     ds = yt.load(last_file, units_override=units_override, fields=["sink_particle_speed", "sink_particle_form_time"])
@@ -817,8 +817,6 @@ if args.make_frames_only == 'False':
             if rank == proj_root_rank:
                 if args.plot_velocity == "True":
                     velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
-                    import pdb
-                    pdb.set_trace()
                     del velx_full, vely_full, velz_full
                     #gc.collect()
                     

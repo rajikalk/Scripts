@@ -6,6 +6,12 @@ import numpy as np
 import csv
 import glob
 from pyramses import rsink
+from functools import lru_cache
+from pyramses import rsink as _rsink
+
+@lru_cache(maxsize=8)
+def rsink(file_no, datadir="."):
+    return _rsink(file_no, datadir=datadir)
 
 #Global variables
 center_pos_ind = 0 # 
