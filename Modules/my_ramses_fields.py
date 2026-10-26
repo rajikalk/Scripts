@@ -1282,7 +1282,7 @@ def _Radial_Momentum_wrt_Center(field, data):
     return radial_momentum
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
-
+'''
 def _usuable_inds(field,data):
     """
     Overwrites density field
@@ -1511,3 +1511,4 @@ def _cell_mass_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "cell_mass_Proj"), function=_cell_mass_Proj, units=r"g", sampling_type="local", force_override=True)
+'''

@@ -224,6 +224,8 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
             except:
                 usable_files.append(files[it])
             if verbatim == True:
+                import pdb
+                pdb.set_trace()
                 print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             mit = mit + 1
             min = it

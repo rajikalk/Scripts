@@ -498,19 +498,7 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            import pdb
-            pdb.set_trace()
-            #import pdb
-            #pdb.set_trace()
-            #region = ds.box(left_corner, right_corner)
-            #x_pos = ds.r[('gas', 'x')]
-            #y_pos = ds.r[('gas', 'y')]
-            #z_pos = ds.r[('gas', 'z')]
-            #region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
-            #unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
-            
-            #del left_corner, right_corner, x_pos, y_pos, z_pos
-            #gc.collect()
+            region = region.cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
@@ -653,30 +641,12 @@ if args.make_frames_only == 'False':
                     
                     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
-                
-                import pdb
-                pdb.set_trace()
-                #Delete unusable inds from projection fields
-                #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
-                #proj_fn = region.save_as_dataset(fields=proj_field_list)
-                
-                #proj_ds = yt.load(proj_fn)
-                #proj = yt.ProjectionPlot(proj_ds, axis_ind, ('ramses', 'x-velocity'), method='integrate')
-                
-                proj_field_list_original = proj_field_list
-                proj_field_list = []
-                proj_dict = {}
-                for field_tuple in proj_field_list_original:
-                    field_tuple = ('gas', field_tuple[1]+'_Proj')
-                    proj_field_list.append(field_tuple)
-                    proj_dict.update({field_tuple[-1]:[]})
-                proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 
                 if args.use_density_threshold != None:
-                    proj_axis_field = [('gas', 'd'+perp_vel+'_Proj')]
-                    proj = yt.ProjectionPlot(ds, axis_ind, proj_axis_field, width=(x_width,'au'), weight_field=None, method='sum', center=center_pos)
+                    proj_axis_field = [('gas', 'd'+perp_vel)]
+                    proj = yt.ProjectionPlot(ds, axis_ind, proj_axis_field, width=(x_width,'au'), weight_field=None, method='sum', center=center_pos, data_source=region)
                     proj.set_buff_size([args.resolution, args.resolution])
                     thickness_arr = proj.frb.data[proj_axis_field[0]]
                 
@@ -684,9 +654,9 @@ if args.make_frames_only == 'False':
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     #weight_field = None
                     method='integrate'
-                    if 'velocity' in field[1] and args.use_density_threshold != None:
-                        method = 'sum'
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos)
+                    #if 'velocity' in field[1] and args.use_density_threshold != None:
+                    #    method = 'sum'
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos, data_source=region)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
@@ -717,9 +687,9 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     elif 'velocity' in field[1] and args.use_density_threshold != None:
-                        import pdb
-                        pdb.set_trace()
                         if weight_field == None:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness_arr.in_units('cm'))
                             else:
