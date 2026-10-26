@@ -93,7 +93,7 @@ def sim_info(ds,args):
     #print("Succesfully read in derived fields list")
     #field = ds.derived_field_list[field_it]
     field = ('gas', args.field)
-    del field_it
+    #del field_it
     #gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
