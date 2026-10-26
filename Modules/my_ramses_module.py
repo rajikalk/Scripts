@@ -224,8 +224,12 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
             except:
                 usable_files.append(files[it])
             if verbatim == True:
-                import pdb
-                pdb.set_trace()
+                #Check it actually it the closest time based on the previous matches
+                with open(usable_files[-1].split("info")[0]+'stars_output.snktxt', 'r') as f:
+                reader = csv.reader(f, dialect='dat')
+                for row in reader:
+                    time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
+                    break
                 print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             mit = mit + 1
             min = it
