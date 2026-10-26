@@ -328,6 +328,8 @@ if args.make_frames_only == 'False':
     #Get simulation information
     print("Getting Simfo")
     sys.stdout.flush()
+    import pdb
+    pdb.set_trace()
     simfo = sim_info(ds, args) if rank == 0 else None
     simfo = CW.bcast(simfo, root=0)
     CW.Barrier()
@@ -469,8 +471,16 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-
-            #ds = yt.load(fn, units_override=units_override, bbox=bbox)
+            region = ds.box(left_corner, right_corner)
+            box_length = x_width
+            while len(region['x'])==0:
+                box_length = box_length + yt.YTQuantity(1000, 'au')
+                region = ds.box(center_pos - box_length, center_pos + box_length)
+            
+            left_box = (center_pos - box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
+            right_box = (center_pos + box_length).in_units('pc')/yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1])).value
+            bbox = [left_box, right_box]
+            ds_bb = yt.load(fn, units_override=units_override, bbox=bbox)
             import pdb
             pdb.set_trace()
             #import resource
