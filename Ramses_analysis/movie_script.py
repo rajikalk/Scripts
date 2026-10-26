@@ -106,12 +106,13 @@ def sim_info(ds,args):
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
-    test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
     try:
-        unit_string = str(test_patch[field[1]].in_cgs().units)
-    except:
-        unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
-    del test_patch
+        fi = ds.field_info[field]
+        unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
+    except Exception:
+        small = ds.sphere(ds.domain_center, ds.domain_width[0] * 1e-4)
+        unit_string = str(small[field].in_cgs().units)
+        del small
     #gc.collect()
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
@@ -267,7 +268,7 @@ if args.debug_plotting == 'True':
     print('Getting all_data on rank', rank)
     sys.stdout.flush()
 if args.sink_number == None:
-    sink_particle_speed = ds.r["sink_particle_speed"]
+    sink_particle_speed = ds.r[("gas", "sink_particle_speed")]
     sink_id = np.argmin(sink_particle_speed)
 else:
     sink_id = args.sink_number
