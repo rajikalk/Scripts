@@ -82,12 +82,14 @@ else:
     myf.set_axis_ind(0)
 '''
 
-def sim_info(ds,args):
+def sim_info(bbox,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
     print("Reading derived fields list")
-    field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
+    import pdb
+    pdb.set_trace()
+    field_it = [i for i, v in enumerate(bbox.ds.derived_field_list) if v[1] == args.field][0]
     print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
     del field_it
@@ -107,10 +109,10 @@ def sim_info(ds,args):
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
     try:
-        fi = ds.field_info[field]
-        unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
+        fi = bbox.ds.field_info[field]
+        unit_string = str(bbox.ds.quan(1.0, fi.units).in_cgs().units)
     except Exception:
-        small = ds.sphere(ds.domain_center, ds.domain_width[0] * 1e-4)
+        small = bbox.ds.sphere(bbox.ds.domain_center, bbox.ds.domain_width[0] * 1e-4)
         unit_string = str(small[field].in_cgs().units)
         del small
     #gc.collect()
@@ -255,15 +257,17 @@ print('Getting sink id and formation time')
 sys.stdout.flush()
 CW.Barrier()
 
+load_fields = ['Density', 'hydro_B_left_x', 'hydro_B_left_y', 'hydro_B_left_z', 'hydro_B_right_x', 'hydro_B_right_y', 'hydro_B_right_z', 'x-velocity', 'y-velocity', 'z-velocity']
+
 #if rank == 0:
 if args.debug_plotting == 'True':
     print('About to load end file on rank', rank)
     sys.stdout.flush()
 try:
-    ds = yt.load(files[-1], units_override=units_override)
+    ds = yt.load(files[-1], units_override=units_override, fields=load_fields)
 except:
     last_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')[0]
-    ds = yt.load(last_file, units_override=units_override)
+    ds = yt.load(last_file, units_override=units_override fields=load_fields)
 if args.debug_plotting == 'True':
     print('Getting all_data on rank', rank)
     sys.stdout.flush()
@@ -328,10 +332,16 @@ if args.make_frames_only == 'False':
     #Get simulation information
     print("Getting Simfo")
     sys.stdout.flush()
+    center_pos = sinks['pos'][sink_id]
+    box_length = yt.YTQuantity(75000, 'au')
+    bbox = ds.box(center_pos - box_length, center_pos + box_length)
     import pdb
     pdb.set_trace()
-    simfo = sim_info(ds, args) if rank == 0 else None
-    simfo = CW.bcast(simfo, root=0)
+    if rank == 0:
+        simfo = sim_info(ds, args)
+        simfo = CW.bcast(simfo, root=0)
+    else:
+        None
     CW.Barrier()
     #simfo = sim_info(ds, args)
     print("Got Simfo")
@@ -452,6 +462,8 @@ if args.make_frames_only == 'False':
             ds = yt.load(fn, units_override=units_override)      # no index touched yet
             sinks = myf.get_sink_table(ds)
             center_pos = sinks['pos'][sink_id]
+            box_length = yt.YTQuantity(75000, 'au')
+            bbox = ds.box(center_pos - box_length, center_pos + box_length)
             
             if args.axis == 'xy':
                 axis_ind = 2
@@ -472,7 +484,7 @@ if args.make_frames_only == 'False':
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
             region = ds.box(left_corner, right_corner)
-            box_length = x_width
+            box_length = yt.YTQuantity(args.slice_thickness, 'au')
             while len(region['x'])==0:
                 box_length = box_length + yt.YTQuantity(1000, 'au')
                 region = ds.box(center_pos - box_length, center_pos + box_length)
