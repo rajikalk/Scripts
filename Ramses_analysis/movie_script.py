@@ -328,12 +328,12 @@ if args.make_frames_only == 'False':
     #Get simulation information
     print("Getting Simfo")
     sys.stdout.flush()
-    simfo = sim_info(ds, args)
+    simfo = sim_info(ds, args) if rank == 0 else None
+    simfo = CW.bcast(simfo, root=0)
+    CW.Barrier()
+    #simfo = sim_info(ds, args)
     print("Got Simfo")
     sys.stdout.flush()
-    
-    ##gc.collect()
-    CW.Barrier()
         
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
     X, Y = np.meshgrid(x, x)
