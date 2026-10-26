@@ -498,7 +498,7 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            region = region.cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
+            region = ds.all_data().cut_region([f"(obj['index','x'].to('AU').v > {left_corner[0].v}) & (obj['index','x'].to('AU').v < {right_corner[0].v})",f"(obj['index','y'].to('AU').v > {left_corner[1].v}) & (obj['index','y'].to('AU').v < {right_corner[1].v})",f"(obj['index','z'].to('AU').v > {left_corner[2].v}) & (obj['index','z'].to('AU').v < {right_corner[2].v})"])
             
             if args.use_density_threshold != None:
                 myf.set_density_threshold(args.use_density_threshold)
