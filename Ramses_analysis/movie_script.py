@@ -22,7 +22,7 @@ def parse_inputs():
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
-    parser.add_argument("-prl", "--plot_real_time", help="do you want to annotate the real plot time, or use the time from m_times", default=False)
+    parser.add_argument("-prt", "--plot_real_time", help="do you want to annotate the real plot time, or use the time from m_times", default=False)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-pv", "--plot_velocity", help="would you like to annotate the velocity legend?", type=str, default="True")
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
