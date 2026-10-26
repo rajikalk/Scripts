@@ -1066,7 +1066,7 @@ for pickle_file in pickle_files:
                     ax.scatter((part_info['particle_position'][0]), (part_info['particle_position'][1]), color='c', s=0.5)
                 else:
                     if args.annotate_particles_mass == 'True':
-                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, particle_velocity=part_info['particle_velocity'], standard_vel=args.standard_vel, annotate_velocity=True)
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, particle_velocity=(part_info['particle_velocity']/10000), standard_vel=args.standard_vel, annotate_velocity=True)
                     else:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, zorder=7)
             if args.debug_plotting != 'False':
