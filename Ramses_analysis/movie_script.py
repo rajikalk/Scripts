@@ -331,13 +331,15 @@ if args.make_frames_only == 'False':
     #Get simulation information
     print("Getting Simfo")
     sys.stdout.flush()
+    '''
     if rank == 0:
         simfo = sim_info(ds, args)
     else:
         simfo = None
     simfo = CW.bcast(simfo, root=0)
     CW.Barrier()
-    #simfo = sim_info(ds, args)
+    '''
+    simfo = sim_info(ds, args)
     print("Got Simfo")
     sys.stdout.flush()
         
