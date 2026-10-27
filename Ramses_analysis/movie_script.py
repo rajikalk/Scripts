@@ -185,7 +185,6 @@ save_dir = sys.argv[2]
 if os.path.exists(save_dir) == False:
     os.makedirs(save_dir)
 
-sys.stdout.flush()
 CW.Barrier()
 
 #Set some plot variables independant on data files
@@ -222,7 +221,6 @@ if args.debug_plotting == 'True':
     print('set global font size on rank', rank)
     sys.stdout.flush()
 
-sys.stdout.flush()
 CW.Barrier()
 
 #File files
@@ -236,7 +234,6 @@ if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
     sys.stdout.flush()
 
-sys.stdout.flush()
 CW.Barrier()
 
 #Define units to override:
@@ -289,8 +286,6 @@ else:
     print("got sink formation time")
     sys.stdout.flush()
     
-
-sys.stdout.flush()
 CW.Barrier()
     
 if args.plot_time != None:
@@ -331,7 +326,6 @@ sys.stdout.flush()
 #gc.collect()
 
 if args.make_frames_only == 'False':
-    sys.stdout.flush()
     CW.Barrier()
 
     #Get simulation information
@@ -383,7 +377,6 @@ if args.make_frames_only == 'False':
         
     #Make sure to only use gas when calculating the center velocity
 
-    sys.stdout.flush()
     CW.Barrier()
 
     if args.plot_time != None:
@@ -394,7 +387,6 @@ if args.make_frames_only == 'False':
             weight_field = ('gas', args.weight_field)
             pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
         
-    sys.stdout.flush()
     CW.Barrier()
 
     if args.make_frames_only == 'False':
@@ -412,7 +404,6 @@ if args.make_frames_only == 'False':
     del files
     #gc.collect()
         
-    sys.stdout.flush()
     CW.Barrier()
 
     no_frames = len(usable_files)
@@ -421,7 +412,6 @@ if args.make_frames_only == 'False':
     sys.stdout.flush()
     
 
-sys.stdout.flush()
 CW.Barrier()
 
 if args.make_frames_only == 'False':
@@ -909,7 +899,6 @@ if args.make_frames_only == 'False':
     
     del usable_files
     #gc.collect()
-sys.stdout.flush()
 CW.Barrier()
 
 #Copy pickle files:
@@ -933,7 +922,6 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 plt.rcParams['text.usetex'] = False
 
-sys.stdout.flush()
 CW.Barrier()
 
 if args.plot_time != None:
@@ -943,7 +931,6 @@ else:
     start_file_int = pickle_files.index(save_dir+"movie_frame_"+("%06d" % args.start_frame)+".pkl")
     pickle_files = pickle_files[start_file_int:]
 
-sys.stdout.flush()
 CW.Barrier()
 
 
@@ -1115,7 +1102,6 @@ for pickle_file in pickle_files:
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
         
-sys.stdout.flush()
 CW.Barrier()
 
 print("completed making movie frames on rank", rank)
