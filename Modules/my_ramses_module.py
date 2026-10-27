@@ -274,8 +274,11 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None, edges=None):
     sink_particle_mass = ds.r['gas', 'sink_particle_mass']
     part_mass = sink_particle_mass[usable_sinks].in_units('msun').value
     
-    dx = ds.r['ramses', 'dx']
-    accretion_rad = 4.*np.min(dx).in_units('au').value
+    dx_min = ds.index.get_smallest_dx().in_units('au')   # check it equals np.min(ds.r['ramses','dx']) once
+    accretion_rad = 4.*dx_min.value
+    
+    #dx = ds.r['ramses', 'dx']
+    #accretion_rad = 4.*np.min(dx).in_units('au').value
     #center_pos = myf.get_center_pos()
     
     sink_particle_velx = ds.r['gas', 'sink_particle_velx']
