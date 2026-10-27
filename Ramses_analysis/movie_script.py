@@ -175,6 +175,7 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 if rank == 0:
     print("size =", size)
+    sys.stdout.flush()
 
 #Get input and output directories
 
@@ -203,6 +204,7 @@ else:
 
 if args.debug_plotting == 'True':
     print('set colorbar limits on rank', rank)
+    sys.stdout.flush()
     
 title_parts = args.title.split('_')
 title = ''
@@ -214,9 +216,11 @@ for part in title_parts:
         
 if args.debug_plotting == 'True':
     print('set plot title on rank', rank)
+    sys.stdout.flush()
 mym.set_global_font_size(args.text_font)
 if args.debug_plotting == 'True':
     print('set global font size on rank', rank)
+    sys.stdout.flush()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -225,10 +229,12 @@ CW.Barrier()
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 if len(files) == 0:
     print("NO FILES IN TARGET DIRECTORY")
+    sys.stdout.flush()
     sys.exit()
 #gc.collect()
 if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
+    sys.stdout.flush()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -240,6 +246,7 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/units_over
 mym.set_units(units_override)
 if args.debug_plotting == 'True':
     print('Updated my modules units with RAMSES code units on rank', rank)
+    sys.stdout.flush()
 
 
 #find sink particle to center on and formation time
@@ -270,14 +277,17 @@ if args.sink_number == None:
 else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
+sys.stdout.flush()
 sinks = myf.get_sink_table(ds)
 sink_form_times = sinks['form_time']
 if len(sink_form_times) < sink_id:
     print("TARGET SINK NOT FORMED YET")
+    sys.stdout.flush()
     sys.exit()
 else:
     sink_form_time = sink_form_times[sink_id]
     print("got sink formation time")
+    sys.stdout.flush()
     
 
 sys.stdout.flush()
@@ -304,6 +314,7 @@ elif args.use_all_files == 'False':
             start_time = yt.YTQuantity(0, 'yr')
         #gc.collect()
     print("start time", start_time)
+    sys.stdout.flush()
     
     if os.path.isfile(files[-1].split('info_')[0]+'/stars_output.snktxt') == False:
         files = files[:-1]
@@ -316,6 +327,7 @@ else:
 
 print('m_times =', m_times)
 print('no_frames =', no_frames)
+sys.stdout.flush()
 #gc.collect()
 
 if args.make_frames_only == 'False':
@@ -402,6 +414,7 @@ if args.make_frames_only == 'False':
     no_frames = len(usable_files)
     frames = list(range(args.start_frame, no_frames))
     print("derived image position arrays")
+    sys.stdout.flush()
     
 
 sys.stdout.flush()
@@ -409,6 +422,7 @@ CW.Barrier()
 
 if args.make_frames_only == 'False':
     print("starting to make projections")
+    sys.stdout.flush()
     
     #Trying yt parallelism
     file_int = -1
@@ -431,6 +445,7 @@ if args.make_frames_only == 'False':
                 pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
             except:
                 print("Failed on fn", fn, "and file_int", file_int)
+                sys.stdout.flush()
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         elif os.path.isfile(pickle_file) == True:
@@ -439,6 +454,7 @@ if args.make_frames_only == 'False':
         if usable_files[file_int] == usable_files[file_int-1]:
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
+            sys.stdout.flush()
         if make_pickle == True:
             if args.debug_plotting == 'True':
                 print('loading file', fn, 'on rank', rank)
@@ -540,6 +556,7 @@ if args.make_frames_only == 'False':
                     L = np.array([L_x, L_y, L_z])/np.sum(region['Angular_Momentum'].value)
                     myf.set_normal(L)
                     print("L =", L)
+                    sys.stdout.flush()
                     del L_x, L_y, L_z
                     #gc.collect()
                 else:
@@ -557,6 +574,7 @@ if args.make_frames_only == 'False':
                     #gc.collect()
                     myf.set_normal(L)
                     print("L =", L)
+                    sys.stdout.flush()
                     
             
             if args.update_ax_lim == 'True':
@@ -861,6 +879,7 @@ if args.make_frames_only == 'False':
                 pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "of", no_frames, "frames for  file:", str(ds), "on rank", rank)
+                sys.stdout.flush()
                 del image, magx, magy, velx, vely, velz, args_dict
                 #gc.collect()
                 
@@ -882,6 +901,7 @@ if args.make_frames_only == 'False':
             except:
                 continue
         print('Finished copying pickles that use the same file for the same frame')
+        sys.stdout.flush()
     
     del usable_files
     #gc.collect()
