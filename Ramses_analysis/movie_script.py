@@ -521,8 +521,8 @@ if args.make_frames_only == 'False':
             if has_particles:
                 print('Getting particle data on rank', rank)
                 sys.stdout.flush()
-                
-                part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
+                if np.remainder(rank, 6*para_div) == 0:
+                    part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
                 print('Got particle data on rank', rank)
                 sys.stdout.flush()
             else:
