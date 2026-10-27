@@ -85,14 +85,14 @@ def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
-    #print("Reading derived fields list")
+    print("Reading derived fields list")
     #small_box = ds.box([0.0, 0.0, 0.0], [0.1, 0.1, 0.1])
     #dummy = small_box['x']
-    #field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
-    #print("Succesfully read in derived fields list")
-    #field = ds.derived_field_list[field_it]
-    field = ('gas', args.field)
-    #del field_it
+    field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
+    print("Succesfully read in derived fields list")
+    field = ds.derived_field_list[field_it]
+    #field = ('gas', args.field)
+    del field_it
     #gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
@@ -108,8 +108,6 @@ def sim_info(ds,args):
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
-    import pdb
-    pdb.set_trace()
     try:
         fi = ds.field_info[field]
         unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
