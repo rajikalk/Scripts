@@ -7,6 +7,7 @@ import pickle
 import my_ramses_module as mym
 import os
 import yt
+import my_ramses_fields_short as myf
 yt.enable_parallelism()
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
@@ -62,12 +63,13 @@ if len(files)>0:
             print('Reading file', fn, 'on rank', rank)
             sys.stdout.flush()
             ds = yt.load(fn, units_override=units_override)
+            sinks = myf.get_sink_table(ds)
             
-            if len(ds.r["sink_particle_form_time"]) == 45:
+            if len(sinks['mass']) == 45:
                 skip=True
             else:
                 if np.isnan(sink_form_time):
-                    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+                    sink_form_time = sinks['form_time'][sink_id]
                     print("RANK", rank, "got sink formation time")
                     sys.stdout.flush()
                 skip = False
