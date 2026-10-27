@@ -80,6 +80,20 @@ def _cell_mass(field,data):
     return cell_mass
 
 yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local", force_override=True)
+
+def get_sink_table(ds):
+    file_no = int(ds.directory.split('output_')[-1])
+    datadir = ds.directory.split('output_')[0]
+    s = rsink(file_no, datadir=datadir)            # the cached wrapper
+    lu = ds.length_unit.in_units('au').value
+    vu = ds.velocity_unit.in_units('cm/s').value
+    tu = ds.time_unit.in_units('yr').value
+    return {
+        'pos': yt.YTArray(np.array([s['x'], s['y'], s['z']]).T * lu, 'au'),
+        'vel': yt.YTArray(np.array([s['ux'], s['uy'], s['uz']]).T * vu, 'cm/s'),
+        'form_time': yt.YTArray(np.array(s['tcreate']) * tu, 'yr'),
+        'mass': yt.YTArray(np.array(s['m']) * ds.mass_unit.in_units('Msun').value, 'Msun'),
+    }
     
 #===========================CALCULATING RAMSES CENTERED MAGNETIC FIELDS======================================
 
