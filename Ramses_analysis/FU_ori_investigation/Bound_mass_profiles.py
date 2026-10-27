@@ -77,8 +77,8 @@ if len(files)>0:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
             gc.collect()
             sys.stdout.flush()
-            
             #Get sink position
+            
             sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
             sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
             sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
@@ -213,6 +213,16 @@ if len(files)>0:
             file_open = open(frame_name+'.pkl', 'rb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             profile_dict = pickle.load(file_open)
+            file_open.close()
+            
+            if 'time' not in profile_dict.keys():
+                #update pickle with time
+                ds = yt.load(fn, units_override=units_override)
+                time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
+                profile_dict.update({"time": time_val})
+            
+            file_open = open(frame_name+'.pkl', 'wb')
+            pickle.dump((profile_dict), file_open)
             file_open.close()
                 
             #Radial profile calcaluated, so now let's plot the frame!
