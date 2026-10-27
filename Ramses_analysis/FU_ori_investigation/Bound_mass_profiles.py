@@ -218,6 +218,8 @@ if len(files)>0:
             if 'time' not in profile_dict.keys():
                 #update pickle with time
                 ds = yt.load(fn, units_override=units_override)
+                sinks = myf.get_sink_table(ds)
+                sink_form_time = sinks['form_time'][sink_id]
                 time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
                 profile_dict.update({"time": time_val})
             
