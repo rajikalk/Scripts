@@ -230,7 +230,7 @@ if len(files)>0:
             #Radial profile calcaluated, so now let's plot the frame!
             plt.clf()
             plt.xscale("log")
-            plt.title("time =", profile_dict["time"])
+            plt.title("time =" + str(profile_dict["time"]))
             plt.errorbar(profile_dict["R_profile_mean"], profile_dict["E_ratio_profile_mean"], xerr=profile_dict["R_profile_std"], yerr=profile_dict["E_ratio_profile_std"])
             for sink_sep in profile_dict["Sink_seps"]:
                 plt.axvline(x=sink_sep, c='r')
