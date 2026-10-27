@@ -57,7 +57,6 @@ def parse_inputs():
     parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-use_myf_short", "--use_my_ramses_field_short", help="is RAM is low, used the short version of the RAMSES yt fields", type=str, default="False")
     parser.add_argument("-use_dens_threshold", "--use_density_threshold", type=float, default=None)
     parser.add_argument("files", nargs='*')
@@ -233,16 +232,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Define units to override:
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-
-if args.simulation_density_id == 'G50':
-    units_override.update({"mass_unit":(1500,"Msun")})
-elif args.simulation_density_id == 'G200':
-    units_override.update({"mass_unit":(6000,"Msun")})
-elif args.simulation_density_id == 'G400':
-    units_override.update({"mass_unit":(12000,"Msun")})
-else:
-    units_override.update({"mass_unit":(2998,"Msun")})
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
 mym.set_units(units_override)

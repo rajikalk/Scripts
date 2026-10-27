@@ -41,6 +41,7 @@ def _Density(field,data):
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local", force_override=True)
 
+'''
 def _Gamma(field,data):
     """
     Derive gamma from density from the piecewise polytropic equation
@@ -70,7 +71,7 @@ def _Pressure(field,data):
     return pressure_arr
 
 yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
-
+'''
 def _cell_mass(field,data):
     """
     Overwrites cell mass field
