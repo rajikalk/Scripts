@@ -108,6 +108,8 @@ def sim_info(ds,args):
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
+    import pdb
+    pdb.set_trace()
     try:
         fi = ds.field_info[field]
         unit_string = str(ds.quan(1.0, fi.units).in_cgs().units)
