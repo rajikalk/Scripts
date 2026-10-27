@@ -263,10 +263,10 @@ if args.debug_plotting == 'True':
 try:
     ds = yt.load(files[-1], units_override=units_override, fields=load_fields)
 except:
+    first_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[0].split('grav')[0]+'info*.txt')[0]
     last_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')[0]
-    import pdb
-    pdb.set_trace()
-    ds = yt.load(last_file, units_override=units_override, fields=load_fields)
+    files[files.index(first_file):files.index(last_file)+1]
+    ds = yt.load(files[-1], units_override=units_override, fields=load_fields)
 if args.debug_plotting == 'True':
     print('Getting all_data on rank', rank)
     sys.stdout.flush()
