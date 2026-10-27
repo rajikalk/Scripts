@@ -104,7 +104,8 @@ for sink_id in IDs_continuous_clean:
     axs.flatten()[0].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
     print("plotted sink", sink_id)
     
-axs.flatten()[0].set_title("Diversity of star accretion histories from ISM simulations of Kuruwita & Haugbølle (2023)", pad=-1, fontsize=font_size)
+#axs.flatten()[0].set_title("Diversity of star accretion histories from ISM simulations of Kuruwita & Haugbølle (2023)", pad=-1, fontsize=font_size)
+axs.flatten()[0].set_title("My treasure trove of accretion histories produced in Kuruwita & Haugbølle (2023)", pad=-1, fontsize=font_size)
 
 axs.flatten()[0].tick_params(axis='both', which='both', direction='in', top=True, right=True)
 axs.flatten()[0].text(1.73, 1.e-7, "(a) Continuous accretion", ha='right', fontsize=font_size)
