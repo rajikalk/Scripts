@@ -15,6 +15,7 @@ from matplotlib import transforms
 import csv
 import math
 from matplotlib.transforms import Affine2D, offset_copy
+import sys
 
 fontsize_global=12
 
@@ -201,6 +202,7 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
         f.close()
         if verbatim == True:
             print("Current file time =", time, "for interator =", it)
+            sys.stdout.flush()
         #check if it is honed in on the closes file, or times match:
         if pit == it or time == m_times[mit]:
             #Checking which file is actually closest to the movie time
@@ -231,6 +233,7 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
                         time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                         break
                 print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
+                sys.stdout.flush()
             mit = mit + 1
             min = it
             max = len(files)-1
@@ -654,6 +657,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
     else:
         bins = np.linspace(bin_min, bin_max, n_bins+1)
     print(("No of bins:", len(bins)))
+    sys.stdout.flush()
     neg_inds = np.where(bins < 0)[0]
     #bins[neg_inds[-1]] = -1*(bins[neg_inds[-1]+1] - yt.YTArray(0.01, unit_string))
 
@@ -678,12 +682,14 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
         else:
             bin_val = np.nan
             print("FOUND EMPTY BIN")
+            sys.stdout.flush()
         prev_bin = bin
         if cumulative:
             cum_val = cum_val + np.sum(y[ind])
             bin_val = cum_val
         y_array.append(bin_val)
         print("Value =", bin_val, ", at radius=", mid_x)
+        sys.stdout.flush()
 
     x_array = np.array(x_array)
     y_array = np.array(y_array)
