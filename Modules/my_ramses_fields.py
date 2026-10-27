@@ -973,7 +973,7 @@ def _All_Particle_Masses(field, data):
     return mass
 
 yt.add_field("All_Particle_Masses", function=_All_Particle_Masses, units=r"g", sampling_type="local")
-
+'''
 def _dx_from_Center(field, data):
     """
     Calculates the change in x position from the current set center.
@@ -1071,7 +1071,7 @@ def _magnetic_field_magnitude(field, data):
     return B
     
 yt.add_field("magnetic_field_magnitude", function=_magnetic_field_magnitude, units=r"G", sampling_type="local")
-
+'''
 '''
 def _Angular_Momentum_x(field, data):
     """
@@ -1228,6 +1228,7 @@ def _Bulk_Velocity_Gas(field, data):
 
 yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s", sampling_type="local")
 '''
+'''
 def _Number_Density(field, data):
     """
     Estimates number density
@@ -1236,7 +1237,7 @@ def _Number_Density(field, data):
     return Number_Density
 
 yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3", sampling_type="local")
-
+'''
 '''
 def _Radial_Velocity(field, data):
     global normal
@@ -1261,7 +1262,7 @@ def _Radial_Velocity(field, data):
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
 '''
-
+'''
 def _Radial_Velocity_wrt_Center(field, data):
 
     shape = np.shape(data['x'])
@@ -1302,6 +1303,7 @@ def _Radial_Momentum_wrt_Center(field, data):
     return radial_momentum
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
+'''
 '''
 def _usuable_inds(field,data):
     """
