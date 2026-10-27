@@ -424,7 +424,7 @@ if args.make_frames_only == 'False':
     
     #Trying yt parallelism
     file_int = -1
-    para_div = 2
+    para_div = 4
     for fn in yt.parallel_objects(usable_files, njobs=int(size/(6*para_div))):
         #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
@@ -521,6 +521,7 @@ if args.make_frames_only == 'False':
             if has_particles:
                 print('Getting particle data on rank', rank)
                 sys.stdout.flush()
+                
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
                 print('Got particle data on rank', rank)
                 sys.stdout.flush()
