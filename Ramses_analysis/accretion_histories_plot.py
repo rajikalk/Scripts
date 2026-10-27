@@ -171,7 +171,7 @@ for sink_id in IDs_steady_decline_messy:
     time_arr = (particle_data['time'].T[sink_id]-particle_data['time'].T[sink_id][0]) * units['time_unit'].in_units('Myr')
     axs.flatten()[2].semilogy(time_arr, acc_val, linewidth=ln_wd, alpha=alpha)
 '''
-axs.flatten()[2].set_ylabel("Mass accrretion rate ($\mathrm{M}_\odot/yr$)", labelpad=-1, fontsize=font_size)
+axs.flatten()[2].set_ylabel("Mass accrretion rate onto star ($\mathrm{M}_\odot/yr$)", labelpad=-1, fontsize=font_size)
 
 for sink_id in IDs_late_accretion_clean:
     #zero_inds = np.where(particle_data['time'].T[sink_id] == 0)[0]
