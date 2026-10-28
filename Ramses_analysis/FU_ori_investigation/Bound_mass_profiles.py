@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=10000, type=float)
 parser.add_argument("-event_id", "--event_identifier", default=None, type=int)
 parser.add_argument("-para_div", "--parallelisation_jobs", default=None, type=int)
+parser.add_argument("-use_com", "--use_centre_of_mass", default=False, type=str)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -79,16 +80,25 @@ if len(files)>0:
             sys.stdout.flush()
             #Get sink position
             
+            sinks = myf.get_sink_table(ds)
+            import pdb
+            pdb.set_trace()
             sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
             sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
             sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-            sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+            center_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+                
             
-            dx_sinks = ds.r["gas", "sink_particle_posx"].in_units('au') - sink_pos[0].in_units('au')
-            dy_sinks = ds.r["gas", "sink_particle_posy"].in_units('au') - sink_pos[1].in_units('au')
-            dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - sink_pos[2].in_units('au')
+            dx_sinks = ds.r["gas", "sink_particle_posx"].in_units('au') - center_pos[0].in_units('au')
+            dy_sinks = ds.r["gas", "sink_particle_posy"].in_units('au') - center_pos[1].in_units('au')
+            dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - center_pos[2].in_units('au')
             sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
             del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
+            
+            if args.use_centre_of_mass != False:
+                nearest_sink = np.argsort(sink_separations)[1]
+                
+            
             sink_masses = ds.r["gas", "sink_particle_mass"].in_units('g')
             sink_masses = np.delete(sink_masses, np.where(sink_separations>radius)[0])
             sink_separations = np.delete(sink_separations, np.where(sink_separations>radius)[0])
@@ -97,11 +107,11 @@ if len(files)>0:
             sys.stdout.flush()
             
             #Get inds in measuring sphere
-            dx = ds.r['ramses', 'x'].in_units('au') - sink_pos[0].in_units('au')
-            dy = ds.r['ramses', 'y'].in_units('au') - sink_pos[1].in_units('au')
-            dz = ds.r['ramses', 'z'].in_units('au') - sink_pos[2].in_units('au')
+            dx = ds.r['ramses', 'x'].in_units('au') - center_pos[0].in_units('au')
+            dy = ds.r['ramses', 'y'].in_units('au') - center_pos[1].in_units('au')
+            dz = ds.r['ramses', 'z'].in_units('au') - center_pos[2].in_units('au')
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
-            del dx, dy, dz, sink_pos
+            del dx, dy, dz, center_pos
             del_inds = np.where(sep>radius)[0]
             gas_mass = ds.r["gas", "mass"]
             gas_mass = np.delete(gas_mass, np.where(sep>radius)[0])
