@@ -174,9 +174,9 @@ if len(files)>0:
                 gc.collect()
                 #get average radius in the bin
                 rad_mean = np.mean(sep[sphere_inds])
-                profile_dict["R_profile_mean"] = np.append(profile_dict["R_profile_mean"], rad_mean)
+                profile_dict["R_profile_mean"] = np.append(profile_dict["R_profile_mean"], rad_mean.value)
                 rad_std = np.std(sep[sphere_inds])
-                profile_dict["R_profile_std"] = np.append(profile_dict["R_profile_std"], rad_std)
+                profile_dict["R_profile_std"] = np.append(profile_dict["R_profile_std"], rad_std.value)
                 #calcualte gravitational potential energy
                 E_grav = -1*(yt.units.gravitational_constant_cgs*enclosed_mass*gas_mass[sphere_inds])/sep[sphere_inds]
                 del sphere_inds
@@ -190,11 +190,11 @@ if len(files)>0:
                 E_ratio_mean = np.mean(E_ratio)
                 E_ratio_std = np.std(E_ratio)
                 
-                profile_dict["E_ratio_profile_mean"] = np.append(profile_dict["E_ratio_profile_mean"], E_ratio_mean)
-                profile_dict["E_ratio_profile_std"] = np.append(profile_dict["E_ratio_profile_std"], E_ratio_std)
-                profile_dict["E_tot_profile_mean"] = np.append(profile_dict["E_tot_profile_mean"], E_tot_mean)
-                profile_dict["E_tot_profile_std"] = np.append(profile_dict["E_tot_profile_std"], E_tot_std)
-                profile_dict["Sink_seps"] = np.append(profile_dict["Sink_seps"], sink_separations)
+                profile_dict["E_ratio_profile_mean"] = np.append(profile_dict["E_ratio_profile_mean"], E_ratio_mean.value)
+                profile_dict["E_ratio_profile_std"] = np.append(profile_dict["E_ratio_profile_std"], E_ratio_std.value)
+                profile_dict["E_tot_profile_mean"] = np.append(profile_dict["E_tot_profile_mean"], E_tot_mean.value)
+                profile_dict["E_tot_profile_std"] = np.append(profile_dict["E_tot_profile_std"], E_tot_std.value)
+                profile_dict["Sink_seps"] = np.append(profile_dict["Sink_seps"], sink_separations.value)
                 del E_ratio, E_tot
                 gc.collect()
                 #sto.result_id = str(radius_bins[radius_bit])
