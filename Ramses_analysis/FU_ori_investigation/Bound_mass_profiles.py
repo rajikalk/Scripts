@@ -227,8 +227,8 @@ if len(files)>0:
             plt.axhline(y=1.0, ls='--', c='k')
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
-            plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
-            plt.ylim([0.0, np.max(profile_dict["E_ratio_profile_mean"])])
+            plt.xlim([np.nanmin(profile_dict["R_profile_mean"]), np.nanmax(profile_dict["R_profile_mean"])])
+            plt.ylim([0.0, np.nanmax(profile_dict["E_ratio_profile_mean"])])
             plt.savefig(frame_name+"_ratio.jpg")
             
             plt.clf()
@@ -239,8 +239,8 @@ if len(files)>0:
                 plt.axvline(x=sink_sep)
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
-            plt.xlim([np.min(profile_dict["R_profile_mean"]), np.max(profile_dict["R_profile_mean"])])
-            plt.ylim([np.min(profile_dict["E_tot_profile_mean"]), np.max(profile_dict["E_tot_profile_mean"])])
+            plt.xlim([np.nanmin(profile_dict["R_profile_mean"]), np.nanmax(profile_dict["R_profile_mean"])])
+            plt.ylim([np.nanmin(profile_dict["E_tot_profile_mean"]), np.mammax(profile_dict["E_tot_profile_mean"])])
             plt.yscale("symlog")
             plt.savefig(frame_name+"_total.jpg")
             del profile_dict
