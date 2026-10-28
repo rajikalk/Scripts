@@ -81,25 +81,21 @@ if len(files)>0:
             #Get sink position
             
             sinks = myf.get_sink_table(ds)
-            import pdb
-            pdb.set_trace()
-            sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-            sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
-            sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-            center_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-                
-            
-            dx_sinks = ds.r["gas", "sink_particle_posx"].in_units('au') - center_pos[0].in_units('au')
-            dy_sinks = ds.r["gas", "sink_particle_posy"].in_units('au') - center_pos[1].in_units('au')
-            dz_sinks = ds.r["gas", "sink_particle_posz"].in_units('au') - center_pos[2].in_units('au')
-            sink_separations = np.sqrt(dx_sinks**2 + dy_sinks**2 + dz_sinks**2)
-            del sink_particle_posx, sink_particle_posy, sink_particle_posz, dx_sinks, dy_sinks, dz_sinks
+            center_pos = sinks['pos'][sink_id]
+            sink_separations = np.sqrt(np.sum((sinks['pos'] - center_pos)**2, axis=1))
             
             if args.use_centre_of_mass != False:
                 nearest_sink = np.argsort(sink_separations)[1]
-                
+                binary_masses = sinks['mass'][[sink_id, nearest_sink]]
+                binary_positions = sinks['pos'][[sink_id, nearest_sink]]
+                binary_velocities = sinks['vel'][[sink_id, nearest_sink]]
+                center_pos = np.sum(binary_masses*binary_positions.T, axis=1)/np.sum(binary_masses)
+                center_vel = np.sum(binary_masses*binary_velocities.T, axis=1)/np.sum(binary_masses)
+                sink_separations = np.sqrt(np.sum((sinks['pos'] - center_pos)**2, axis=1))
+            else:
+                center_vel = sinks['vel'][sink_id]
             
-            sink_masses = ds.r["gas", "sink_particle_mass"].in_units('g')
+            sink_masses = sinks['mass']
             sink_masses = np.delete(sink_masses, np.where(sink_separations>radius)[0])
             sink_separations = np.delete(sink_separations, np.where(sink_separations>radius)[0])
             #Delete sink separations greater than measuring sphere
@@ -120,18 +116,14 @@ if len(files)>0:
             gc.collect()
             sys.stdout.flush()
             
-            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-            del sink_particle_velx, sink_particle_vely, sink_particle_velz
+            
             gc.collect()
             print("RANK", rank, "got particle velocity")
             sys.stdout.flush()
             
-            sph_dvx = ds.r["ramses", "x-velocity"].in_units('km/s') - sink_vel[0]
-            sph_dvy = ds.r["ramses", "y-velocity"].in_units('km/s') - sink_vel[1]
-            sph_dvz = ds.r["ramses", "z-velocity"].in_units('km/s') - sink_vel[2]
+            sph_dvx = ds.r["ramses", "x-velocity"].in_units('km/s') - center_vel[0]
+            sph_dvy = ds.r["ramses", "y-velocity"].in_units('km/s') - center_vel[1]
+            sph_dvz = ds.r["ramses", "z-velocity"].in_units('km/s') - center_vel[2]
             sph_vel = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
             sph_vel = np.delete(sph_vel, del_inds)
             del del_inds
@@ -223,18 +215,6 @@ if len(files)>0:
             file_open = open(frame_name+'.pkl', 'rb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             profile_dict = pickle.load(file_open)
-            file_open.close()
-            
-            if 'time' not in profile_dict.keys():
-                #update pickle with time
-                ds = yt.load(fn, units_override=units_override)
-                sinks = myf.get_sink_table(ds)
-                sink_form_time = sinks['form_time'][sink_id]
-                time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-                profile_dict.update({"time": time_val})
-            
-            file_open = open(frame_name+'.pkl', 'wb')
-            pickle.dump((profile_dict), file_open)
             file_open.close()
                 
             #Radial profile calcaluated, so now let's plot the frame!
