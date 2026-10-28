@@ -240,7 +240,7 @@ if len(files)>0:
             plt.xlabel("Radius (au)")
             plt.ylabel("E_grav/E_kin")
             plt.xlim([np.nanmin(profile_dict["R_profile_mean"]), np.nanmax(profile_dict["R_profile_mean"])])
-            plt.ylim([np.nanmin(profile_dict["E_tot_profile_mean"]), np.mammax(profile_dict["E_tot_profile_mean"])])
+            plt.ylim([np.nanmin(profile_dict["E_tot_profile_mean"]), np.nanmax(profile_dict["E_tot_profile_mean"])])
             plt.yscale("symlog")
             plt.savefig(frame_name+"_total.jpg")
             del profile_dict
