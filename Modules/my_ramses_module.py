@@ -217,6 +217,8 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
                 f.close()
                 diff_val = time - m_times[mit]
                 diff_arr.append(diff_val)
+            import pdb
+            pdb.set_trace()
             try:
                 append_it = np.argmin(abs(np.array(diff_arr)))
             
