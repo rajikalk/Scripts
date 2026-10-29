@@ -206,7 +206,10 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
         #check if it is honed in on the closes file, or times match:
         if pit == it or time == m_times[mit]:
             #Checking which file is actually closest to the movie time
-            potential_files = files[it-1:it+2]
+            if it == 0:
+                potential_files = files[:it+2]
+            else:
+                potential_files = files[it-1:it+2]
             diff_arr = []
             for pot_file in potential_files:
                 with open(pot_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
@@ -217,8 +220,6 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
                 f.close()
                 diff_val = time - m_times[mit]
                 diff_arr.append(diff_val)
-            import pdb
-            pdb.set_trace()
             try:
                 append_it = np.argmin(abs(np.array(diff_arr)))
             
