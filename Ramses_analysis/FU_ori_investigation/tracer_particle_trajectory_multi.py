@@ -28,11 +28,11 @@ page_height = 10.62472 #inches
 font_size = 10
 mutation_scale = 5
 linewidth = 0.8
-axis_lim = 100
+axis_lim = 15
 
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.8*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.9*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
 
@@ -93,10 +93,7 @@ for Traj_pickle in Traj_pickles:
         plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj_ref.pdf", bbox_inches='tight', pad_inches=0.02)
-<<<<<<< HEAD
-=======
 
->>>>>>> 2d53269a117e7692f42affe3ce57460455fc1fe0
 cax = fig.add_axes([0.90, 0.30, 0.01, 0.35])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Normalised", rotation=270, labelpad=13, fontsize=font_size)
