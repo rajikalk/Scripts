@@ -687,6 +687,8 @@ if args.make_frames_only == 'False':
                     #    method = 'sum'
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos, data_source=region)
                     proj.set_buff_size([args.resolution, args.resolution])
+                    import pdb
+                    pdb.set_trace()
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
