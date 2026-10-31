@@ -73,8 +73,7 @@ for movie_plot_pickle in movie_plot_pickles:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
 
-    ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
-    ax.set_aspect('equal')
+    axs.flatten()[plot_it].set_aspect('equal')
     
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
