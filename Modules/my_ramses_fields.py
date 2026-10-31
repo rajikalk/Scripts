@@ -1304,7 +1304,7 @@ def _Radial_Momentum_wrt_Center(field, data):
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
 '''
-'''
+
 def _usuable_inds(field,data):
     """
     Overwrites density field
@@ -1325,7 +1325,7 @@ def _usuable_inds(field,data):
     return unusable_dd_inds
     
 yt.add_field(("gas", "unusable_dd_inds"), function=_usuable_inds, units=r"", sampling_type="local", force_override=True)
-'''
+
 def _Density_Proj(field,data):
     """
     Overwrites density field
