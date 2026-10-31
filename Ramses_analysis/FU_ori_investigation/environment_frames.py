@@ -43,7 +43,6 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-cbar_lims = [5.e-20, 5.e-17]
 cmap=plt.cm.gist_heat
 
 width = 1000
@@ -79,6 +78,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     axs.flatten()[plot_it].set_aspect('equal')
     
+    width = args_dict['axlim']*2
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
     Y_image = Y_image - part_info['particle_position'][1][centre_ind]
