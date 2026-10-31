@@ -667,6 +667,14 @@ if args.make_frames_only == 'False':
                     
                     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
+                    
+                old_proj_field_list = proj_field_list
+                proj_field_list = []
+                for field in old_proj_field_list:
+                    new_field = (field[0], field[-1]+'_Proj')
+                    proj_field_list.append(new_field)
+                del old_proj_field_list
+                
                 
                 print('Generated projection field list rank', rank)
                 sys.stdout.flush()
@@ -687,8 +695,6 @@ if args.make_frames_only == 'False':
                     #    method = 'sum'
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos, data_source=region)
                     proj.set_buff_size([args.resolution, args.resolution])
-                    import pdb
-                    pdb.set_trace()
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
