@@ -134,7 +134,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-1, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     if plot_it == 0:
@@ -204,6 +204,8 @@ for movie_plot_pickle in movie_plot_pickles:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = axs.flatten()[plot_it].get_yticklabels()
         plt.setp(yticklabels, visible=False)
+        xticklabels = axs.flatten()[plot_it].get_xticklabels()
+        plt.setp(xticklabels[0], visible=False)
 
     axs.flatten()[plot_it].set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
