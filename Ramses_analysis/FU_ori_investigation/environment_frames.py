@@ -83,7 +83,7 @@ for movie_plot_pickle in movie_plot_pickles:
     part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][centre_ind]
     part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][centre_ind]
     
-    part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
+    part_info_pickle = 'part_info_'+str(args_dict['time_val'])+'.pkl'
     if os.path.isfile(part_info_pickle):
         file = open(part_info_pickle, 'rb')
         part_info = pickle.load(file)
@@ -108,7 +108,7 @@ for movie_plot_pickle in movie_plot_pickles:
         sink_id = int(part_info['particle_tag'][-1].value)
         ds = yt.load(files[-1], units_override=units_override)
         sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-        usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
+        usable_files = mym.find_files([args_dict['time_val']], files, sink_form_time, sink_id, verbatim=True)
         ds = yt.load(usable_files[0], units_override=units_override)
         if len(part_info['particle_tag']) == 1:
             part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
@@ -181,7 +181,7 @@ for movie_plot_pickle in movie_plot_pickles:
     for line in axs.flatten()[plot_it].yaxis.get_ticklines():
         line.set_color('white')
                     
-    time_string = "$t$="+str(int(plot_time))+"yr"
+    time_string = "$t$="+str(int(args_dict['time_val']))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -204,4 +204,4 @@ for movie_plot_pickle in movie_plot_pickles:
     axs.flatten()[plot_it].set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Environment_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    print('saving figure after plotting time', plot_time)
+    print('saving figure after plotting time', args_dict['time_val'])
