@@ -18,6 +18,7 @@ import matplotlib.patches as mpatches
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-ax', '--axis', default='xy')
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
