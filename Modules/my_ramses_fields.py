@@ -1326,6 +1326,60 @@ def _usuable_inds(field,data):
     
 yt.add_field(("gas", "unusable_dd_inds"), function=_usuable_inds, units=r"", sampling_type="local", force_override=True)
 
+def _x(field,data):
+    """
+    Overwrites density field
+    """
+    #global centred_sink_id
+    #global projection_depth
+    if np.shape(data[('gas', 'x')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'x')]
+    else:
+        Proj_field = data[('gas', 'x')]
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds')].value.astype(int)
+        Proj_field = np.delete(Proj_field, unusable_dd_inds)
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "x"), function=_x, units=r"cm", sampling_type="local", force_override=True)
+
+def _y(field,data):
+    """
+    Overwrites density field
+    """
+    #global centred_sink_id
+    #global projection_depth
+    if np.shape(data[('gas', 'y')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'y')]
+    else:
+        Proj_field = data[('gas', 'y')]
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds')].value.astype(int)
+        Proj_field = np.delete(Proj_field, unusable_dd_inds)
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "y"), function=_y, units=r"cm", sampling_type="local", force_override=True)
+
+def _z(field,data):
+    """
+    Overwrites density field
+    """
+    #global centred_sink_id
+    #global projection_depth
+    if np.shape(data[('gas', 'z')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'z')]
+    else:
+        Proj_field = data[('gas', 'z')]
+        unusable_dd_inds = data[('gas', 'unusable_dd_inds')].value.astype(int)
+        Proj_field = np.delete(Proj_field, unusable_dd_inds)
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "z"), function=_z, units=r"cm", sampling_type="local", force_override=True)
+
 def _Density_Proj(field,data):
     """
     Overwrites density field
