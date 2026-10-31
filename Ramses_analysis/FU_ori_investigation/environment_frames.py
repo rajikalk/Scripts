@@ -22,6 +22,7 @@ parser.add_argument('-ax', '--axis', default='xy')
 parser.add_argument('-cmin', '--cbar_min', type=float)
 parser.add_argument('-cmax', '--cbar_max', type=float)
 parser.add_argument('-stdv', '--standard_vel', default=5, type=int)
+parser.add_argument('-axlim', '--axis_lim', default=None, type=int)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -79,7 +80,10 @@ for movie_plot_pickle in movie_plot_pickles:
 
     axs.flatten()[plot_it].set_aspect('equal')
     
-    width = args_dict['axlim']*2
+    if args.axis_lim == None:
+        width = args_dict['axlim']*2
+    else:
+        width = args.axis_lim*2
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
     Y_image = Y_image - part_info['particle_position'][1][centre_ind]
