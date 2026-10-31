@@ -560,6 +560,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         particle_tags = np.arange(len(particle_position))
     for pos_it in np.argsort(particle_tags):
         axis.scatter(particle_position[0][pos_it], particle_position[1][pos_it], c=part_color[pos_it], s=1)#, zorder=zorder)
+        circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
+        axis.add_patch(circle)
         if annotate_velocity:
             len_scale = (0.07*(xmax - xmin))
             xvel = len_scale*(particle_velocity[0][pos_it]/standard_vel)
@@ -573,8 +575,6 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
             axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw/2, c=part_color[pos_it])
             axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
-        circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
-        axis.add_patch(circle)
         
         if annotate_field is not None:
             if units is not None:
