@@ -1477,7 +1477,7 @@ def _x_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _y_velocity_Proj(field,data):
     """
@@ -1497,7 +1497,7 @@ def _y_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _z_velocity_Proj(field,data):
     """
@@ -1517,7 +1517,7 @@ def _z_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _magx_Proj(field,data):
     """
