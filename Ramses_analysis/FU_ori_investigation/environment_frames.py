@@ -205,5 +205,5 @@ for movie_plot_pickle in movie_plot_pickles:
 
     axs.flatten()[plot_it].set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
-    plt.savefig("Environment_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("Environment_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', args_dict['time_val'])
