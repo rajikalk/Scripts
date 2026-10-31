@@ -57,7 +57,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.5), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.3), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -75,7 +75,7 @@ for pick_file in pickle_files:
     print("finished reading in pickle")
 
     #find time bounds:
-    t_start_yr = 3000
+    t_start_yr = 3500
     if t_end_yr == None:
         t_end_yr = (np.array(particle_data['time']) - t_start_yr)[-1]
     t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
@@ -129,10 +129,10 @@ for pick_file in pickle_files:
     #axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
     if cit == 0:
         axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--', label='$2r_\mathrm{acc}$')
-        axs.flatten()[2].legend(loc='upper right')
+        axs.flatten()[2].legend(loc='lower left')
     else:
         axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
-    axs.flatten()[2].set_xlabel('Time (yr)', size=font_size)
+    axs.flatten()[2].set_xlabel('Time (yr)', size=font_size, labelpad=-1)
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
     #axs.flatten()[1].set_ylim()

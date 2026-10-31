@@ -1325,7 +1325,7 @@ def _usuable_inds(field,data):
     return unusable_dd_inds
     
 yt.add_field(("gas", "unusable_dd_inds"), function=_usuable_inds, units=r"", sampling_type="local", force_override=True)
-
+'''
 def _Density_Proj(field,data):
     """
     Overwrites density field
@@ -1533,4 +1533,3 @@ def _cell_mass_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "cell_mass_Proj"), function=_cell_mass_Proj, units=r"g", sampling_type="local", force_override=True)
-'''
