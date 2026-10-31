@@ -669,11 +669,15 @@ if args.make_frames_only == 'False':
                     proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
                     
                 old_proj_field_list = proj_field_list
+                old_proj_dict_keys = proj_dict_keys
+                proj_dict_keys = []
                 proj_field_list = []
                 for field in old_proj_field_list:
                     new_field = ('gas', field[-1]+'_Proj')
                     proj_field_list.append(new_field)
-                del old_proj_field_list
+                for key in old_proj_dict_keys:
+                    proj_dict_keys.append(key+'_Proj')
+                del old_proj_field_list,old_proj_dict_keys
                 
                 
                 print('Generated projection field list rank', rank)
