@@ -63,7 +63,7 @@ plt.subplots_adjust(hspace=-0.2)
 plt.clf()
 fig, axs = plt.subplots(ncols=5, nrows=1, figsize=(two_col_width, single_col_width*0.7), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.01)
-cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
+cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.5])
 
 files = sorted(glob.glob("/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/data/out*/info*"))
 movie_plot_pickles = sorted(glob.glob("movie_frame*.pkl"))
