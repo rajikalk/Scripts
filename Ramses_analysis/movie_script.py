@@ -671,7 +671,7 @@ if args.make_frames_only == 'False':
                 old_proj_field_list = proj_field_list
                 proj_field_list = []
                 for field in old_proj_field_list:
-                    new_field = (field[0], field[-1]+'_Proj')
+                    new_field = ('gas', field[-1]+'_Proj')
                     proj_field_list.append(new_field)
                 del old_proj_field_list
                 
