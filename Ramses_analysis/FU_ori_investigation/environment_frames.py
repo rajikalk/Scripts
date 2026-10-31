@@ -130,7 +130,7 @@ for movie_plot_pickle in movie_plot_pickles:
     axs.flatten()[plot_it].set_ylim(ylim)
                 
     if plot_it < n_frames:
-        plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+        plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args.cbar_min, vmax=args.cbar_max), rasterized=True, zorder=1)
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
