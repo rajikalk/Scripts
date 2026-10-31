@@ -54,10 +54,10 @@ label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\Delta
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 10
+font_size = 9
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.3), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.2), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -101,7 +101,7 @@ for pick_file in pickle_files:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls=":")
         else:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-", label=label[pickle_files.index(pick_file)])
-    axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
+    axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size, labelpad=-1)
     #axs.flatten()[0].legend(loc=(0.5, 0.13), fontsize=font_size)
     axs.flatten()[0].legend(loc='center right', fontsize=font_size)
     axs.flatten()[0].set_ylim(bottom=0.03)
@@ -112,10 +112,11 @@ for pick_file in pickle_files:
             axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
         else:
             axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
-    axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
+    axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size, labelpad=-1)
     #axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
-    axs.flatten()[1].set_ylim([1.e-9, 5.e-5])
-    axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
+    axs.flatten()[1].set_ylim([5.e-9, 5.e-5])
+    #axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
+    axs.flatten()[1].tick_params(axis='both', which='both', direction='in', top=True, right=True)
     print("plotted Accretion rate")
     
     '''
@@ -125,7 +126,7 @@ for pick_file in pickle_files:
     axs.flatten()[1].set_ylim(bottom=1.e-9)
     '''
     axs.flatten()[2].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit], linestyle='-')
-    axs.flatten()[2].set_ylabel('Separation (AU)', size=font_size)
+    axs.flatten()[2].set_ylabel('Separation (AU)', size=font_size, labelpad=-1)
     #axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
     if cit == 0:
         axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--', label='$2r_\mathrm{acc}$')
@@ -134,7 +135,8 @@ for pick_file in pickle_files:
         axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
     axs.flatten()[2].set_xlabel('Time (yr)', size=font_size, labelpad=-1)
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
-    axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
+    #axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
+    axs.flatten()[2].tick_params(axis='both', which='both', direction='in', top=True, right=True)
     #axs.flatten()[1].set_ylim()
     print("plotted separation")
     
