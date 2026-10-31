@@ -18,8 +18,6 @@ import matplotlib.patches as mpatches
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
-parser.add_argument("-ax", "--axis", default='xy', type=str)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -48,23 +46,6 @@ cmap=plt.cm.gist_heat
 width = 1000
 stdvel = 1
 n_frames = 5
-make_frame = True
-event_it = args.event_identifier
-cbar_lims = cbar_lims_all[event_it-1]
-start_burst = burst_bounds[event_it -1][0]
-end_burst = burst_bounds[event_it -1][1]
-start_time = time_bounds[event_it -1][0]
-end_time = time_bounds[event_it -1][1]
-highlight_obs_start = burst_bounds[event_it -1][0] - 15
-highlight_obs_end = burst_bounds[event_it -1][0] + 90
-highlight_burst_start = burst_bounds[event_it -1][0]
-highlight_burst_end = burst_bounds[event_it -1][0] + 20
-if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
-    end_burst = 7340
-    end_time = 7340
-    
-plot_dt = (end_burst-start_burst)/4
-plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
