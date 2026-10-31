@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-ax', '--axis', default='xy')
 parser.add_argument('-cmin', '--cbar_min', type=float)
 parser.add_argument('-cmax', '--cbar_max', type=float)
+parser.add_argument('-stdv', '--standard_vel', default=5, type=int)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -134,7 +135,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-1, rotation=270, size=font_size)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=10, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     if plot_it == 0:
@@ -175,7 +176,7 @@ for movie_plot_pickle in movie_plot_pickles:
         
     #Get unit velocity:
     #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
-        
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, standard_vel=args.standard_vel, Z_val=None)
     
     mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1)
 
