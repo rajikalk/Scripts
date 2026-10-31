@@ -124,8 +124,8 @@ for movie_plot_pickle in movie_plot_pickles:
 
     xlim = [-1*width/2, width/2]
     ylim = [-1*width/2, width/2]
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    axs.flatten()[plot_it].set_xlim(xlim)
+    axs.flatten()[plot_it].set_ylim(ylim)
                 
     if plot_it < n_frames:
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
