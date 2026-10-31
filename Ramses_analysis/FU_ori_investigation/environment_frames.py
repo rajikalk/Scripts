@@ -41,7 +41,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-cbar_lims_all = [5.e-19, 5.e-16]
+cbar_lims_all = [5.e-20, 5.e-17]
 cmap=plt.cm.gist_heat
 
 width = 1000
