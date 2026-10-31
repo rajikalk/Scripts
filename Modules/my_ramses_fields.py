@@ -471,7 +471,7 @@ def _sink_particle_tag(field, data):
     Retrieve particle tags from .snktxt file
     """
     particle_tag = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_tag = yt.YTArray(np.array(particle_tag), "")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -488,7 +488,7 @@ def _sink_particle_posx(field, data):
     Retrieve particle x position from .snktxt file
     """
     particle_posx = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -505,7 +505,7 @@ def _sink_particle_posy(field, data):
     Retrieve particle y position from .snktxt file
     """
     particle_posy = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_posy = yt.YTArray(np.array(particle_posy), "pc")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -522,7 +522,7 @@ def _sink_particle_posz(field, data):
     Retrieve particle z position from .snktxt file
     """
     particle_posz = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_posz = yt.YTArray(np.array(particle_posz), "pc")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -539,7 +539,7 @@ def _sink_particle_velx(field, data):
     Retrieve particle x velocity from .snktxt file
     """
     particle_velx = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_velx = yt.YTArray(np.array(particle_velx), "km/s")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -556,7 +556,7 @@ def _sink_particle_vely(field, data):
     Retrieve particle y velocity from .snktxt file
     """
     particle_vely = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_vely = yt.YTArray(np.array(particle_vely), "km/s")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -573,7 +573,7 @@ def _sink_particle_velz(field, data):
     Retrieve particle z velocity from .snktxt file
     """
     particle_velz = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_velz = yt.YTArray(np.array(particle_velz), "km/s")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -590,7 +590,7 @@ def _sink_particle_speed(field, data):
     Retrieve particle speed from sink particle file
     """
     particle_speed = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_speed = yt.YTArray(np.array(particle_speed), "km/s")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -607,7 +607,7 @@ def _sink_particle_mass(field, data):
     Retrieve particle mass from .snktxt file
     """
     particle_mass = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_mass = yt.YTArray(np.array(particle_mass), "Msun")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -624,7 +624,7 @@ def _sink_particle_accretion_rate(field, data):
     Retrieve particle accretion rate from sink file
     """
     particle_mdot = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_mdot = yt.YTArray(np.array(particle_mdot), "Msun/yr")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -643,7 +643,7 @@ def _sink_particle_form_time(field, data):
     Retrieve particle formation time from .snktxt file
     """
     particle_form_time = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_form_time = yt.YTArray(np.array(particle_form_time), "yr")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -660,7 +660,7 @@ def _sink_particle_age(field, data):
     Retrieve particle age from .snktxt file
     """
     particle_age = []
-    if np.shape(data['x']) == (16, 16, 16):
+    if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
         particle_age = yt.YTArray(np.array(particle_age), "yr")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
@@ -963,7 +963,7 @@ def _All_Particle_Masses(field, data):
     Saves all the particle masses
     """
     if ('all', 'sink_particle_mass') in data.ds.field_list:
-        if np.shape(data['x']) == (16, 16, 16):
+        if np.shape(data[('ramses', 'x')]) == (16, 16, 16):
             mass = data['sink_particle_mass']
         else:
             mass = data.ds.r['gas', 'sink_particle_mass']
