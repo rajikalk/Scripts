@@ -197,7 +197,7 @@ for movie_plot_pickle in movie_plot_pickles:
     axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
             
     if np.remainder(plot_it, n_frames)==0:
-        axs.flatten()[plot_it].set_ylabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-5)
+        axs.flatten()[plot_it].set_ylabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-10)
         if plot_it == n_frames:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
