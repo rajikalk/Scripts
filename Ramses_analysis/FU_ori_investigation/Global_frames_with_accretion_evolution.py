@@ -84,7 +84,7 @@ lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['
 axes_1_twin = axes_1.twinx()
 lns3 = axes_1.axhline(y=200, ls="-.", c='k', lw=2, label='2r$_\mathrm{acc}$')
 lns4 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-lns = lns1+lns2+lns3+lns4
+lns = lns1+lns2+[lns3]+lns4
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower left')
 
