@@ -515,7 +515,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             pos_start = pvl_pos
         else:
             pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.05*(ymax-ymin)]
-        text_y_pos = pos_start[1] - 0.10*(ymax-ymin)
+        text_y_pos = pos_start[1] - 0.15*(ymax-ymin)
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
@@ -638,7 +638,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             p0 = axis.transData.inverted().transform((0, 0))
             p1 = axis.transData.inverted().transform((0, height_px))
             height_in_data_units = p1[1] - p0[1]
-            rainbow_text((xpos), (ymin+ypos_delta+1.9*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ymin+ypos_delta+2*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
             rainbow_text((xpos), (ymin+ypos_delta), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
