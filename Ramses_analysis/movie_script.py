@@ -13,6 +13,7 @@ import gc
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("-cut_region", "--use_cut_region", default=False, type=str)
     parser.add_argument("-abs", "--absolute_image", help="do you want to get the absolute value of the image field?", default="False")
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
@@ -489,7 +490,19 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            region = ds.box(left_corner, right_corner)
+            if args.use_cut_region == False
+                region = ds.box(left_corner, right_corner)
+            else:
+                lc = left_corner.in_units('au').value
+                rc = right_corner.in_units('au').value
+                cuts = [
+                    f'(obj["index", "x"].in_units("au") > {lc[0]}) & (obj["index", "x"].in_units("au") < {rc[0]})',
+                    f'(obj["index", "y"].in_units("au") > {lc[1]}) & (obj["index", "y"].in_units("au") < {rc[1]})',
+                    f'(obj["index", "z"].in_units("au") > {lc[2]}) & (obj["index", "z"].in_units("au") < {rc[2]})',
+                ]
+                if args.use_density_threshold is not None:
+                    cuts.append(f'obj["gas", "Density"].in_units("g/cm**3") > {args.use_density_threshold}')
+                region = box.cut_region(cuts)
             time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
             if args.debug_plotting == 'True':
                 print('loaded file', fn, 'on rank', rank)
