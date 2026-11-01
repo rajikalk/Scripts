@@ -71,7 +71,7 @@ G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.3)
-cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
+cbar_ax = fig.add_axes([0.90, 0.3, 0.015, 0.28])
             
 #axes_1.set_title("Low resolution long term evolution", y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
@@ -87,7 +87,9 @@ lns4 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_d
 axes_1_twin.set_ylim([20, np.max(particle_data['separation'][start_ind:end_ind])])
 lns = lns1+lns2+[lns3]+lns4
 labs = [l.get_label() for l in lns]
-axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1)
+#axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1)
+leg = axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1, bbox_to_anchor=(0, -0.05))
+leg.set_zorder(10)
 
 curr_ylim = axes_1.get_ylim()
 axes_1.set_ylim([0.1, 10])
@@ -98,7 +100,7 @@ axes_1.set_ylim([0.1, 10])
 
 axes_1.set_xlabel('Time (yr)', labelpad=-8, fontsize=font_size) #($yr$)
 #axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-3, fontsize=font_size)# (M$_\odot/yr$)
+axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-5, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size, labelpad=1)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
@@ -197,7 +199,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=10, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     if plot_it == n_frames-1:

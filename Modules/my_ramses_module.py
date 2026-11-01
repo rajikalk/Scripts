@@ -584,6 +584,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
         
         if annotate_field is not None:
+            import pdb
+            pdb.set_trace()
             if annotate_mass_inds != None:
                 if pos_it in annotate_mass_inds:
                     ann_mass = True
