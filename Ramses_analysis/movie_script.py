@@ -490,8 +490,9 @@ if args.make_frames_only == 'False':
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
-            if args.use_cut_region == False:
-                region = ds.box(left_corner, right_corner)
+            box = ds.box(left_corner, right_corner)
+            if args.use_cut_region == 'False':
+                region = box
             else:
                 lc = left_corner.in_units('au').value
                 rc = right_corner.in_units('au').value
