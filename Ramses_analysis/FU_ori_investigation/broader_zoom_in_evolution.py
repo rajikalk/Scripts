@@ -85,12 +85,12 @@ axes_1.set_title("Broader evolution", y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='cyan', ls='-', label="Accretion rate")
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
 
 #Highlight observed window and burst time
 
 axes_1_twin = axes_1.twinx()
-lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+lns2 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
@@ -129,7 +129,7 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
     
     plot_time = args_dict['time_real'].value
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='cyan', marker='o', s=20)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
     axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
     
     if args.axis_lim == None:
@@ -221,7 +221,7 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
         plot_velocity_legend = False
 
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
-    
+    '''
     if plot_it == 4:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
         xvel = (0.07*(xlim[1] - xlim[0]))
@@ -232,7 +232,7 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
         ax.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
         annotate_text = ax.text(10, -10, legend_text, va="center", ha="center", color='w', fontsize=font_size)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        
+    '''
     part_color = None
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])
