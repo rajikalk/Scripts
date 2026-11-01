@@ -101,7 +101,7 @@ axes_1.set_ylim([0.1, 10])
 axes_1.set_xlabel('Time (yr)', labelpad=-9, fontsize=font_size) #($yr$)
 #axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-3, fontsize=font_size)# (M$_\odot/yr$)
-axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size, labelpad=1)
+axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size, labelpad=0)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 axes_1.xaxis.label.set_color('black')
@@ -214,7 +214,7 @@ for movie_plot_pickle in movie_plot_pickles:
         plot_velocity_legend = False
 
     xvel = (0.07*(xlim[1] - xlim[0]))
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2.5*xvel, 0.8*ylim[1]], mutation_scale=0.5)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2.5*xvel, 0.75*ylim[1]], mutation_scale=0.5)
     
     #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     
