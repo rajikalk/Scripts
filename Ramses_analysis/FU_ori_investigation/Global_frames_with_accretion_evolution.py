@@ -59,7 +59,7 @@ print("finished reading in pickle")
 stdvel = args.standard_vel
 n_frames = 5
 start_time = yt.YTQuantity(0, 'yr')
-end_time = yt.YTQuantity(25000, 'yr')
+end_time = yt.YTQuantity(25742, 'yr')
 make_frame = True
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
