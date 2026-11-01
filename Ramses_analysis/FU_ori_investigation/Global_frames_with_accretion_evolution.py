@@ -77,15 +77,13 @@ axes_1.set_title("Low resolution long term evolution", y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-import pdb
-pdb.set_trace()
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
-
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[0][start_ind:end_ind], color='b', ls='-', label="Candidate")
+lns2 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[1][start_ind:end_ind], color='orange', ls=':', label="Nearest star")
 #Highlight observed window and burst time
 
 axes_1_twin = axes_1.twinx()
-lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-lns = lns1+lns2
+lns3 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+lns = lns1+lns2+lns3
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
 
@@ -97,7 +95,8 @@ axes_1.set_ylim(curr_ylim)
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+#axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
