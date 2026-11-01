@@ -208,7 +208,7 @@ for movie_plot_pickle in movie_plot_pickles:
         plot_velocity_legend = False
 
     xvel = (0.07*(xlim[1] - xlim[0]))
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 1.1*xvel, 0.9*ylim[1]], mutation_scale=0.5)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2*xvel, 0.9*ylim[1]], mutation_scale=0.5)
     
     '''
     if plot_it == 4:
