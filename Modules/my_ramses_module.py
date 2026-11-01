@@ -582,31 +582,34 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
         
         if annotate_field is not None:
-            
-            if units is not None:
-                annotate_field = annotate_field.in_units(units)
-                if annotate_mass_inds != None:
-                    import pdb
-                    pdb.set_trace()
-                    annotate_field = annotate_field[np.array(annotate_mass_inds)]
-            if unit_string == "$\,$M$_\odot$":
-                P_msun = str(np.round(annotate_field[pos_it], 2))
-                if len(P_msun.split('.')[-1]) == 1:
-                    P_msun = P_msun +"0"
+            if annotate_mass_inds != None:
+                if pos_it in annotate_mass_inds:
+                    ann_mass = True
             else:
-                if annotate_field[pos_it] == 0.0:
-                    P_msun = "0.0"
+                ann_mass = True
+            if ann_mass == True:
+                if units is not None:
+                    annotate_field = annotate_field.in_units(units)
+                    if annotate_mass_inds != None:
+                        import pdb
+                        pdb.set_trace()
+                        annotate_field = annotate_field[np.array(annotate_mass_inds)]
+                if unit_string == "$\,$M$_\odot$":
+                    P_msun = str(np.round(annotate_field[pos_it], 2))
+                    if len(P_msun.split('.')[-1]) == 1:
+                        P_msun = P_msun +"0"
                 else:
-                    P_msun = "{:0.1f}".format(annotate_field[pos_it])
-            if p_t == "":
-                p_t = field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
-            else:
-                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
-            rainbow_text_colors.append(part_color[pos_it])
-            rainbow_text_colors.append('white')
+                    if annotate_field[pos_it] == 0.0:
+                        P_msun = "0.0"
+                    else:
+                        P_msun = "{:0.1f}".format(annotate_field[pos_it])
+                if p_t == "":
+                    p_t = field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
+                else:
+                    p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
+                rainbow_text_colors.append(part_color[pos_it])
+                rainbow_text_colors.append('white')
     if annotate_field is not None:
-        if annotate_mass_inds != None:
-            annotate_field = annotate_field[np.array(annotate_mass_inds)]
         tick_len_pts = axis.xaxis.majorTicks[0].tick1line.get_markersize()
         p0 = axis.transData.inverted().transform((0, 0))
         p1 = axis.transData.inverted().transform((1, 0))
