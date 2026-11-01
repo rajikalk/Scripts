@@ -59,7 +59,7 @@ print("finished reading in pickle")
 stdvel = args.standard_vel
 n_frames = 5
 start_time = yt.YTQuantity(0, 'yr')
-end_time = yt.YTQuantity(75000, 'yr')
+end_time = yt.YTQuantity(30000, 'yr')
 make_frame = True
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
@@ -82,7 +82,7 @@ lns2 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['
 #Highlight observed window and burst time
 
 axes_1_twin = axes_1.twinx()
-lns3 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+lns3 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2+lns3
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower right')
@@ -205,13 +205,14 @@ for movie_plot_pickle in movie_plot_pickles:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
         xvel = (0.07*(xlim[1] - xlim[0]))
         yvel = 0
-        pos_start = [9, -12.5]
+        pos_start = [xlim[-1] - 1.1*xvel, ylim[0] + xvel]
         width_val = 0.8
         width_ceil = 0.8
         ax.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
-        annotate_text = ax.text(10, -10, legend_text, va="center", ha="center", color='w', fontsize=font_size)
+        annotate_text = ax.text(pos_start[0], np.mean([pos_start[-1], ylim[0]]), legend_text, va="center", ha="center", color='w', fontsize=font_size)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        
+      
+    '''
     part_color = None
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])
@@ -230,7 +231,9 @@ for movie_plot_pickle in movie_plot_pickles:
             part_info['particle_tag'] = np.array([part_info['particle_tag'][-1]])
             part_info['formation_time'] = np.array([part_info['formation_time'][-1]])
             part_info['particle_velocity'] = np.array([[part_info['particle_velocity'][0][-1]], [part_info['particle_velocity'][1][-1]]])
-            part_color = [part_color[-1]]
+            part_color = [part_color[-1]    
+    '''
+    part_color = ['b', 'cyan', 'orange', 'green', 'red']
         
     #Get unit velocity:
     #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
