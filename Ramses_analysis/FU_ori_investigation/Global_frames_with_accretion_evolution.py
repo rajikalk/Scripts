@@ -136,7 +136,7 @@ for movie_plot_pickle in movie_plot_pickles:
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
@@ -199,14 +199,14 @@ for movie_plot_pickle in movie_plot_pickles:
     if plot_it < n_frames:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args.cbar_min, vmax=args.cbar_max), rasterized=True, zorder=1)
     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=10, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
         
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
                 
     if plot_it == n_frames-1:
         plot_velocity_legend = True
@@ -214,9 +214,9 @@ for movie_plot_pickle in movie_plot_pickles:
         plot_velocity_legend = False
 
     xvel = (0.07*(xlim[1] - xlim[0]))
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2*xvel, 0.9*ylim[1]], mutation_scale=0.5)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2.5*xvel, 0.8*ylim[1]], mutation_scale=0.5)
     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     
     '''
     if plot_it == 4:
@@ -251,7 +251,7 @@ for movie_plot_pickle in movie_plot_pickles:
             part_info['particle_velocity'] = np.array([[part_info['particle_velocity'][0][-1]], [part_info['particle_velocity'][1][-1]]])
             part_color = [part_color[-1]    
     '''
-    part_color = ['cyan', 'b', 'orange', 'green', 'red']
+    part_color = ['orange', 'cyan', 'green', 'red', 'blue']
         
     #Get unit velocity:
     #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
@@ -259,7 +259,7 @@ for movie_plot_pickle in movie_plot_pickles:
     
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1, annotate_mass_inds=[0, 1])
     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
@@ -272,7 +272,7 @@ for movie_plot_pickle in movie_plot_pickles:
     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
                 
     ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
     ax.tick_params(axis='y', which='major', direction='in', color='w', right=True)
@@ -280,7 +280,7 @@ for movie_plot_pickle in movie_plot_pickles:
     ax.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
                     
-    plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
         
     if np.remainder(plot_it, n_frames)==0:
         ax.set_ylabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-10)
