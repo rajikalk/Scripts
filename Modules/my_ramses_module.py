@@ -524,15 +524,10 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
 
 def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None, part_color=None, part_tag_split_length=2, annotate_mass_inds=None):
     global fontsize_global
-    if annotate_mass_inds != None:
-        import pdb
-        pdb.set_trace()
     
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
         if annotate_mass_inds != None:
-            import pdb
-            pdb.set_trace()
             annotate_field = annotate_field[np.array(annotate_mass_inds)]
     if part_color == None:
         part_color = ['cyan','magenta','r','b','y','w','k']
@@ -588,6 +583,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
+                if annotate_mass_inds != None:
+                    annotate_field = annotate_field[np.array(annotate_mass_inds)]
             if unit_string == "$\,$M$_\odot$":
                 P_msun = str(np.round(annotate_field[pos_it], 2))
                 if len(P_msun.split('.')[-1]) == 1:
