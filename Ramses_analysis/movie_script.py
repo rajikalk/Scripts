@@ -535,8 +535,7 @@ if args.make_frames_only == 'False':
             if has_particles:
                 print('Getting particle data on rank', rank)
                 sys.stdout.flush()
-                if np.remainder(rank, 6*para_div) == 0:
-                    part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, edges=[left_corner, right_corner])
+                part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, edges=[left_corner, right_corner])
                 print('Got particle data on rank', rank)
                 sys.stdout.flush()
             else:
@@ -908,7 +907,7 @@ if args.make_frames_only == 'False':
                 del image, magx, magy, velx, vely, velz, args_dict
                 #gc.collect()
                 
-            del has_particles, time_val, center_vel, X_image, Y_image, X_image_vel, Y_image_vel
+            del has_particles, time_val, center_vel, X_image, Y_image, X_image_vel, Y_image_vel, part_info
             #gc.collect()
             
         
