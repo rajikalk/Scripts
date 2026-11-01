@@ -251,7 +251,7 @@ for movie_plot_pickle in movie_plot_pickles:
             part_info['particle_velocity'] = np.array([[part_info['particle_velocity'][0][-1]], [part_info['particle_velocity'][1][-1]]])
             part_color = [part_color[-1]    
     '''
-    part_color = ['b', 'cyan', 'orange', 'green', 'red']
+    part_color = ['cyan', 'b', 'orange', 'green', 'red']
         
     #Get unit velocity:
     #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]

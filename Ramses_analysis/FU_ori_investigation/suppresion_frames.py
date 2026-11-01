@@ -255,7 +255,7 @@ for plot_time in plot_times[::-1]:
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'][0] = part_info['particle_velocity'][0][sort_inds]
         part_info['particle_velocity'][1] = part_info['particle_velocity'][1][sort_inds]
-        part_color = ['b', 'cyan']
+        part_color = ['cyan', 'b']
         if np.max(abs(part_info['particle_position'])) > np.max(xlim):
             part_info['particle_tag'] = [part_info['particle_tag'][-1]]
             part_info['particle_position'] = np.array([[part_info['particle_position'][0][-1]], [part_info['particle_position'][1][-1]]])
