@@ -214,7 +214,7 @@ for movie_plot_pickle in movie_plot_pickles:
         plot_velocity_legend = False
 
     xvel = (0.07*(xlim[1] - xlim[0]))
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2.5*xvel, 0.75*ylim[1]], mutation_scale=0.5)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 2.5*xvel, 0.9*ylim[1]], mutation_scale=0.5)
     
     #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     
