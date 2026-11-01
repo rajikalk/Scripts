@@ -160,8 +160,8 @@ for movie_plot_pickle in movie_plot_pickles:
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
         files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/*/info*'))
-        first_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[0].split('grav')[0]+'info*.txt')[0]
-        last_file = glob.glob(sorted(glob.glob(input_dir+"*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')[0]
+        first_file = glob.glob(sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/'+"*/grav_*.out00001"))[0].split('grav')[0]+'info*.txt')[0]
+        last_file = glob.glob(sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/'+"*/grav_*.out00001"))[-1].split('grav')[0]+'info*.txt')[0]
         files = files[files.index(first_file):files.index(last_file)+1]
         ds = yt.load(files[-1], units_override=units_override, fields=load_fields)
         ds = yt.load(files[-1], units_override=units_override)
