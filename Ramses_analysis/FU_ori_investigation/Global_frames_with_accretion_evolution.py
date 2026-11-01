@@ -199,7 +199,7 @@ for movie_plot_pickle in movie_plot_pickles:
     else:
         plot_velocity_legend = False
 
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=true, pvl_pos=[xlim[-1] - 1.1*xvel, 0.9*ylim[1]])
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=True, pvl_pos=[xlim[-1] - 1.1*xvel, 0.9*ylim[1]])
     
     if plot_it == 4:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
