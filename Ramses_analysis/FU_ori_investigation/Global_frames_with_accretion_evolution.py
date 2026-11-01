@@ -159,7 +159,7 @@ for movie_plot_pickle in movie_plot_pickles:
     #get relative velocity
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
-        files = glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/*/info*')
+        files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/*/info*'))
         ds = yt.load(files[-1], units_override=units_override)
         sinks = myf.get_sink_table(ds)
         sink_form_time = sinks['form_time'][sink_id]
