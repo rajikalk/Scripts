@@ -527,6 +527,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
         if annotate_mass_inds != None:
+            import pdb
+            pdb.set_trace()
             annotate_field = annotate_field[np.array(annotate_mass_inds)]
     if part_color == None:
         part_color = ['cyan','magenta','r','b','y','w','k']
