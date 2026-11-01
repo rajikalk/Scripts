@@ -202,7 +202,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
-    if plot_time == plot_times[-1]:
+    if plot_it == 4:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
         xvel = (0.07*(xlim[1] - xlim[0]))
         yvel = 0
