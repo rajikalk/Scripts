@@ -123,8 +123,8 @@ for movie_plot_pickle in movie_plot_pickles:
     else:
         width = args.axis_lim*2
 
-    plot_time = args_dict['time_real']
-    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
+    plot_time = args_dict['time_real'].value
+    plot_time_ind = np.argmin(abs(particle_data['time'].value - plot_time))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
     axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
 
