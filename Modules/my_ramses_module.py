@@ -450,9 +450,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     elif plot_velocity_legend == 'True' or plot_velocity_legend == True:
         plot_velocity_legend = True
         if standard_vel > 1.0:
-            legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
+            #legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
+            legend_text=str(int(standard_vel)) + "km$\,$/s"
         else:
-            legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
+            #legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
+            legend_text=str(int(standard_vel*10.)/10.) + "km$\,$/s"
     standard_vel = (yt.units.km * standard_vel).in_units('cm').value
     xmin = axis.get_xlim()[0]
     xmax = axis.get_xlim()[1]
