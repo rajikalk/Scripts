@@ -908,7 +908,7 @@ if args.make_frames_only == 'False':
                 del image, magx, magy, velx, vely, velz, args_dict
                 #gc.collect()
                 
-            del has_particles, time_val, center_vel, part_info, X_image, Y_image, X_image_vel, Y_image_vel
+            del has_particles, time_val, center_vel, X_image, Y_image, X_image_vel, Y_image_vel
             #gc.collect()
             
         
