@@ -536,9 +536,9 @@ if args.make_frames_only == 'False':
                 print('Getting particle data on rank', rank)
                 sys.stdout.flush()
                 if np.remainder(rank, 6*para_div) == 0:
-                    try:
+                    if args.use_cut_region == False:
                         part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
-                    except:
+                    else:
                         part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, edges=[left_corner, right_corner])
                 print('Got particle data on rank', rank)
                 sys.stdout.flush()
