@@ -82,8 +82,9 @@ lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['
 #Highlight observed window and burst time
 
 axes_1_twin = axes_1.twinx()
-lns3 = axes_1.axhline(y=200, ls="-.", c='k', lw=2, label='2r$_\mathrm{acc}$')
+lns3 = axes_1_twin.axhline(y=200, ls="-.", c='k', lw=2, label='2r$_\mathrm{acc}$')
 lns4 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+axes_1_twin.set_ylim(bottom=10)
 lns = lns1+lns2+[lns3]+lns4
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower left')
@@ -105,7 +106,6 @@ axes_1.xaxis.label.set_color('black')
 axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
-axes_1.set_ylim(bottom=10)
 axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
 plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
@@ -246,7 +246,7 @@ for movie_plot_pickle in movie_plot_pickles:
     #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
         
     
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1)
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1, annotate_mass_inds=[0, 1])
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
@@ -273,6 +273,8 @@ for movie_plot_pickle in movie_plot_pickles:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels[0], visible=False)
 
     ax.set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         

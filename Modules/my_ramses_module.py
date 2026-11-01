@@ -522,10 +522,12 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None, part_color=None, part_tag_split_length=2):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None, part_color=None, part_tag_split_length=2, annotate_mass_inds=None):
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
+        if annotate_mass_inds != None:
+            annotate_field = annotate_field[np.array(annotate_mass_inds)]
     if part_color == None:
         part_color = ['cyan','magenta','r','b','y','w','k']
     #part_color = ['r','r','r','b','y','w','k']
@@ -577,6 +579,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
         
         if annotate_field is not None:
+            
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
             if unit_string == "$\,$M$_\odot$":
