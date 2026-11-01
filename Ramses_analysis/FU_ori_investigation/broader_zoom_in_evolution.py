@@ -294,6 +294,8 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels[0], visible=False)
 
     ax.set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
