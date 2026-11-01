@@ -202,6 +202,10 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
         pickle.dump((part_info), file)
         file.close()
 
+    part_speed = np.sqrt(part_info['particle_velocity'][0]**2 + part_info['particle_velocity'][1]**2)
+    part_info['particle_velocity'] = part_info['particle_velocity']/part_speed
+
+
     xlim = [-1*width/2, width/2]
     ylim = [-1*width/2, width/2]
     ax.set_xlim(xlim)
