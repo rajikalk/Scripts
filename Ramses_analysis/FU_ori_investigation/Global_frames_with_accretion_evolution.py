@@ -173,8 +173,8 @@ for movie_plot_pickle in movie_plot_pickles:
             part_info['particle_velocity'][0] = [sinks['vel'][45][ax_x_ind] - sinks['vel'][44][ax_x_ind]]
             part_info['particle_velocity'][1] = [sinks['vel'][45][ax_y_ind] - sinks['vel'][44][ax_y_ind]]
         else:
-            part_info['particle_velocity'][0] = [sinks['vel'][44][ax_x_ind] - sinks['vel'][45][ax_x_ind], sinks['vel'][45][ax_x_ind] - sinks['vel'][44][ax_x_ind]]
-            part_info['particle_velocity'][1] = [sinks['vel'][44][ax_y_ind] - sinks['vel'][45][ax_y_ind], sinks['vel'][45][ax_y_ind] - sinks['vel'][44][ax_y_ind]]
+            part_info['particle_velocity'][0] = [sinks['vel'][44][0] - sinks['vel'][45][0], sinks['vel'][45][1] - sinks['vel'][44][1], sinks['vel'][45][2] - sinks['vel'][44][2]]
+            part_info['particle_velocity'][1] = [sinks['vel'][44][0] - sinks['vel'][45][0], sinks['vel'][45][1] - sinks['vel'][44][1], sinks['vel'][45][2] - sinks['vel'][44][2]]
         file = open(part_info_pickle, 'wb')
         pickle.dump((part_info), file)
         file.close()
