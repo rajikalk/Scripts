@@ -71,13 +71,14 @@ G = gridspec.GridSpec(2, n_frames, height_ratios=[0.8, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.31)
-cbar_ax = fig.add_axes([0.90, 0.3, 0.015, 0.28])
+cbar_ax = fig.add_axes([0.90, 0.29, 0.015, 0.28])
             
 #axes_1.set_title("Low resolution long term evolution", y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
 lns2 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[1][start_ind:end_ind], color='orange', ls=':', label="Nearest star", lw=0.5)
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[0][start_ind:end_ind], color='b', ls='-', label="Candidate", lw=0.5)
 lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[0][start_ind:end_ind], color='b', ls='-', label="Candidate", lw=0.5)
 #Highlight observed window and burst time
 
@@ -88,7 +89,7 @@ axes_1_twin.set_ylim([10, np.max(particle_data['separation'][start_ind:end_ind])
 lns = lns1+lns2+[lns3]+lns4
 labs = [l.get_label() for l in lns]
 #axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1)
-leg = axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1, bbox_to_anchor=(0, -0.07))
+leg = axes_1.legend(lns, labs, loc='lower left', labelspacing=0.1, bbox_to_anchor=(0, -0.06))
 leg.set_zorder(10)
 
 curr_ylim = axes_1.get_ylim()
@@ -112,10 +113,10 @@ axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif
 
 plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
-plot_it = -1
+plot_it = 5
 movie_plot_pickles = sorted(glob.glob('movie_frame*.pkl'))
-for movie_plot_pickle in movie_plot_pickles:
-    plot_it = plot_it + 1
+for movie_plot_pickle in movie_plot_pickles[::-1]:
+    plot_it = plot_it - 1
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
@@ -203,7 +204,7 @@ for movie_plot_pickle in movie_plot_pickles:
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=10, rotation=270, size=font_size)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-10, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
         
     #plt.savefig("Low_res_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
