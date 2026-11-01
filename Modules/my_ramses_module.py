@@ -519,9 +519,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
-        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
         annotate_text = axis.text(pos_start[0], text_y_pos, legend_text, va="bottom", ha="center", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
     return axis
 
 def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None, part_color=None, part_tag_split_length=2, annotate_mass_inds=None):
@@ -636,7 +636,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             p0 = axis.transData.inverted().transform((0, 0))
             p1 = axis.transData.inverted().transform((0, height_px))
             height_in_data_units = p1[1] - p0[1]
-            rainbow_text((xpos), (ymin+ypos_delta+1.5*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ymin+ypos_delta+1.8*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
             rainbow_text((xpos), (ymin+ypos_delta), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
