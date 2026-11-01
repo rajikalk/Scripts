@@ -81,7 +81,7 @@ cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
             
 start_time = 0
 end_time = 8000
-axes_1.set_title("Broader evolution "+str(event_it), y=0.1)
+axes_1.set_title("Broader evolution", y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
@@ -113,7 +113,7 @@ axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
 axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
-plt.savefig("Suppression_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+plt.savefig("Broader_evolution_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
 plot_it = 5
 #plot_it = -1
@@ -210,10 +210,7 @@ for movie_plot_pickle in movie_plot_pickles[::-1]:
 
     if plot_it == n_frames-1:
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        if event_it > 3:
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size, y=0.35)
-        else:
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     if plot_it == n_frames-1:
