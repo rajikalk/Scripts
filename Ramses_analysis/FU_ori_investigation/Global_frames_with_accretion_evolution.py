@@ -77,29 +77,29 @@ cbar_ax = fig.add_axes([0.90, 0.275, 0.015, 0.28])
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-lns2 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[1][start_ind:end_ind], color='orange', ls=':', label="Nearest star")
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[0][start_ind:end_ind], color='b', ls='-', label="Candidate")
+lns2 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[1][start_ind:end_ind], color='orange', ls=':', label="Nearest star", lw=0.5)
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['ltot'].T[0][start_ind:end_ind], color='b', ls='-', label="Candidate", lw=0.5)
 #Highlight observed window and burst time
 
 axes_1_twin = axes_1.twinx()
-lns3 = axes_1_twin.axhline(y=200, ls="-.", c='k', lw=2, label='2r$_\mathrm{acc}$')
-lns4 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-axes_1_twin.set_ylim(bottom=10)
+lns3 = axes_1_twin.axhline(y=200, ls="-.", c='k', lw=1, label='2r$_\mathrm{acc}$')
+lns4 = axes_1_twin.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation", lw=0.5)
+axes_1_twin.set_ylim([20, np.max(particle_data['separation'][start_ind:end_ind])])
 lns = lns1+lns2+[lns3]+lns4
 labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower left')
 
 curr_ylim = axes_1.get_ylim()
-axes_1.set_ylim(bottom=0.1)
+axes_1.set_ylim([0.1, 10])
 #axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
 #axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
+axes_1.set_xlabel('Time (yr)', labelpad=-10, fontsize=font_size) #($yr$)
 #axes_1.set_ylabel('Accretion (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
+axes_1.set_ylabel('Luminosity (L$_\odot$)', labelpad=-2, fontsize=font_size)# (M$_\odot/yr$)
+axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size, labelpad=-1)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 axes_1.xaxis.label.set_color('black')
