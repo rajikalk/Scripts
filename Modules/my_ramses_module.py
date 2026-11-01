@@ -605,6 +605,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
+        if annotate_mass_inds != None:
+            import pdb
+            pdb.set_trace()
+            annotate_field = annotate_field[np.array(annotate_mass_inds)]
         tick_len_pts = axis.xaxis.majorTicks[0].tick1line.get_markersize()
         p0 = axis.transData.inverted().transform((0, 0))
         p1 = axis.transData.inverted().transform((1, 0))
