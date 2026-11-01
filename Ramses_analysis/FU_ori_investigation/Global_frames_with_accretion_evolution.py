@@ -19,7 +19,6 @@ import matplotlib.patches as mpatches
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-ax", "--axis", default='xy', type=str)
-parser.add_argument("-width", "--frame_width", default=1000, type=int)
 parser.add_argument("-stdv", "--standard_vel", default=5, type=int)
 parser.add_argument('-cmin', '--cbar_min', type=float)
 parser.add_argument('-cmax', '--cbar_max', type=float)
@@ -57,7 +56,6 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
 
-width = args.frame_width
 stdvel = args.standard_vel
 n_frames = 5
 start_time = yt.YTQuantity(0, 'yr')
