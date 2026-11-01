@@ -102,7 +102,7 @@ axes_1.set_title("Suppression event "+str(event_it), y=0.1)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
+lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='cyan', ls='-', label="Accretion rate")
 
 #Highlight observed window and burst time
 
@@ -138,7 +138,7 @@ for plot_time in plot_times[::-1]:
     #plot_it = plot_it + 1
     plot_it = plot_it - 1
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='cyan', marker='o', s=20)
     axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
     
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
@@ -255,7 +255,7 @@ for plot_time in plot_times[::-1]:
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'][0] = part_info['particle_velocity'][0][sort_inds]
         part_info['particle_velocity'][1] = part_info['particle_velocity'][1][sort_inds]
-        part_color = ['cyan', 'b']
+        part_color = ['b', 'cyan']
         if np.max(abs(part_info['particle_position'])) > np.max(xlim):
             part_info['particle_tag'] = [part_info['particle_tag'][-1]]
             part_info['particle_position'] = np.array([[part_info['particle_position'][0][-1]], [part_info['particle_position'][1][-1]]])
