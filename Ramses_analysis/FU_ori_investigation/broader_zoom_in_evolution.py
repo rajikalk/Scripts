@@ -121,15 +121,16 @@ movie_plot_pickles = sorted(glob.glob('movie_frame*.pkl'))
 for movie_plot_pickle in movie_plot_pickles[::-1]:
     #plot_it = plot_it + 1
     plot_it = plot_it - 1
-    plot_time = args_dict['time_real'].value
-    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='cyan', marker='o', s=20)
-    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
+    
+    plot_time = args_dict['time_real'].value
+    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='cyan', marker='o', s=20)
+    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
     
     if args.axis_lim == None:
         width = args_dict['axlim']*2
