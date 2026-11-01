@@ -96,7 +96,7 @@ labs = [l.get_label() for l in lns]
 axes_1.legend(lns, labs, loc='lower left')
 
 curr_ylim = axes_1.get_ylim()
-axes_1.set_ylim(curr_ylim)
+axes_1.set_ylim([5.e-9, 5.e-5])
 #axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_obs_start, x2=highlight_obs_end, color="orange", alpha=0.2)
 #axes_1.fill_betweenx((1.e-9, 1.e-5), highlight_burst_start, x2=highlight_burst_end, color="orange", alpha=0.2)
             
