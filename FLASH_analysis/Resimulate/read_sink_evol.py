@@ -31,30 +31,17 @@ with open(sink_evol_file, 'r') as f:
     for row in reader:
         row_list = [x for x in row if x]
         if row_list[0] == '[00]part_tag':
-            import pdb
-            pdb.set_trace()
-            col_tag = row_list
+            col_tags = row_list
         line_counter = line_counter + 1
         if line_counter > prev_line_counter:
             if row_list[0] != '[00]part_tag':
                 if row_list[0] not in sink_data.keys():
                     #If sink id isn't in saved data, add it
                     sink_data.update({row_list[0]:{}})
-                    sink_data[row_list[0]].update({col_tag[1].split(']')[-1]:[float(row_list[1])]})
-                    sink_data[row_list[0]].update({col_tag[2].split(']')[-1]:[float(row_list[2])]})
-                    sink_data[row_list[0]].update({col_tag[3].split(']')[-1]:[float(row_list[3])]})
-                    sink_data[row_list[0]].update({col_tag[4].split(']')[-1]:[float(row_list[4])]})
-                    sink_data[row_list[0]].update({col_tag[5].split(']')[-1]:[float(row_list[5])]})
-                    sink_data[row_list[0]].update({col_tag[6].split(']')[-1]:[float(row_list[6])]})
-                    sink_data[row_list[0]].update({col_tag[7].split(']')[-1]:[float(row_list[7])]})
-                    sink_data[row_list[0]].update({col_tag[8].split(']')[-1]:[float(row_list[8])]})
-                    sink_data[row_list[0]].update({col_tag[9].split(']')[-1]:[float(row_list[9])]})
-                    sink_data[row_list[0]].update({col_tag[10].split(']')[-1]:[float(row_list[10])]})
-                    sink_data[row_list[0]].update({col_tag[11].split(']')[-1]:[float(row_list[11])]})
-                    sink_data[row_list[0]].update({col_tag[12].split(']')[-1]:[float(row_list[12])]})
-                    sink_data[row_list[0]].update({col_tag[13].split(']')[-1]:[float(row_list[13])]})
-                    sink_data[row_list[0]].update({col_tag[14].split(']')[-1]:[float(row_list[14])]})
-                    sink_data[row_list[0]].update({col_tag[15].split(']')[-1]:[float(row_list[15])]})
+                    for col_tag in col_tags[1:]:
+                        import pdb
+                        pdb.set_trace()
+                        sink_data[row_list[0]].update({col_tag.split(']')[-1]:np.array([float(row_list[1])])})
                 else:
                     if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
                         #if time in the sink time array
