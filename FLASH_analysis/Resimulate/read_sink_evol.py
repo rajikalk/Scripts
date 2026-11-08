@@ -63,8 +63,9 @@ with open(sink_evol_file, 'r') as f:
                             time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
                             for field_key in sink_data[sink_key].keys():
                                 sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
-                    import pdb
-                    pdb.set_trace()
+                                
+                    for col_tag in col_tags[1:]:
+                        sink_data[row_list[0]][col_tag.split(']')[-1]] = np.append(float(row_list[col_tags.index(col_tag)]), sink_data[row_list[0]][col_tag.split(']')[-1]])
 
                 if np.remainder(line_counter, 5000) == 0:
                     print('Read up to line', line_counter)
