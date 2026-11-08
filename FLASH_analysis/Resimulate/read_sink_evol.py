@@ -31,6 +31,8 @@ with open(sink_evol_file, 'r') as f:
     for row in reader:
         row_list = [x for x in row if x]
         if row_list[0] == '[00]part_tag':
+            import pdb
+            pdb.set_trace()
             col_tag = row_list
         line_counter = line_counter + 1
         if line_counter > prev_line_counter:
