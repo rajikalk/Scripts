@@ -42,32 +42,14 @@ with open(sink_evol_file, 'r') as f:
                         sink_data[row_list[0]].update({col_tag.split(']')[-1]:np.array([float(row_list[col_tags.index(col_tag)])])})
                 else:
                     if float(row_list[1]) in sink_data[row_list[0]][col_tags[1].split(']')[-1]]:
-                        import pdb
-                        pdb.set_trace()
-                        #if time in the sink time array
-                        match_time = float(row_list[1])
-                        remove_keys = []
-                        for sink_key in sink_data.keys():
-                            #if sink form time is after match time, remove sink
-                            if len(sink_data[sink_key]['time']) == 0:
-                                remove_keys.append(sink_key)
-                            elif sink_data[sink_key]['time'][0] > match_time:
-                                remove_keys.append(sink_key)
+                        #Get index of the time that is already in the sink particle dictionary
+                        replace_ind = np.where(sink_data[row_list[0]][col_tags[1].split(']')[-1]] == float(row_list[1]))[0][0]
                         
-                        import pdb
-                        pdb.set_trace()
-                        for r_key in remove_keys:
-                            del sink_data[r_key]
-                            print('removed sink', sink_key)
-                                
                         #remove data after this time
-                        for sink_key in sink_data.keys():
-                            import pdb
-                            pdb.set_trace()
-                            time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
-                            for field_key in sink_data[sink_key].keys():
-                                sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
+                        for col_tag in col_tags[1:]:
+                            sink_data[row_list[0]][col_tag.split(']')[-1]] = sink_data[row_list[0]][col_tag.split(']')[-1]][:replace_ind]
                                 
+                    #Add new data for existing arrays
                     for col_tag in col_tags[1:]:
                         sink_data[row_list[0]][col_tag.split(']')[-1]] = np.append(float(row_list[col_tags.index(col_tag)]), sink_data[row_list[0]][col_tag.split(']')[-1]])
 
