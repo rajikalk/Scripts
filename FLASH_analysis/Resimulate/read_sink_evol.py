@@ -75,15 +75,26 @@ pickle_file = open(sink_evol_pickle, 'wb')
 pickle.dump((write_sink_data, line_counter), pickle_file)
 pickle_file.close()
 
-#plot spin evolution
-plt.clf()
+#plot mass and specific angular momentum evolution
+Msun = 1.989e33   # g
+yr = 3.154e7      # s
+
+fig, (ax_mass, ax_spin) = plt.subplots(2, 1, sharex=True, figsize=(6, 7))
 
 for sink_id in write_sink_data.keys():
-    plot_time = (write_sink_data[sink_id]['time'] - write_sink_data[sink_id]['time'][0])/3.154e+7
-    L_tot = np.sqrt(write_sink_data[sink_id]['anglx']**2 + write_sink_data[sink_id]['angly']**2 + write_sink_data[sink_id]['anglz']**2)
-    L_spec = L_tot/write_sink_data[sink_id]['mass']
-    
-    plt.plot(plot_time, L_spec, label=sink_id)
-plt.xlabel('Time (yr)')
-plt.ylabel('Specific angular momenutm (cm$^2$/s)')
-plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
+    sink = write_sink_data[sink_id]
+    plot_time = (sink['time'] - sink['time'][0])/yr
+    L_tot = np.sqrt(sink['anglx']**2 + sink['angly']**2 + sink['anglz']**2)
+    L_spec = L_tot/sink['mass']
+
+    ax_mass.plot(plot_time, sink['mass']/Msun, label=sink_id)
+    ax_spin.plot(plot_time, L_spec, label=sink_id)
+
+ax_mass.set_ylabel('Mass (M$_\\odot$)')
+ax_spin.set_ylabel('Specific angular momentum (cm$^2$/s)')
+ax_spin.set_xlabel('Time (yr)')
+ax_mass.legend(loc='best', fontsize='small')
+
+fig.tight_layout()
+fig.subplots_adjust(hspace=0)
+fig.savefig(sink_evol_pickle.split('.pkl')[0] + '.png', dpi=300)
