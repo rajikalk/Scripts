@@ -45,11 +45,9 @@ with open(sink_evol_file, 'r') as f:
                         #Get index of the time that is already in the sink particle dictionary
                         replace_ind = np.where(sink_data[row_list[0]][col_tags[1].split(']')[-1]] == float(row_list[1]))[0][0]
                         
-                        #remove data after this time
+                        #remove that offending index
                         for col_tag in col_tags[1:]:
-                            import pdb
-                            pdb.set_trace()
-                            sink_data[row_list[0]][col_tag.split(']')[-1]] = sink_data[row_list[0]][col_tag.split(']')[-1]][:replace_ind]
+                            sink_data[row_list[0]][col_tag.split(']')[-1]] = np.delete(sink_data[row_list[0]][col_tag.split(']')[-1]], replace_ind)
                                 
                     #Add new data for existing arrays
                     for col_tag in col_tags[1:]:
