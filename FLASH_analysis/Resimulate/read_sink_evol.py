@@ -47,6 +47,8 @@ with open(sink_evol_file, 'r') as f:
                         
                         #remove data after this time
                         for col_tag in col_tags[1:]:
+                            import pdb
+                            pdb.set_trace()
                             sink_data[row_list[0]][col_tag.split(']')[-1]] = sink_data[row_list[0]][col_tag.split(']')[-1]][:replace_ind]
                                 
                     #Add new data for existing arrays
