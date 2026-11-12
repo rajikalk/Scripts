@@ -73,9 +73,9 @@ def get_files(path, args):
             type = "proj"
         else:
             type = "slice"
-        source_directory = sorted(glob.glob(path + 'WIND_' + type + '*'))[:-1]
+        source_directory = sorted(glob.glob(path + '*_' + type + '*'))[:-1]
     else:
-        source_directory = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))[:-1]
+        source_directory = sorted(glob.glob(path + '*_hdf5_plt_cnt*'))[:-1]
     return source_directory
 
 def has_sinks(file):
@@ -277,7 +277,7 @@ def main():
         myf.set_normal(L)
         print("SET PROJECTION ORIENTATION L=", myf.get_normal())
     if args.yt_proj == False and args.image_center != 0:
-        sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
+        sim_files = sorted(glob.glob(path + '*_hdf5_plt_cnt*'))
     elif args.yt_proj != False and args.image_center != 0:
         sim_files = files
     xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
