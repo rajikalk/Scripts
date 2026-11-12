@@ -13,7 +13,7 @@ import sys
 import os
 #from matplotlib import transforms
 import glob
-import my_module as mym
+import my_flash_module as mym
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
