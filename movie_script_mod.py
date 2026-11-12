@@ -19,7 +19,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import matplotlib.patheffects as path_effects
 import yt
-import my_fields as myf
+import my_flash_fields as myf
 from PIL import Image
 
 def parse_inputs():
