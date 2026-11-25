@@ -77,6 +77,7 @@ else:
     save_dict.update({"BHL_Acc_acc_high": np.array([])})
     save_dict.update({"Density": np.array([[]])})
     save_dict.update({"Rel_kep": np.array([[]])})
+    save_dict.update({"Bondi_radius":np.array([])})
 
 sink_id = 45
 sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
@@ -178,12 +179,12 @@ if len(files)>0:
         density_mean = np.mean(density_array)
         density_median = np.median(density_array)
         density_mass_weighted = np.sum(density_array*gas_mass)/np.sum(gas_mass)
-        #del density_array
+        del density_array
         gc.collect()
         BHL_top_mean = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mean.in_cgs()
         BHL_top_median = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_median.in_cgs()
         BHL_top_mass_weighted = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mass_weighted.in_cgs()
-        #del sink_mass, mean_density
+        del density_mean, density_median, density_mass_weighted
         gc.collect()
         
         gas_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
@@ -196,14 +197,20 @@ if len(files)>0:
         sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
         sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
         sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-        #del sph_dvx, sph_dvy, sph_dvz
+        del sph_dvx, sph_dvy, sph_dvz
         #gc.collect()
         sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
         rel_speed_mean = np.mean(sph_speed)
         rel_speed_median = np.median(sph_speed)
         rel_speed_mass_weighted = np.sum(sph_speed*gas_mass)/np.sum(gas_mass)
         
-        #del rel_vel
+        #Calculate BH Radius
+        Bondi_radius_mean = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_mean**2)).in_units("au")
+        Bondi_radius_median = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_median**2)).in_units("au")
+        Bondi_radius_mass_weighted = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_mass_weighted**2 + rel_speed_mass_weighted**2)).in_units("au")
+        save_dict["Bondi_radius"] = np.append(save_dict["Bondi_radius"], np.array([Bondi_radius_mean, Bondi_radius_median, Bondi_radius_mass_weighted]))
+        
+        del rel_vel
         gc.collect()
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
@@ -212,16 +219,16 @@ if len(files)>0:
         proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
         proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
         proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
-        #del sph_vel, sep_vector
+        del sph_vel, sep_vector
         gc.collect()
         rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
-        #del proj_v_x, proj_v_y, proj_v_z
+        del proj_v_x, proj_v_y, proj_v_z
         gc.collect()
         rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
-        #del rad_vel
+        del rad_vel
         gc.collect()
         tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
-        #del sph_speed, rad_speed
+        del sph_speed, rad_speed
         gc.collect()
         rel_kep = tang_vel/keplerian_velocity
         try:
@@ -249,19 +256,15 @@ if len(files)>0:
         BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed_mean.in_cgs()**2)**(3./2.)
         BHL_bot_median = (rel_speed_median.in_cgs()**2 + sound_speed_median.in_cgs()**2)**(3./2.)
         BHL_bot_mass_weighted = (rel_speed_mass_weighted.in_cgs()**2 + sound_speed_mass_weighted.in_cgs()**2)**(3./2.)
-        #del rel_speed, sound_speed
+        del rel_speed_mean, rel_speed_median, rel_speed_mass_weighted, sound_speed_mean, sound_speed_median, sound_speed_mass_weighted
         gc.collect()
         BHL_mean = (alpha * (BHL_top_mean/BHL_bot_mean)).in_units('msun/yr')
         BHL_median = (alpha * (BHL_top_median/BHL_bot_median)).in_units('msun/yr')
         BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot_mass_weighted)).in_units('msun/yr')
-        #del alpha, BHL_top, BHL_bot
+        del alpha, BHL_top_mean, BHL_top_median, BHL_top_mass_weighted, BHL_bot_mean, BHL_bot_median, BHL_bot_mass_weighted
         gc.collect()
-        import pdb
-        pdb.set_trace()
-        save_dict["BHL_Acc_acc_low_mean"] = np.append(save_dict["BHL_Acc_acc_low_mean"], BHL_mean[0])
-        save_dict["BHL_Acc_acc_low_median"] = np.append(save_dict["BHL_Acc_acc_low_median"], BHL_median[0])
-        save_dict["BHL_Acc_acc_low_mass_weighted"] = np.append(save_dict["BHL_Acc_acc_low_mass_weighted"], BHL_median[0])
-        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_high"], BHL[1])
+        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low_mean"], np.array([BHL_mean[0], BHL_median[0], BHL_mass_weighted[0]]))
+        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_low_median"], np.array([BHL_mean[1], BHL_median[1], BHL_mass_weighted[1]]))
         #sto.result_id = "BHL_Acc_acc_low"
         #sto.result = BHL[0]
         #sto.result_id = "BHL_Acc_acc_high"
