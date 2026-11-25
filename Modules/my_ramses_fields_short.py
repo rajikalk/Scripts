@@ -59,11 +59,13 @@ def _Pressure(field,data):
     """
     Overwrites pressure field
     """
-    pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
+    density_unit = (data.ds.mass_unit/data.ds.length_unit**3).in_cgs()
+    pressure_unit = (density_unit * (data.ds.length_unit/data.ds.time_unit)**2).in_cgs()
     if ('ramses', 'Pressure') in data.ds.field_list:
-        pressure = data[('ramses', 'Pressure')].value*pressure_unit
+        pressure = data[('ramses', 'Pressure')].value * pressure_unit
     else:
-        pressure = (data.ds.velocity_unit.in_units('cm/s').value**2)*np.power(data[('gas', 'Density')].in_units('g/cm**3').value, data[('gas', 'Gamma')].value)
+        import pdb
+        pdb.set_trace()
     pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
     del pressure
     del pressure_unit

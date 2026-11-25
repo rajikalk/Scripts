@@ -232,6 +232,8 @@ if len(files)>0:
         del rel_kep
         gc.collect()
         
+        import pdb
+        pdb.set_trace()
         sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
         print('calculated sound speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
