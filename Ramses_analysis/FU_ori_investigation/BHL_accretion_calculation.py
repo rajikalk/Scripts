@@ -153,7 +153,7 @@ if len(files)>0:
             enc_inds = np.where(radii<=radii[radi_it])[0]
             enc_mass = np.sum(gas_mass[enc_inds])
             enclosed_mass[radi_it] = enc_mass
-        del gas_mass
+        #del gas_mass
         gc.collect()
         sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
         #print('Got particle mass on rank', rank, ' for fn', ds)
@@ -190,9 +190,14 @@ if len(files)>0:
         del sph_dvx, sph_dvy, sph_dvz
         gc.collect()
         sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-        rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
-        rel_speed = np.sqrt(np.sum(rel_vel**2))
-        del rel_vel
+        rel_vel_mean = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
+        rel_speed_mean = np.sqrt(np.sum(rel_vel_mean**2))
+        rel_vel_median = yt.YTArray([np.median(sph_vel[0]), np.median(sph_vel[1]), np.median(sph_vel[2])])
+        rel_speed_median = np.sqrt(np.sum(rel_vel_median**2))
+        rel_vel_mass_weighted = yt.YTArray([np.sum(sph_vel[0]*gas_mass)/np.sum(gas_mass), np.sum(sph_vel[1]*gas_mass)/np.sum(gas_mass), np.sum(sph_vel[2]*gas_mass)/np.sum(gas_mass)])
+        rel_speed_mass_weighted = np.sqrt(np.sum(rel_vel_mass_weighted**2))
+        
+        #del rel_vel
         gc.collect()
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
@@ -232,13 +237,19 @@ if len(files)>0:
         sys.stdout.flush()
         
         alpha = yt.YTArray([1, 2], '')
-        BHL_bot = (rel_speed.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
+        BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
+        BHL_bot_median = (rel_speed_median.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
+        BHL_bot_mass_weighted = (rel_speed_mass_weighted.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
         del rel_speed, sound_speed
         gc.collect()
-        BHL = (alpha * (BHL_top/BHL_bot)).in_units('msun/yr')
+        BHL_mean = (alpha * (BHL_top_mean/BHL_bot)).in_units('msun/yr')
+        BHL_median = (alpha * (BHL_top_median/BHL_bot)).in_units('msun/yr')
+        BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot)).in_units('msun/yr')
         del alpha, BHL_top, BHL_bot
         gc.collect()
-        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low"], BHL[0])
+        save_dict["BHL_Acc_acc_low_mean"] = np.append(save_dict["BHL_Acc_acc_low_mean"], BHL_mean[0])
+        save_dict["BHL_Acc_acc_low_median"] = np.append(save_dict["BHL_Acc_acc_low_median"], BHL_median[0])
+        save_dict["BHL_Acc_acc_low_mass_weighted"] = np.append(save_dict["BHL_Acc_acc_low_mass_weighted"], BHL_median[0])
         save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_high"], BHL[1])
         #sto.result_id = "BHL_Acc_acc_low"
         #sto.result = BHL[0]
