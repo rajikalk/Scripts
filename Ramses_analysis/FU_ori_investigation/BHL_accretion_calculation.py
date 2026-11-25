@@ -262,8 +262,8 @@ if len(files)>0:
         BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot_mass_weighted)).in_units('msun/yr')
         del alpha, BHL_top_mean, BHL_top_median, BHL_top_mass_weighted, BHL_bot_mean, BHL_bot_median, BHL_bot_mass_weighted
         gc.collect()
-        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low_mean"], np.array([BHL_mean[0], BHL_median[0], BHL_mass_weighted[0]]))
-        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_low_median"], np.array([BHL_mean[1], BHL_median[1], BHL_mass_weighted[1]]))
+        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low"], np.array([BHL_mean[0], BHL_median[0], BHL_mass_weighted[0]]))
+        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_high"], np.array([BHL_mean[1], BHL_median[1], BHL_mass_weighted[1]]))
         #sto.result_id = "BHL_Acc_acc_low"
         #sto.result = BHL[0]
         #sto.result_id = "BHL_Acc_acc_high"
