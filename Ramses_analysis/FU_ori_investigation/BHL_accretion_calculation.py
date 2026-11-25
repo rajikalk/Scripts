@@ -59,6 +59,7 @@ elif os.path.exists('BHL_accretion_0.pkl'):
     save_dict.update({"BHL_Acc_acc_high": np.array([])})
     save_dict.update({"Density": np.array([[]])})
     save_dict.update({"Rel_kep": np.array([[]])})
+    save_dict.update({"Bondi_radius":np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
