@@ -175,11 +175,15 @@ if len(files)>0:
                 save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=1)
             except:
                 save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=0)
-        mean_density = np.mean(density_array)
-        del density_array
+        density_mean = np.mean(density_array)
+        density_median = np.median(density_array)
+        density_mass_weighted = np.sum(density_array*gas_mass)/np.sum(gas_mass)
+        #del density_array
         gc.collect()
-        BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
-        del sink_mass, mean_density
+        BHL_top_mean = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mean.in_cgs()
+        BHL_top_median = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_median.in_cgs()
+        BHL_top_mass_weighted = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mass_weighted.in_cgs()
+        #del sink_mass, mean_density
         gc.collect()
         
         #Calculate bulk velocity of the sphere
@@ -190,12 +194,9 @@ if len(files)>0:
         del sph_dvx, sph_dvy, sph_dvz
         gc.collect()
         sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-        rel_vel_mean = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
-        rel_speed_mean = np.sqrt(np.sum(rel_vel_mean**2))
-        rel_vel_median = yt.YTArray([np.median(sph_vel[0]), np.median(sph_vel[1]), np.median(sph_vel[2])])
-        rel_speed_median = np.sqrt(np.sum(rel_vel_median**2))
-        rel_vel_mass_weighted = yt.YTArray([np.sum(sph_vel[0]*gas_mass)/np.sum(gas_mass), np.sum(sph_vel[1]*gas_mass)/np.sum(gas_mass), np.sum(sph_vel[2]*gas_mass)/np.sum(gas_mass)])
-        rel_speed_mass_weighted = np.sqrt(np.sum(rel_vel_mass_weighted**2))
+        rel_speed_mean = np.mean(sph_speed)
+        rel_speed_median = np.median(sph_speed)
+        rel_speed_mass_weighted = np.sum(sph_speed*gas_mass)/np.sum(gas_mass)
         
         #del rel_vel
         gc.collect()
@@ -232,23 +233,26 @@ if len(files)>0:
         del rel_kep
         gc.collect()
         
-        import pdb
-        pdb.set_trace()
-        sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+        sound_speed_vals = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+        sound_speed_mean = np.mean(sound_speed_vals)
+        sound_speed_median = np.median(sound_speed_vals)
+        sound_speed_mass_weighted = np.sum(sound_speed_vals*gas_mass)/np.sum(gas_mass)
         print('calculated sound speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
         alpha = yt.YTArray([1, 2], '')
-        BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
-        BHL_bot_median = (rel_speed_median.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
-        BHL_bot_mass_weighted = (rel_speed_mass_weighted.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
-        del rel_speed, sound_speed
+        BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed_mean.in_cgs()**2)**(3./2.)
+        BHL_bot_median = (rel_speed_median.in_cgs()**2 + sound_speed_median.in_cgs()**2)**(3./2.)
+        BHL_bot_mass_weighted = (rel_speed_mass_weighted.in_cgs()**2 + sound_speed_mass_weighted.in_cgs()**2)**(3./2.)
+        #del rel_speed, sound_speed
         gc.collect()
-        BHL_mean = (alpha * (BHL_top_mean/BHL_bot)).in_units('msun/yr')
-        BHL_median = (alpha * (BHL_top_median/BHL_bot)).in_units('msun/yr')
-        BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot)).in_units('msun/yr')
-        del alpha, BHL_top, BHL_bot
+        BHL_mean = (alpha * (BHL_top_mean/BHL_bot_mean)).in_units('msun/yr')
+        BHL_median = (alpha * (BHL_top_median/BHL_bot_median)).in_units('msun/yr')
+        BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot_mass_weighted)).in_units('msun/yr')
+        #del alpha, BHL_top, BHL_bot
         gc.collect()
+        impoty pdb
+        pdb.set_trace()
         save_dict["BHL_Acc_acc_low_mean"] = np.append(save_dict["BHL_Acc_acc_low_mean"], BHL_mean[0])
         save_dict["BHL_Acc_acc_low_median"] = np.append(save_dict["BHL_Acc_acc_low_median"], BHL_median[0])
         save_dict["BHL_Acc_acc_low_mass_weighted"] = np.append(save_dict["BHL_Acc_acc_low_mass_weighted"], BHL_median[0])
