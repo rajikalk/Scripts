@@ -51,7 +51,7 @@ mym.set_global_font_size(font_size)
 
 if args.make_movie_pickles == 'True':
     
-    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+    files = sorted(glob.glob(input_dir + '*plt_cnt*'))[1:]
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
