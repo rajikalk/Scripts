@@ -204,7 +204,6 @@ if len(files)>0:
         rel_speed_median = np.median(sph_speed)
         rel_speed_mass_weighted = np.sum(sph_speed*gas_mass)/np.sum(gas_mass)
         
-        del rel_vel
         gc.collect()
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
