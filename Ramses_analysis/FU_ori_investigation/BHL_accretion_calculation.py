@@ -186,13 +186,18 @@ if len(files)>0:
         #del sink_mass, mean_density
         gc.collect()
         
+        gas_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
+        gas_vely = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s')
+        gas_velz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s')
+        gas_vel = np.sqrt(gas_velx**2 + gas_vely**2 + gas_velz**2)
+        
         #Calculate bulk velocity of the sphere
         sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
         sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
         sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
         sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-        del sph_dvx, sph_dvy, sph_dvz
-        gc.collect()
+        #del sph_dvx, sph_dvy, sph_dvz
+        #gc.collect()
         sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
         rel_speed_mean = np.mean(sph_speed)
         rel_speed_median = np.median(sph_speed)
@@ -207,16 +212,16 @@ if len(files)>0:
         proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
         proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
         proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
-        del sph_vel, sep_vector
+        #del sph_vel, sep_vector
         gc.collect()
         rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
-        del proj_v_x, proj_v_y, proj_v_z
+        #del proj_v_x, proj_v_y, proj_v_z
         gc.collect()
         rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
-        del rad_vel
+        #del rad_vel
         gc.collect()
         tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
-        del sph_speed, rad_speed
+        #del sph_speed, rad_speed
         gc.collect()
         rel_kep = tang_vel/keplerian_velocity
         try:
@@ -233,7 +238,7 @@ if len(files)>0:
         del rel_kep
         gc.collect()
         
-        sound_speed_vals = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+        sound_speed_vals = np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s')
         sound_speed_mean = np.mean(sound_speed_vals)
         sound_speed_median = np.median(sound_speed_vals)
         sound_speed_mass_weighted = np.sum(sound_speed_vals*gas_mass)/np.sum(gas_mass)
