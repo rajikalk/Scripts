@@ -1,4 +1,24 @@
 #!/usr/bin/env python
+"""
+Estimate the Bondi-Hoyle-Lyttleton (BHL) accretion rate onto a sink from the gas
+inside a measuring sphere, for every RAMSES output of one burst event.
+
+Pickle format (format_version 2), used for both the per-rank pickles
+(BHL_accretion_<rank>.pkl) and the merged pickle (BHL_accretion.pkl):
+    "format_version"     : 2
+    "Estimators"         : ["mean", "median", "mass_weighted"]  (column order below)
+    "Alpha"              : [1, 2]  (BHL_Acc_acc_low uses alpha=1, _high uses alpha=2)
+    "Measuring_radius_au": float
+    "Rel_vel_method"     : "cell" or "bulk"
+    "File"               : list of N output paths, relative to the event's data/ dir
+    "Time"               : (N,)   time since sink formation [yr]
+    "BHL_Acc_acc_low"    : (N, 3) alpha * 2 pi (G M)^2 rho / (v^2 + cs^2)^1.5 with alpha=1 [Msun/yr]
+    "BHL_Acc_acc_high"   : (N, 3) same with alpha=2 [Msun/yr]
+    "Bondi_radius"       : (N, 3) 2 G M / (cs^2 + v^2) [au]
+    "Density"            : list of N arrays, per-cell density in the sphere [g/cm^3]
+    "Rel_kep"            : list of N arrays, per-cell v_tan / v_kep in the sphere
+Snapshots are sorted by Time and unique by File.
+"""
 import glob
 import sys
 import argparse
@@ -18,301 +38,224 @@ size = CW.Get_size()
 if rank == 0:
     print("size =", size)
 
+ESTIMATORS = ["mean", "median", "mass_weighted"]
+ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius"]   # (N, 3)
+LIST_KEYS = ["Density", "Rel_kep"]                                      # ragged, one array per snapshot
+META_KEYS = ["Measuring_radius_au", "Rel_vel_method"]
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument("-ax", "--axis", default='xy', type=str)
 parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=5, type=float)
+parser.add_argument("-vrel", "--rel_vel_method", default='cell', choices=['cell', 'bulk'],
+                    help="'cell': estimators of the per-cell speed |v_gas - v_sink| (original behaviour, includes disc rotation). "
+                         "'bulk': speed of the sphere's bulk (mean/median/mass-weighted) velocity relative to the sink.")
+parser.add_argument("-est", "--plot_estimator", default='mass_weighted', choices=ESTIMATORS,
+                    help="Which estimator to show in the plot")
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+# Pickle helpers
+def empty_bhl_dict():
+    d = {"format_version": 2, "Estimators": list(ESTIMATORS), "Alpha": [1, 2],
+         "Measuring_radius_au": float(args.measuring_sphere_radius),
+         "Rel_vel_method": args.rel_vel_method,
+         "File": [], "Time": []}
+    for key in ARRAY_KEYS + LIST_KEYS:
+        d[key] = []
+    return d
 
-#Start by loading pickel data and then deleting what we don't need
+def load_bhl_pickle(path):
+    """Return the dict in path if it is in the current format, else None."""
+    with open(path, 'rb') as file_open:
+        d = pickle.load(file_open)
+    if isinstance(d, dict) and d.get("format_version") == 2:
+        return d
+    if rank == 0:
+        print("WARNING: ignoring", path, "- old pickle format (its BHL arrays were mis-sorted), it will be recomputed/overwritten")
+    return None
+
+def check_meta(d, path):
+    for key in META_KEYS:
+        if d[key] != empty_bhl_dict()[key]:
+            raise SystemExit("ERROR: " + path + " was made with " + key + "=" + str(d[key]) +
+                             " but this run uses " + str(empty_bhl_dict()[key]) +
+                             ". Run in a separate directory or remove the old pickles.")
+
+def merge_bhl_dicts(dicts):
+    """Combine dicts snapshot-by-snapshot, unique by File (later dicts win), sorted by Time."""
+    merged = empty_bhl_dict()
+    for d in dicts:
+        if d is not None:
+            for key in META_KEYS:
+                merged[key] = d[key]
+    entries = {}
+    for d in dicts:
+        if d is None:
+            continue
+        for i, fname in enumerate(d["File"]):
+            entries[fname] = (d, i)
+    order = sorted(entries, key=lambda f: entries[f][0]["Time"][entries[f][1]])
+    merged["File"] = order
+    merged["Time"] = np.array([entries[f][0]["Time"][entries[f][1]] for f in order], dtype=float)
+    for key in ARRAY_KEYS:
+        merged[key] = np.array([entries[f][0][key][entries[f][1]] for f in order], dtype=float).reshape(-1, len(ESTIMATORS))
+    for key in LIST_KEYS:
+        merged[key] = [np.asarray(entries[f][0][key][entries[f][1]]) for f in order]
+    return merged
+
+def save_pickle(d, path):
+    tmp_path = path + ".tmp"
+    with open(tmp_path, 'wb') as file_open:
+        pickle.dump(d, file_open)
+    os.replace(tmp_path, path)   # atomic, so a crash mid-write can't corrupt the pickle
+
+def estimators(values, weights):
+    """[mean, median, mass-weighted mean]"""
+    return np.array([np.mean(values), np.median(values), np.sum(values*weights)/np.sum(weights)])
+
+#------------------------------------------------------
+time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 
 event_it = args.event_identifier
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
 if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
-    end_burst = 7340
     end_time = 7340
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
-sys.stdout.flush()
-CW.Barrier()
-
 sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
-files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
-
-if os.path.exists('BHL_accretion.pkl'):
-    file_open = open('BHL_accretion.pkl', 'rb')
-    save_dict = pickle.load(file_open)
-    file_open.close()
-    if len(save_dict["Time"]) != len(files):
-        files = files[len(save_dict["Time"]):]
-elif os.path.exists('BHL_accretion_0.pkl'):
-    pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
-    save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"BHL_Acc_acc_low": np.array([])})
-    save_dict.update({"BHL_Acc_acc_high": np.array([])})
-    save_dict.update({"Density": np.array([[]])})
-    save_dict.update({"Rel_kep": np.array([[]])})
-    save_dict.update({"Bondi_radius":np.array([])})
-    for pickle_file in pickle_files:
-        file_open = open(pickle_file, 'rb')
-        save_dict_r = pickle.load(file_open)
-        file_open.close()
-        for key in save_dict_r.keys():
-            save_dict[key] = np.append(save_dict[key],save_dict_r[key])
-    sorted_inds = np.argsort(save_dict["Time"])
-    for key in save_dict.keys():
-        save_dict[key] = save_dict[key][sorted_inds]
-    if len(save_dict["Time"]) != len(files):
-        files = files[len(save_dict["Time"]):]
-else:
-    save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"BHL_Acc_acc_low": np.array([])})
-    save_dict.update({"BHL_Acc_acc_high": np.array([])})
-    save_dict.update({"Density": np.array([[]])})
-    save_dict.update({"Rel_kep": np.array([[]])})
-    save_dict.update({"Bondi_radius":np.array([])})
+all_files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
 
 sink_id = 45
-sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
+sink_form_time_yr = yt.YTQuantity(22926444.19370405, 'yr').value
+
+# Work out which outputs are already done, from every existing pickle
+rank_pickle = 'BHL_accretion_'+str(rank)+'.pkl'
+existing_pickles = (['BHL_accretion.pkl'] if os.path.exists('BHL_accretion.pkl') else []) + sorted(glob.glob("BHL_accretion_*.pkl"))
+done_files = set()
+for pickle_file in existing_pickles:
+    d = load_bhl_pickle(pickle_file)
+    if d is not None:
+        check_meta(d, pickle_file)
+        done_files.update(d["File"])
+
+# This rank keeps appending to its own pickle (if it is in the current format)
+my_dict = empty_bhl_dict()
+if os.path.exists(rank_pickle):
+    d = load_bhl_pickle(rank_pickle)
+    if d is not None:
+        for key in ["File", "Time"] + ARRAY_KEYS + LIST_KEYS:
+            my_dict[key] = list(d[key])
+
+files = [fn for fn in all_files if os.path.relpath(fn, sim_data_dir) not in done_files]
+if rank == 0:
+    print(len(all_files) - len(files), "of", len(all_files), "outputs already done,", len(files), "to do")
 
 sys.stdout.flush()
 CW.Barrier()
 gc.collect()
 
-if len(files)>0:
-    #ts = yt.DatasetSeries(files, parallel=4)
-    #'''
-    para_div = 7
-    #my_storage = {}
-    for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
-        proj_root_rank = int(rank/para_div)
+#------------------------------------------------------
+G = float(yt.units.gravitational_constant_cgs.in_cgs().value)
+
+def calculate_bhl(ds, fn):
+    au_cm = ds.quan(1, 'au').in_cgs().value
+    msun_g = ds.quan(1, 'Msun').in_cgs().value
+    yr_s = ds.quan(1, 'yr').in_cgs().value
+
+    time_val = ds.current_time.in_units('yr').value - sink_form_time_yr
+
+    # Sink properties
+    sink_pos = np.array([ds.r["gas", "sink_particle_pos"+ax][sink_id].in_cgs().value for ax in 'xyz'])
+    sink_vel = np.array([ds.r["gas", "sink_particle_vel"+ax][sink_id].in_cgs().value for ax in 'xyz'])
+    sink_mass = ds.r["gas", "sink_particle_mass"][sink_id].in_cgs().value
+
+    # Only read the cells around the sink, instead of the whole domain
+    radius_cm = args.measuring_sphere_radius*au_cm
+    sph = ds.sphere(ds.arr(sink_pos, 'cm'), ds.quan(radius_cm, 'cm'))
+    sep_vector = np.array([sph["index", ax].in_cgs().value - sink_pos[i] for i, ax in enumerate('xyz')])
+    radii = np.sqrt(np.sum(sep_vector**2, axis=0))
+    in_sph = radii <= radius_cm   # same cell selection as before (cell centre within the radius)
+    sep_vector = sep_vector[:, in_sph]
+    radii = radii[in_sph]
+
+    gas_mass = sph["gas", "mass"].in_cgs().value[in_sph]
+    density = sph["gas", "Density"].in_cgs().value[in_sph]
+    gas_vel = np.array([sph["ramses", ax+"-velocity"].in_cgs().value[in_sph] for ax in 'xyz'])
+    gamma = np.asarray(sph["gas", "Gamma"])[in_sph]
+    pressure = sph["gas", "Pressure"].in_cgs().value[in_sph]
+    del sph
+    sound_speed = np.sqrt(gamma*pressure/density)
+
+    # Keplerian velocity from sink mass + gas mass enclosed (cells at the same radius count as enclosed)
+    sort_inds = np.argsort(radii)
+    cumulative_mass = np.cumsum(gas_mass[sort_inds])
+    enclosed_mass = cumulative_mass[np.searchsorted(radii[sort_inds], radii, side='right') - 1] + sink_mass
+    with np.errstate(divide='ignore', invalid='ignore'):
+        keplerian_velocity = np.where(radii > 0, np.sqrt(G*enclosed_mass/np.where(radii > 0, radii, 1.0)), np.nan)
+
+    # Velocity relative to the sink, split into radial and tangential parts
+    rel_vel = gas_vel - sink_vel[:, None]
+    rel_speed_cells = np.sqrt(np.sum(rel_vel**2, axis=0))
+    with np.errstate(divide='ignore', invalid='ignore'):
+        rad_speed = np.where(radii > 0, np.sum(rel_vel*sep_vector, axis=0)/np.where(radii > 0, radii, 1.0), 0.0)
+        tang_vel = np.sqrt(np.clip(rel_speed_cells**2 - rad_speed**2, 0, None))
+        rel_kep = tang_vel/keplerian_velocity
+
+    # Estimators [mean, median, mass-weighted]
+    density_est = estimators(density, gas_mass)
+    sound_speed_est = estimators(sound_speed, gas_mass)
+    if args.rel_vel_method == 'cell':
+        rel_speed_est = estimators(rel_speed_cells, gas_mass)
+    else:
+        bulk_vels = [np.mean(gas_vel, axis=1), np.median(gas_vel, axis=1), np.sum(gas_vel*gas_mass, axis=1)/np.sum(gas_mass)]
+        rel_speed_est = np.array([np.sqrt(np.sum((v - sink_vel)**2)) for v in bulk_vels])
+
+    # BHL rate and radius, each using matching estimators
+    v2_plus_cs2 = rel_speed_est**2 + sound_speed_est**2
+    bhl_alpha_1 = 2*np.pi*(G*sink_mass)**2*density_est/v2_plus_cs2**1.5   # g/s
+    bhl_alpha_1 = bhl_alpha_1*yr_s/msun_g                                  # Msun/yr
+    bondi_radius = 2*G*sink_mass/v2_plus_cs2/au_cm                         # au
+
+    return {"File": os.path.relpath(fn, sim_data_dir), "Time": time_val,
+            "BHL_Acc_acc_low": bhl_alpha_1, "BHL_Acc_acc_high": 2*bhl_alpha_1,
+            "Bondi_radius": bondi_radius, "Density": density, "Rel_kep": rel_kep}
+
+if len(files) > 0:
+    for fn in yt.parallel_objects(files, njobs=size):   # one output per rank at a time
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
-        #try:
         ds = yt.load(fn, units_override=units_override)
-        #'''
-        #my_storage = {}
-        #for sto, ds in ts.piter(storage=my_storage):
-        time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-        save_dict["Time"] = np.append(save_dict["Time"],time_val)
-        del time_val
+        result = calculate_bhl(ds, fn)
+        for key in result.keys():
+            my_dict[key].append(result[key])
+        del ds, result
         gc.collect()
-        #sto.result_id = "Time"
-        #sto.result = time_val
-        
-        #Get sink position
-        sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-        sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
-        sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-        sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-        del sink_particle_posx, sink_particle_posy, sink_particle_posz
-        gc.collect()
-        #print('Got particle position on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #get sink velocity
-        sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-        sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-        sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-        sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-        del sink_particle_velx, sink_particle_vely, sink_particle_velz
-        gc.collect()
-        #print('Got particle velocity on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #Get inds in measuring sphere
-        dd = ds.all_data()
-        dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-        dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-        dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-        sep_vector = yt.YTArray([dx, dy, dz])
-        del dx, dy, dz, dd
-        gc.collect()
-        sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
-        sys.stdout.flush()
-        
-        #Get indices in measure sphere
-        radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
-        sphere_inds = np.where(sep<=radius)[0]
-        radii = sep[sphere_inds]
-        del sep
-        gc.collect()
-        #print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
-        sep_vector = sep_vector.T[sphere_inds].T
-        
-        #Calcualte keplerian velocity
-        gas_mass = ds.r["gas", "mass"][sphere_inds]
-        enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
-        for radi_it in range(len(radii)):
-            enc_inds = np.where(radii<=radii[radi_it])[0]
-            enc_mass = np.sum(gas_mass[enc_inds])
-            enclosed_mass[radi_it] = enc_mass
-        #del gas_mass
-        gc.collect()
-        sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
-        #print('Got particle mass on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        enclosed_mass = enclosed_mass+sink_mass.in_units('g')
-        keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
-        del enclosed_mass
-        gc.collect()
-        
-        density_array = ds.r["gas", "Density"][sphere_inds]
-        try:
-            try:
-                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
-            except:
-                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
-        except:
-            print("Hack for previous mistake about appending 2d arrays. Please fix!")
-            try:
-                save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=1)
-            except:
-                save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=0)
-        density_mean = np.mean(density_array)
-        density_median = np.median(density_array)
-        density_mass_weighted = np.sum(density_array*gas_mass)/np.sum(gas_mass)
-        del density_array
-        gc.collect()
-        BHL_top_mean = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mean.in_cgs()
-        BHL_top_median = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_median.in_cgs()
-        BHL_top_mass_weighted = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * density_mass_weighted.in_cgs()
-        del density_mean, density_median, density_mass_weighted
-        gc.collect()
-        
-        gas_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
-        gas_vely = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s')
-        gas_velz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s')
-        gas_vel = np.sqrt(gas_velx**2 + gas_vely**2 + gas_velz**2)
-        
-        #Calculate bulk velocity of the sphere
-        sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
-        sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
-        sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
-        sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
-        del sph_dvx, sph_dvy, sph_dvz
-        #gc.collect()
-        sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-        rel_speed_mean = np.mean(sph_speed)
-        rel_speed_median = np.median(sph_speed)
-        rel_speed_mass_weighted = np.sum(sph_speed*gas_mass)/np.sum(gas_mass)
-        
-        gc.collect()
-        print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #Calculate Tangential vel
-        proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
-        proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
-        proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
-        del sph_vel, sep_vector
-        gc.collect()
-        rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
-        del proj_v_x, proj_v_y, proj_v_z
-        gc.collect()
-        rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
-        del rad_vel
-        gc.collect()
-        tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
-        del sph_speed, rad_speed
-        gc.collect()
-        rel_kep = tang_vel/keplerian_velocity
-        try:
-            try:
-                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
-            except:
-                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
-        except:
-            print("Hack for previous mistake about appending 2d arrays. Please fix!")
-            try:
-                save_dict["Rel_kep"] = np.append([save_dict["Rel_kep"].T], [rel_kep], axis=1)
-            except:
-                save_dict["Rel_kep"] = np.append([save_dict["Rel_kep"].T], [rel_kep], axis=0)
-        del rel_kep
-        gc.collect()
-        
-        sound_speed_vals = np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s')
-        sound_speed_mean = np.mean(sound_speed_vals)
-        sound_speed_median = np.median(sound_speed_vals)
-        sound_speed_mass_weighted = np.sum(sound_speed_vals*gas_mass)/np.sum(gas_mass)
-        print('calculated sound speed on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-                #Calculate BH Radius
-        Bondi_radius_mean = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_mean**2)).in_units("au")
-        Bondi_radius_median = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_median**2)).in_units("au")
-        Bondi_radius_mass_weighted = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_mass_weighted**2 + rel_speed_mass_weighted**2)).in_units("au")
-        save_dict["Bondi_radius"] = np.append(save_dict["Bondi_radius"], np.array([Bondi_radius_mean, Bondi_radius_median, Bondi_radius_mass_weighted]))
-        
-        alpha = yt.YTArray([1, 2], '')
-        BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed_mean.in_cgs()**2)**(3./2.)
-        BHL_bot_median = (rel_speed_median.in_cgs()**2 + sound_speed_median.in_cgs()**2)**(3./2.)
-        BHL_bot_mass_weighted = (rel_speed_mass_weighted.in_cgs()**2 + sound_speed_mass_weighted.in_cgs()**2)**(3./2.)
-        del rel_speed_mean, rel_speed_median, rel_speed_mass_weighted, sound_speed_mean, sound_speed_median, sound_speed_mass_weighted
-        gc.collect()
-        BHL_mean = (alpha * (BHL_top_mean/BHL_bot_mean)).in_units('msun/yr')
-        BHL_median = (alpha * (BHL_top_median/BHL_bot_median)).in_units('msun/yr')
-        BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot_mass_weighted)).in_units('msun/yr')
-        del alpha, BHL_top_mean, BHL_top_median, BHL_top_mass_weighted, BHL_bot_mean, BHL_bot_median, BHL_bot_mass_weighted
-        gc.collect()
-        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low"], np.array([BHL_mean[0], BHL_median[0], BHL_mass_weighted[0]]))
-        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_high"], np.array([BHL_mean[1], BHL_median[1], BHL_mass_weighted[1]]))
-        #sto.result_id = "BHL_Acc_acc_low"
-        #sto.result = BHL[0]
-        #sto.result_id = "BHL_Acc_acc_high"
-        #sto.result = BHL[1]
-        #print('calculated BHL accretion on rank', rank, ' for fn', ds)
-        sys.stdout.flush()
-        
-        #ds.index.clear_all_data()
-        
-        #Save BHL Calculation
-        file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
-        #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-        pickle.dump((save_dict), file_open)
-        file_open.close()
+
+        save_pickle(merge_bhl_dicts([my_dict]), rank_pickle)
         print("RANK "+str(rank)+": CALCULATED BHL FOR FILE", files.index(fn), "OF", len(files))
         sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
+sys.stdout.flush()
 CW.Barrier()
 
+#------------------------------------------------------
 if rank == 0:
-    pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
-    save_dict = {}
-    save_dict.update({"Time": np.array([])})
-    save_dict.update({"BHL_Acc_acc_low": np.array([])})
-    save_dict.update({"BHL_Acc_acc_high": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
-    for pickle_file in pickle_files:
-        file_open = open(pickle_file, 'rb')
-        save_dict_r = pickle.load(file_open)
-        file_open.close()
-        for key in save_dict_r.keys():
-            save_dict[key] = np.append(save_dict[key],save_dict_r[key])
-    sorted_inds = np.argsort(save_dict["Time"])
-    for key in save_dict.keys():
-        save_dict[key] = save_dict[key][sorted_inds]
-        
-    file_open = open('BHL_accretion.pkl', 'wb')
-    pickle.dump((save_dict), file_open)
-    file_open.close()
-    
+    pickle_files = (['BHL_accretion.pkl'] if os.path.exists('BHL_accretion.pkl') else []) + sorted(glob.glob("BHL_accretion_*.pkl"))
+    save_dict = merge_bhl_dicts([load_bhl_pickle(p) for p in pickle_files])
+    save_pickle(save_dict, 'BHL_accretion.pkl')
+    print("Saved BHL_accretion.pkl with", len(save_dict["Time"]), "outputs")
+
     radius = args.measuring_sphere_radius
-    
+
     try:
         sink_pickle = "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl"
         file_open = open(sink_pickle, 'rb')
-        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+        particle_data, counter, _, _ = pickle.load(file_open)
         file_open.close()
         print("finished reading in pickle")
         sys.stdout.flush()
@@ -320,23 +263,19 @@ if rank == 0:
         sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
         print("read pickle", sink_pickle)
         file_open = open(sink_pickle, 'rb')
-        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+        particle_data, counter, _, _ = pickle.load(file_open)
         file_open.close()
         print("finished reading in pickle")
         sys.stdout.flush()
 
-    
     import matplotlib.pyplot as plt
-    
-    cmap=plt.cm.gist_heat
+    from matplotlib.colors import to_rgba
+
     plt.rcParams.update({
         "font.family": "sans-serif",
         "font.sans-serif": ["Arial"],
         "mathtext.fontset": "stixsans"  # Force math to use a sans-serif look
     })
-
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.sans-serif'] = 'Arial'
 
     #Ploting parameters
     two_col_width = 7.20472 #inches
@@ -345,43 +284,39 @@ if rank == 0:
     font_size = 9
     mym.set_global_font_size(font_size)
 
-    
+    est_ind = ESTIMATORS.index(args.plot_estimator)
+    bhl_low = save_dict["BHL_Acc_acc_low"][:, est_ind]
+    bhl_high = save_dict["BHL_Acc_acc_high"][:, est_ind]
+
     plt.clf()
-    fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-                
-    plt.title("Burst event "+str(event_it), y=0.8)
+    fig, ax = plt.subplots(figsize=(two_col_width, 0.6*two_col_width))
+    ax.set_title("Burst event "+str(event_it), y=0.8)
     start_ind = np.argmin(abs(particle_data['time']-start_time))
     end_ind = np.argmin(abs(particle_data['time']-end_time))
-    #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-    lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
-    BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
-    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color='g', ls=':', label="BHL_mean")
-    plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
-    plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color='g', alpha=0.5, label="BHL prediction")
-    axes_1_twin = plt.twinx()
+    mdot = particle_data['mdot'].T[1][start_ind:end_ind]
+    lns1 = ax.semilogy(particle_data['time'][start_ind:end_ind], mdot, color='b', ls='-', label="Accretion rate")
+    band = ax.fill_between(save_dict["Time"], bhl_low, bhl_high, facecolor=to_rgba('g', 0.3), edgecolor='g', linewidth=0.5,
+                           label="BHL prediction ("+args.plot_estimator.replace('_', '-')+r", $\alpha$=1–2)")
+
+    # y-limits that include both the measured and predicted rates in the window
+    in_window = (save_dict["Time"] >= start_time) & (save_dict["Time"] <= end_time)
+    y_vals = np.concatenate([mdot, bhl_low[in_window], bhl_high[in_window]])
+    y_vals = y_vals[np.isfinite(y_vals) & (y_vals > 0)]
+    if len(y_vals) > 0:
+        ax.set_ylim([0.8*np.min(y_vals), 1.25*np.max(y_vals)])
+
+    axes_1_twin = ax.twinx()
     lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-    #Plot accretion and separation. This should be loaded from a pickle
 
-    plt.xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-    plt.ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+    ax.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size)
+    ax.set_ylabel(r'Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)
     axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
-    plt.tick_params(axis='x', which='major', direction='in', color='k', top=True)
-    plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
-    #plt.xaxis.label.set_color('black')
-    #plt.yaxis.label.set_color('black')
-    plt.tick_params(axis='both', labelsize=font_size)
-    plt.xlim([start_time, end_time])
-    plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-    lns = lns1+lns2+lns3
-    labs = [l.get_label() for l in lns]
-    plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    print('Saved figure with BHL Accretion')
-
-    #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    lns = lns1+lns2+lns3
-    labs = [l.get_label() for l in lns]
-    plt.legend(lns, labs, loc='upper left')
+    ax.tick_params(axis='x', which='major', direction='in', color='k', top=True)
+    ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+    ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+    ax.set_xlim([start_time, end_time])
+    handles = [lns1[0], band, lns2[0]]
+    ax.legend(handles, [h.get_label() for h in handles], loc='upper left')
     plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     sys.stdout.flush()
