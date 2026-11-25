@@ -204,12 +204,6 @@ if len(files)>0:
         rel_speed_median = np.median(sph_speed)
         rel_speed_mass_weighted = np.sum(sph_speed*gas_mass)/np.sum(gas_mass)
         
-        #Calculate BH Radius
-        Bondi_radius_mean = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_mean**2)).in_units("au")
-        Bondi_radius_median = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_median**2)).in_units("au")
-        Bondi_radius_mass_weighted = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_mass_weighted**2 + rel_speed_mass_weighted**2)).in_units("au")
-        save_dict["Bondi_radius"] = np.append(save_dict["Bondi_radius"], np.array([Bondi_radius_mean, Bondi_radius_median, Bondi_radius_mass_weighted]))
-        
         del rel_vel
         gc.collect()
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
@@ -251,6 +245,12 @@ if len(files)>0:
         sound_speed_mass_weighted = np.sum(sound_speed_vals*gas_mass)/np.sum(gas_mass)
         print('calculated sound speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
+        
+                #Calculate BH Radius
+        Bondi_radius_mean = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_mean**2)).in_units("au")
+        Bondi_radius_median = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_median**2 + rel_speed_median**2)).in_units("au")
+        Bondi_radius_mass_weighted = ((2*yt.units.gravitational_constant_cgs*sink_mass.in_cgs())/(sound_speed_mass_weighted**2 + rel_speed_mass_weighted**2)).in_units("au")
+        save_dict["Bondi_radius"] = np.append(save_dict["Bondi_radius"], np.array([Bondi_radius_mean, Bondi_radius_median, Bondi_radius_mass_weighted]))
         
         alpha = yt.YTArray([1, 2], '')
         BHL_bot_mean = (rel_speed_mean.in_cgs()**2 + sound_speed_mean.in_cgs()**2)**(3./2.)
