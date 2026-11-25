@@ -251,7 +251,7 @@ if len(files)>0:
         BHL_mass_weighted = (alpha * (BHL_top_mass_weighted/BHL_bot_mass_weighted)).in_units('msun/yr')
         #del alpha, BHL_top, BHL_bot
         gc.collect()
-        impoty pdb
+        import pdb
         pdb.set_trace()
         save_dict["BHL_Acc_acc_low_mean"] = np.append(save_dict["BHL_Acc_acc_low_mean"], BHL_mean[0])
         save_dict["BHL_Acc_acc_low_median"] = np.append(save_dict["BHL_Acc_acc_low_median"], BHL_median[0])
