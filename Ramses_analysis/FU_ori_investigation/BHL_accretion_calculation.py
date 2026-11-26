@@ -15,6 +15,8 @@ Pickle format (format_version 2), used for both the per-rank pickles
     "BHL_Acc_acc_low"    : (N, 3) alpha * 2 pi (G M)^2 rho / (v^2 + cs^2)^1.5 with alpha=1 [Msun/yr]
     "BHL_Acc_acc_high"   : (N, 3) same with alpha=2 [Msun/yr]
     "Bondi_radius"       : (N, 3) 2 G M / (cs^2 + v^2) [au]
+    "Rel_speed"          : (N, 3) speed of the gas in the measuring sphere relative to the sink, v in the
+                           formulas above (definition set by Rel_vel_method) [km/s]
     "Density"            : list of N arrays, per-cell density in the sphere [g/cm^3]
     "Rel_kep"            : list of N arrays, per-cell v_tan / v_kep in the sphere
 Snapshots are sorted by Time and unique by File.
@@ -39,7 +41,7 @@ if rank == 0:
     print("size =", size)
 
 ESTIMATORS = ["mean", "median", "mass_weighted"]
-ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius"]   # (N, 3)
+ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius", "Rel_speed"]   # (N, 3)
 LIST_KEYS = ["Density", "Rel_kep"]                                      # ragged, one array per snapshot
 META_KEYS = ["Measuring_radius_au", "Rel_vel_method"]
 
@@ -100,7 +102,9 @@ def merge_bhl_dicts(dicts):
     merged["File"] = order
     merged["Time"] = np.array([entries[f][0]["Time"][entries[f][1]] for f in order], dtype=float)
     for key in ARRAY_KEYS:
-        merged[key] = np.array([entries[f][0][key][entries[f][1]] for f in order], dtype=float).reshape(-1, len(ESTIMATORS))
+        # keys missing from older pickles (e.g. Rel_speed) are filled with NaN
+        merged[key] = np.array([entries[f][0][key][entries[f][1]] if key in entries[f][0] else [np.nan]*len(ESTIMATORS)
+                                for f in order], dtype=float).reshape(-1, len(ESTIMATORS))
     for key in LIST_KEYS:
         merged[key] = [np.asarray(entries[f][0][key][entries[f][1]]) for f in order]
     return merged
@@ -148,7 +152,10 @@ if os.path.exists(rank_pickle):
     d = load_bhl_pickle(rank_pickle)
     if d is not None:
         for key in ["File", "Time"] + ARRAY_KEYS + LIST_KEYS:
-            my_dict[key] = list(d[key])
+            if key in d:
+                my_dict[key] = list(d[key])
+            else:   # key added after this pickle was made (e.g. Rel_speed)
+                my_dict[key] = [[np.nan]*len(ESTIMATORS)]*len(d["File"])
 
 files = [fn for fn in all_files if os.path.relpath(fn, sim_data_dir) not in done_files]
 if rank == 0:
@@ -222,7 +229,8 @@ def calculate_bhl(ds, fn):
 
     return {"File": os.path.relpath(fn, sim_data_dir), "Time": time_val,
             "BHL_Acc_acc_low": bhl_alpha_1, "BHL_Acc_acc_high": 2*bhl_alpha_1,
-            "Bondi_radius": bondi_radius, "Density": density, "Rel_kep": rel_kep}
+            "Bondi_radius": bondi_radius, "Rel_speed": rel_speed_est/1.e5,   # cm/s -> km/s
+            "Density": density, "Rel_kep": rel_kep}
 
 if len(files) > 0:
     for fn in yt.parallel_objects(files, njobs=size):   # one output per rank at a time

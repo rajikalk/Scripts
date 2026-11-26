@@ -20,7 +20,7 @@ plt.rcParams.update({
     })
 
 ESTIMATORS = ["mean", "median", "mass_weighted"]
-ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius"]
+ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius", "Rel_speed"]
 LIST_KEYS = ["Density", "Rel_kep"]
 
 #-----------------------------------------------------
@@ -54,7 +54,9 @@ def merge_bhl_dicts(dicts):
     merged = {"File": order,
               "Time": np.array([entries[f][0]["Time"][entries[f][1]] for f in order], dtype=float)}
     for key in ARRAY_KEYS:
-        merged[key] = np.array([entries[f][0][key][entries[f][1]] for f in order], dtype=float).reshape(-1, len(ESTIMATORS))
+        # keys missing from older pickles (e.g. Rel_speed) are filled with NaN
+        merged[key] = np.array([entries[f][0][key][entries[f][1]] if key in entries[f][0] else [np.nan]*len(ESTIMATORS)
+                                for f in order], dtype=float).reshape(-1, len(ESTIMATORS))
     for key in LIST_KEYS:
         merged[key] = [np.asarray(entries[f][0][key][entries[f][1]]) for f in order]
     return merged
