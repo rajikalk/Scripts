@@ -11,6 +11,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgba
+from matplotlib.ticker import NullFormatter
 import os
 
 plt.rcParams.update({
@@ -227,4 +228,47 @@ for event_it in event_IDS:
 
 fig.savefig("Bondi_radius_Event_multi_rad_"+args.plot_estimator+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
 print('Saved figure with Bondi radius')
+sys.stdout.flush()
+
+#------------------------------------------------------
+# Figure 3: Mach number of the gas in the measuring sphere (relative to the sink), with separation
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
+plt.subplots_adjust(hspace=-0.61)
+plt.subplots_adjust(wspace=0.0)
+
+for event_it in event_IDS:
+    ax = axs.flatten()[event_it-2]
+    start_time, end_time, start_ind, end_ind = get_window(event_it)
+    handles = []
+
+    for rad in Radii:
+        save_dict = bhl_data[(event_it, rad)]
+        if save_dict is None:
+            continue
+        colour = colours[Radii.index(rad)]
+        lns = ax.semilogy(save_dict["Time"], save_dict["Mach"][:, est_ind], color=colour, ls='-', lw=1, label="r = "+str(rad)+" au")
+        handles.append(lns[0])
+
+    hline = ax.axhline(1, ls=':', color='k', alpha=0.7, lw=1, label=r"$\mathcal{M}$ = 1")
+    handles.append(hline)
+
+    axes_1_twin = ax.twinx()
+    lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+    handles.append(lns2[0])
+
+    if event_it == 2:
+        ax.set_ylabel('Mach number', labelpad=-0.2, fontsize=font_size)
+    ax.yaxis.set_minor_formatter(NullFormatter())   # label decades only
+    if event_it == 5:
+        axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
+    axes_1_twin.set_ylim([5, 70])   # same separation axis in every panel
+    axes_1_twin.tick_params(axis='y', labelsize=font_size)
+    if event_it != 5:
+        plt.setp(axes_1_twin.get_yticklabels(), visible=False)
+    style_panel(ax, event_it, start_time, end_time)
+    if event_it == 2:
+        add_legend(ax, handles, r"Mach number, $|v_{\rm gas} - v_{\rm sink}|/c_s$ ("+estimator_label+")")
+
+fig.savefig("Mach_Event_multi_rad_"+args.plot_estimator+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+print('Saved figure with Mach number')
 sys.stdout.flush()
