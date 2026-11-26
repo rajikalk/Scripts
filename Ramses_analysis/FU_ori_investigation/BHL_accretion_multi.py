@@ -72,10 +72,6 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 9
 
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
-plt.subplots_adjust(hspace=-0.61)
-plt.subplots_adjust(wspace=0.0)
-
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 #time_bounds = [[3800, 4900+500],[5575, 5700+500], [6580, 6720+500], [7295, 7365+500], [7850, 7900+500]]
 colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
@@ -99,24 +95,63 @@ except:
     print("finished reading in pickle")
     sys.stdout.flush()
 
+
+# Load the BHL results once, for both figures
+bhl_data = {}
 for event_it in event_IDS:
-    ax = axs.flatten()[event_it-2]
+    for rad in Radii:
+        directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(event_it)+"/Radius_"+str(rad) +"/"
+        bhl_data[(event_it, rad)] = load_bhl_directory(directory)
+        if bhl_data[(event_it, rad)] is None:
+            print("No data right now for Event", event_it, "Radius", rad)
+
+def get_window(event_it):
     start_time = time_bounds[event_it -1][0]
     end_time = time_bounds[event_it -1][1]
     if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
         end_time = 7340
-
     start_ind = np.argmin(abs(particle_data['time']-start_time))
     end_ind = np.argmin(abs(particle_data['time']-end_time))
+    return start_time, end_time, start_ind, end_ind
+
+def style_panel(ax, event_it, start_time, end_time):
+    ax.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size)
+    ax.tick_params(axis='x', which='major', direction='in', color='k', top=True)
+    ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+    ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+    ax.set_xlim([start_time, end_time])
+    pos = ax.get_position()
+    ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+    if event_it != 2:
+        plt.setp(ax.get_yticklabels(), visible=False)
+
+def add_legend(ax, handles, title):
+    ax.legend(handles, [h.get_label() for h in handles],
+        loc='upper center',
+        bbox_to_anchor=(2.0, -0.25),
+        ncol=4,
+        title=title,
+        title_fontsize=font_size,
+    )
+
+estimator_label = args.plot_estimator.replace('_', '-')
+
+#------------------------------------------------------
+# Figure 1: measured accretion rate vs BHL prediction
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
+plt.subplots_adjust(hspace=-0.61)
+plt.subplots_adjust(wspace=0.0)
+
+for event_it in event_IDS:
+    ax = axs.flatten()[event_it-2]
+    start_time, end_time, start_ind, end_ind = get_window(event_it)
     handles = []
     lns1 = ax.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='k', ls='-', label="Accretion rate")
     handles.append(lns1[0])
 
     for rad in Radii:
-        directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(event_it)+"/Radius_"+str(rad) +"/"
-        save_dict = load_bhl_directory(directory)
+        save_dict = bhl_data[(event_it, rad)]
         if save_dict is None:
-            print("No data right now for Event", event_it, "Radius", rad)
             continue
         colour = colours[Radii.index(rad)]
         band = ax.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"][:, est_ind], save_dict["BHL_Acc_acc_high"][:, est_ind],
@@ -127,32 +162,51 @@ for event_it in event_IDS:
     lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
     handles.append(lns2[0])
 
-    ax.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
     if event_it == 2:
-        ax.set_ylabel(r'Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+        ax.set_ylabel(r'Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)
         ax.set_ylim([5.e-9, 1.e-4])
     if event_it == 5:
         axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
     axes_1_twin.set_ylim([5, 70])   # same separation axis in every panel
-    ax.tick_params(axis='x', which='major', direction='in', color='k', top=True)
-    ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
-    ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-    ax.set_xlim([start_time, end_time])
-    pos = ax.get_position()
-    ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-    if event_it == 2:
-        ax.legend(handles, [h.get_label() for h in handles],
-            loc='upper center',
-            bbox_to_anchor=(2.0, -0.25),
-            ncol=4,
-            title="BHL prediction ("+args.plot_estimator.replace('_', '-')+r", $\alpha$=1–2)",
-            title_fontsize=font_size,
-        )
-    if event_it != 2:
-        plt.setp(ax.get_yticklabels(), visible=False)
+    axes_1_twin.tick_params(axis='y', labelsize=font_size)
     if event_it != 5:
         plt.setp(axes_1_twin.get_yticklabels(), visible=False)
+    style_panel(ax, event_it, start_time, end_time)
+    if event_it == 2:
+        add_legend(ax, handles, "BHL prediction ("+estimator_label+r", $\alpha$=1–2)")
 
-plt.savefig("BHL_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+fig.savefig("BHL_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
 print('Saved figure with BHL Accretion')
+sys.stdout.flush()
+
+#------------------------------------------------------
+# Figure 2: BHL (Bondi) radius vs binary separation, both in au on the same axis
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
+plt.subplots_adjust(hspace=-0.61)
+plt.subplots_adjust(wspace=0.0)
+
+for event_it in event_IDS:
+    ax = axs.flatten()[event_it-2]
+    start_time, end_time, start_ind, end_ind = get_window(event_it)
+    handles = []
+
+    for rad in Radii:
+        save_dict = bhl_data[(event_it, rad)]
+        if save_dict is None:
+            continue
+        colour = colours[Radii.index(rad)]
+        lns = ax.semilogy(save_dict["Time"], save_dict["Bondi_radius"][:, est_ind], color=colour, ls='-', lw=1, label="r = "+str(rad)+" au")
+        handles.append(lns[0])
+
+    lns2 = ax.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+    handles.append(lns2[0])
+
+    if event_it == 2:
+        ax.set_ylabel('Radius (au)', labelpad=-0.2, fontsize=font_size)
+    style_panel(ax, event_it, start_time, end_time)
+    if event_it == 2:
+        add_legend(ax, handles, r"Bondi radius, $2GM/(c_s^2+v^2)$ ("+estimator_label+")")
+
+fig.savefig("Bondi_radius_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+print('Saved figure with Bondi radius')
 sys.stdout.flush()

@@ -260,13 +260,22 @@ if rank == 0:
         print("finished reading in pickle")
         sys.stdout.flush()
     except:
-        sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
-        print("read pickle", sink_pickle)
-        file_open = open(sink_pickle, 'rb')
-        particle_data, counter, _, _ = pickle.load(file_open)
-        file_open.close()
-        print("finished reading in pickle")
-        sys.stdout.flush()
+        try:
+            sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
+            print("read pickle", sink_pickle)
+            file_open = open(sink_pickle, 'rb')
+            particle_data, counter, _, _ = pickle.load(file_open)
+            file_open.close()
+            print("finished reading in pickle")
+            sys.stdout.flush()
+        except:
+            sink_pickle = "/home/100/rlk100/gdata/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
+            print("read pickle", sink_pickle)
+            file_open = open(sink_pickle, 'rb')
+            particle_data, counter, _, _ = pickle.load(file_open)
+            file_open.close()
+            print("finished reading in pickle")
+            sys.stdout.flush()
 
     import matplotlib.pyplot as plt
     from matplotlib.colors import to_rgba
