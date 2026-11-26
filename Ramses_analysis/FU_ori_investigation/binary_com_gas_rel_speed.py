@@ -92,9 +92,9 @@ mym.set_units(units_override)
 sink_id = 45
 sink_form_time_yr = yt.YTQuantity(22926444.19370405, 'yr').value
 
-# Outputs either directly under data_dir/data/ or in event subdirectories (data_dir/Event_*/data/)
+# Outputs either directly under data_dir/data/
 data_dir = os.path.join(args.data_directory, '')
-all_files = sorted(set(glob.glob(data_dir+"data/*/info*.txt") + glob.glob(data_dir+"*/data/*/info*.txt")))
+all_files = sorted(set(glob.glob(data_dir+"data/*/info*.txt")))
 if rank == 0:
     print("Found", len(all_files), "outputs under", data_dir)
     if len(all_files) == 0:
