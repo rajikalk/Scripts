@@ -20,7 +20,7 @@ plt.rcParams.update({
     })
 
 ESTIMATORS = ["mean", "median", "mass_weighted"]
-ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius", "Rel_speed"]
+ARRAY_KEYS = ["BHL_Acc_acc_low", "BHL_Acc_acc_high", "Bondi_radius", "Rel_speed", "Mach"]
 LIST_KEYS = ["Density", "Rel_kep"]
 
 #-----------------------------------------------------
