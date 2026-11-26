@@ -112,7 +112,11 @@ for event_it in event_IDS:
         directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(event_it)+"/Radius_"+str(rad) +"/"
         bhl_data[(event_it, rad)] = load_bhl_directory(directory)
         if bhl_data[(event_it, rad)] is None:
-            print("No data right now for Event", event_it, "Radius", rad)
+            directory = "/home/100/rlk100/gdata/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(event_it)+"/Radius_"+str(rad) +"/"
+            bhl_data[(event_it, rad)] = load_bhl_directory(directory)
+            if bhl_data[(event_it, rad)] is None:
+                print("No data right now for Event", event_it, "Radius", rad)
+            
 
 def get_window(event_it):
     start_time = time_bounds[event_it -1][0]
