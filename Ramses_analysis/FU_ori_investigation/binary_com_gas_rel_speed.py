@@ -162,9 +162,10 @@ if len(files) > 0:
         ds = yt.load(fn, units_override=units_override)
         if len(ds.r["gas", "sink_particle_mass"]) > sink_id:
             result = calculate_rel_speed(ds, fn)
-        for key in result.keys():
-            my_dict[key].append(result[key])
-        del ds, result
+            for key in result.keys():
+                my_dict[key].append(result[key])
+            del result
+        del ds
         gc.collect()
 
         save_pickle(merge_dicts([my_dict]), rank_pickle)
