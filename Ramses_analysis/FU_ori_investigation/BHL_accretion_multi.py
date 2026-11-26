@@ -133,7 +133,7 @@ def style_panel(ax, event_it, start_time, end_time):
     ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
     ax.set_xlim([start_time, end_time])
-    ax.text(0.05, 0.95, "Event "+str(event_it), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+    ax.text(0.05, 0.95, "Event "+str(event_it), transform=ax.transAxes, ha='left', va='top', fontsize=font_size, bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=1))
     pos = ax.get_position()
     ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
     if event_it != 2:
@@ -194,7 +194,7 @@ print('Saved figure with BHL Accretion')
 sys.stdout.flush()
 
 #------------------------------------------------------
-# Figure 2: BHL (Bondi) radius, with a reference line at 0.79 au
+# Figure 2: BHL (Bondi) radius and binary separation (same axis, au), with a reference line at 0.79 au
 fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
@@ -212,7 +212,9 @@ for event_it in event_IDS:
         lns = ax.semilogy(save_dict["Time"], save_dict["Bondi_radius"][:, est_ind], color=colour, ls='-', lw=1, label="r = "+str(rad)+" au")
         handles.append(lns[0])
 
-    hline = ax.axhline(0.79, ls='--', color='k', alpha=0.5, lw=1, label="0.79 au")
+    lns2 = ax.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
+    handles.append(lns2[0])
+    hline = ax.axhline(0.79, ls=':', color='k', alpha=0.7, lw=1, label="0.79 au")
     handles.append(hline)
 
     if event_it == 2:
