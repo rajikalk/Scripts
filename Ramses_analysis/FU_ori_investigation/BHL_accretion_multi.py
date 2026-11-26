@@ -193,7 +193,7 @@ print('Saved figure with BHL Accretion')
 sys.stdout.flush()
 
 #------------------------------------------------------
-# Figure 2: BHL (Bondi) radius vs binary separation, both in au on the same axis
+# Figure 2: BHL (Bondi) radius, with a reference line at 0.79 au
 fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 0.6*single_col_width), sharey=True)
 plt.subplots_adjust(hspace=-0.61)
 plt.subplots_adjust(wspace=0.0)
@@ -211,8 +211,8 @@ for event_it in event_IDS:
         lns = ax.semilogy(save_dict["Time"], save_dict["Bondi_radius"][:, est_ind], color=colour, ls='-', lw=1, label="r = "+str(rad)+" au")
         handles.append(lns[0])
 
-    lns2 = ax.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-    handles.append(lns2[0])
+    hline = ax.axhline(0.79, ls='--', color='k', alpha=0.5, lw=1, label="0.79 au")
+    handles.append(hline)
 
     if event_it == 2:
         ax.set_ylabel('Radius (au)', labelpad=-0.2, fontsize=font_size)
