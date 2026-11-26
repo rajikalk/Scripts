@@ -133,6 +133,7 @@ def style_panel(ax, event_it, start_time, end_time):
     ax.tick_params(axis='y', which='major', direction='in', color='k', right=True)
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
     ax.set_xlim([start_time, end_time])
+    ax.text(0.05, 0.95, "Event "+str(event_it), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
     pos = ax.get_position()
     ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
     if event_it != 2:
@@ -188,7 +189,7 @@ for event_it in event_IDS:
     if event_it == 2:
         add_legend(ax, handles, "BHL prediction ("+estimator_label+r", $\alpha$=1–2)")
 
-fig.savefig("BHL_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+fig.savefig("BHL_Event_multi_rad_"+args.plot_estimator+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
 print('Saved figure with BHL Accretion')
 sys.stdout.flush()
 
@@ -220,6 +221,6 @@ for event_it in event_IDS:
     if event_it == 2:
         add_legend(ax, handles, r"Bondi radius, $2GM/(c_s^2+v^2)$ ("+estimator_label+")")
 
-fig.savefig("Bondi_radius_Event_multi_rad.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+fig.savefig("Bondi_radius_Event_multi_rad_"+args.plot_estimator+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
 print('Saved figure with Bondi radius')
 sys.stdout.flush()
